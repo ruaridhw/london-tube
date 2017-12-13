@@ -1,0 +1,116 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+xml2::xml_structure(doc)
+```
+
+```{r}
+xml_children(doc)
+```
+
+- NptgLocalities
+  - AnnotatedNptgLocalityRef (Locality)
+    - *NptgLocalityRef* (Locality ID)
+    - *LocalityName* (Locality Name)
+- StopPoints
+  - StopPoint (Stop)
+    - AtcoCode
+    - Descriptor
+      - *CommonName* (Longer station name)
+    - Place
+      - *NptgLocalityRef* (Maps to AnnotatedNptgLocalityRef)
+      - *Location* (Easting and Northing coordinates)
+        - Easting
+        - Northing
+    - StopClassification
+      - StopType
+      - OffStreet
+        - Rail
+          - Platform
+    - AdministrativeAreaRef
+    - Notes (Duplicate of CommonName)
+- RouteSections
+  - RouteSection (Each possible component of station patterns on a route)
+    - *RouteLink* (Trip between two stations for a given RouteSection)
+      - *From*
+        - StopPointRef (Maps to AtcoCode)
+      - *To*
+        - StopPointRef (Maps to AtcoCode)
+      - Distance (Units likely metres)
+      - Direction (Inbound/Outbound)
+- Routes
+  - *Route* (Primary Key)
+    - PrivateCode (Route ID)
+    - Description (Long description of tube route name)
+    - RouteSectionRef (Maps to RouteSection)
+- JourneyPatternSections
+  - *JourneyPatternSection* (Primary Key)
+    - *JourneyPatternTimingLink* (Trip between two stations for a given JourneyPatternSection)
+      - *From* (Sequence Number is a counter of the nth stop in the Section)
+        - Activity (pickUp, pickUpAndSetDown, setDown)
+        - StopPointRef (Maps to StopPointRef)
+        - TimingStatus
+      - *To*
+        - Activity
+        - StopPointRef
+        - TimingStatus
+      - *RouteLinkRef* (Maps to RouteLink)
+      - *RunTime* (Time between two stops for the JourneyPatternTimingLink)
+- Operators
+  - Operator (There is only one Tube operator)
+  - OperatorCode
+  - OperatorShortName
+  - OperatorNameOnLicence
+  - TradingName
+- Services
+  - Service
+    - ServiceCode (Primary Key and FILE Key)
+    - Lines
+      - Line
+        - LineName (Tube line name)
+    - OperatingPeriod (The dates for which the service runs)
+      - StartDate
+      - EndDate
+    - OperatingProfile
+      - RegularDayType
+        - DaysOfWeek (Contains tags relating to operating days incl. groups of days)
+    - RegisteredOperatorRef (Operator ID)
+    - StopRequirements
+    - Mode (underground)
+    - Description (Long description of Service name)
+    - StandardService
+      - *Origin*
+      - *Destination*
+      - *JourneyPattern* (Primary Key)
+        - *Direction* (Inbound/Outbound)
+        - Operational
+          - VehicleType
+            - VehicleTypeCode (UT)
+            - Description (Underground Train)
+        - *RouteRef* (Foreign Key to Route)
+        - *JourneyPatternSectionRefs* (Foreign Key to JourneyPatternSection)
+- VehicleJourneys
+  - *VehicleJourney*
+    - PrivateCode
+    - Operational
+      - VehicleType
+        - VehicleTypeCode (UT)
+        - Description (Underground Train)
+    - OperatingProfile
+      - RegularDayType
+        - DaysOfWeek
+      - BankHolidayOperation
+        - DaysOfNonOperation
+    - *VehicleJourneyCode* (Primary Key)
+    - ServiceRef (Foreign Key to ServiceCode)
+    - LineRef (Foreign Key to Line)
+    - *JourneyPatternRef* (Foreign Key to JourneyPattern)
+    - *DepartureTime* (Timetabled departure)
+
+
+```{r}
+as.character(xml_children(xml_children(doc)[5])[1])
+```
