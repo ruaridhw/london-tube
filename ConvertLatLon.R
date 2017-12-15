@@ -12,11 +12,10 @@ tables$StopPoints <- within(tables$StopPoints, {
 wgs84 = "+proj=longlat +datum=WGS84"
 bng = "+init=epsg:27700"
 
-attach(tables$StopPoints)
-cord.UTM <- SpatialPointsDataFrame(cbind(Easting, Northing)
-                                   ,data = data.table(AtcoCode, CommonName, NptgLocalityRef)
-                                   ,proj4string = CRS(bng))
-detach(tables$StopPoints)
+cord.UTM <- with(tables$StopPoints,
+                 SpatialPointsDataFrame(cbind(Easting, Northing)
+                                        ,data = data.table(AtcoCode, CommonName, NptgLocalityRef)
+                                        ,proj4string = CRS(bng)))
 
 cord.latlon <- spTransform(cord.UTM, CRS(wgs84))
 tables$StopPoints <- as_tibble(cord.latlon)
