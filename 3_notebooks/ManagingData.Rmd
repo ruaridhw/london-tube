@@ -190,18 +190,18 @@ by extracting a subset of interest.
 
 ## Subsetting
 
-The next section details how we would otherwise sample the dataset to look
-for only the files of interest and avoid scraping the files with repeated or
-uneccesary information.
+As seen in the previous section, that entire file was only relevant for
+one day of the year. By first filtering the files based on the Operating
+Period and Operating Profile, it's possible to only read in the files
+that relate to a Monday or New Years Day or 17th January.
+
+The bad news is that extracting out the nested Operating Profile information
+isn't easy.
 
 ```{r extract_op_period}
 library(magrittr)
 library(data.table)
-### Using XPaths to extract the Operating Period of every file ----
 xpath.op_period <- ".//txc:Services/txc:Service/txc:OperatingPeriod/*"
-
-#rootdir <- datadir
-#files <- list.files(datadir, pattern = "tfl_1-[^.]+\\.xml")
 
 dates <- sapply(data.files, function(xml_file) {
   XML::xmlParse(xml_file) %>% #xml2::read_xml is faster
@@ -210,7 +210,14 @@ dates <- sapply(data.files, function(xml_file) {
 }, simplify = FALSE) %>%
 {data.table(names(.), rbindlist(.))}
 names(dates) <- c("File", "StartDate", "EndDate")
+dates[["File"]] <- basename(dates[["File"]])
+head(dates, 10)
+```
 
+The next step is to filter this dataframe based on whether a date of
+interest falls within the time interval of a file
+
+```{r}
 library(lubridate)
 timetable_date <- lubridate::today()
 relevant_dates <- dates %$%
@@ -219,11 +226,16 @@ relevant_dates <- dates %$%
   {timetable_date %within% .} %>%
   # Subset dates to only these records
   dates[.]
+head(relevant_dates, 10)
 ```
 
-```{r subset_given_day}
-### Retrieve Vehicle Journeys that relate to a given day of timetabling ----
+Now we've cut down the 84 files to roughly a quarter of the number.
 
+The other option (to filter based on the days of the week) is even more
+convoluted. It should be as simply as filtering on the tags underneath
+Journey Operating Profile however here's a list of the unique set of tags
+
+```{r subset_given_day}
 xpath.days_of_week <- ".//txc:VehicleJourneys/txc:VehicleJourney/txc:OperatingProfile/txc:RegularDayType/txc:DaysOfWeek/*"
 daysofweek <- sapply(data.files, function(xml_file) {
   XML::xmlParse(xml_file) %>% #xml2::read_xml is faster
@@ -235,27 +247,12 @@ daysofweek <- sapply(data.files, function(xml_file) {
 daysofweek
 ```
 
-```{r weekday_category}
-# Get the day of the week and whether its a Weekend or MondayToFriday
-get_weekday_category <- function(date){
-  day_of_week <- weekdays(date)
-  day_category <- ifelse(day_of_week %in% c("Saturday", "Sunday"), "Weekend", "MondayToFriday")
-  c(day_of_week, day_category)
-}
-```
-
-```{r subset_file_list}
-weekday_vec <- get_weekday_category(timetable_date)
-xpath.required_days <- sprintf(".//txc:VehicleJourneys/txc:VehicleJourney[descendant::txc:DaysOfWeek/txc:%s or descendant::txc:DaysOfWeek/txc:%s]", weekday_vec[1], weekday_vec[2])
-
-XML::xmlParse(data.files[1]) %>%
-  XML::xmlRoot() %>%
-  XML::xpathApply(xpath.required_days, namespaces = namespace)
-
-
-terminal_nodesets <- lapply(xpath.required_days, xml2::xml_find_all, x = xml2::read_xml(data.files[1]), ns = namespace)
-```
-
+The "days of the week" also include values such as "MondayToFriday",
+"Weekend" as well as "MondayToSaturday" and "MondayToSunday" under the
+Service Operating Profile. So we would need to create a mapping function
+between a given date and all of the possible "days of the week" it could
+fall under. This is accounted for [here] and [here] however won't be
+covered in this notebook.
 
 ## Extraction
 
@@ -556,8 +553,6 @@ a given date.
 Now, by passing in the date Wednesday 20th Dec 2017 the table size has reduced to 243,847 rows.
 
 ## Advanced Queries
-
-Set eval = TRUE
 
 ```{r advanced_queries, message=FALSE, include=FALSE, eval=TRUE, cache=FALSE}
 knitr::read_chunk(file.path(root.dir, "2_analysis/sql/NumberOfTrainsPointInTime.sql"))
