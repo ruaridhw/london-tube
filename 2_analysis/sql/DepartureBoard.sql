@@ -1,11 +1,29 @@
+
+-- CREATE INDEX ON "VehicleJourneys" ("JourneyPatternRef");
+-- CREATE INDEX ON "JourneyPatterns" ("JourneyPattern");
+-- CREATE INDEX ON "JourneyPatternTimingLinks" ("JourneyPatternSections");
+-- CREATE INDEX ON DaysOfWeek_Groups ("DayIndex");
+
+-- CREATE INDEX ON "VehicleJourneys" ("VehicleJourneyCode");
+-- CREATE INDEX ON "JourneyPatternTimingLinks" ("From_SequenceNumber");
+
+--CREATE INDEX ON "StopPoints" ("AtcoCode");
+--CREATE INDEX ON "Services_RegularDayType_DaysOfWeek" ("Services");
+--CREATE INDEX ON "VehicleJourneys_RegularDayType_DaysOfWeek" ("VehicleJourneys");
+--CREATE INDEX ON "Services" ("ServiceCode");
+
 CREATE OR REPLACE FUNCTION departureboard(IN _timetable_date text)
   RETURNS TABLE (
     "VehicleJourneyCode" text,
     "Line" text,
     "From_StopPointRef" text,
     "From_StopPointName" text,
+		"From_Longitude" double precision,
+		"From_Latitude" double precision,
     "To_StopPointRef" text,
     "To_StopPointName" text,
+		"To_Longitude" double precision,
+		"To_Latitude" double precision,
     "JourneyTime"	double precision,
     "DepartureMins_Link" double precision,
     "ArrivalMins_Link" double precision,
@@ -22,8 +40,12 @@ CREATE OR REPLACE FUNCTION departureboard(IN _timetable_date text)
     ,SUBSTRING("LineRef" FROM 3 FOR 3) "Line"
     ,"From_StopPointRef"
     ,"From_StopPointName"
+		,"From_Longitude"
+		,"From_Latitude"
     ,"To_StopPointRef"
     ,"To_StopPointName"
+		,"To_Longitude"
+		,"To_Latitude"
     ,"JourneyTime"
     ,LAG("ArrivalMins_Link", 1, "DepartureMins") OVER (PARTITION BY "VehicleJourneyCode" ORDER BY "From_SequenceNumber") AS "DepartureMins_Link"
     ,"ArrivalMins_Link"
@@ -40,8 +62,12 @@ CREATE OR REPLACE FUNCTION departureboard(IN _timetable_date text)
       ,j."From_SequenceNumber"
       ,j."From_StopPointRef"
       ,p1."CommonName" "From_StopPointName"
+			,p1."Longitude" "From_Longitude"
+			,p1."Latitude" "From_Latitude"
       ,j."To_StopPointRef"
       ,p2."CommonName" "To_StopPointName"
+			,p2."Longitude" "To_Longitude"
+			,p2."Latitude" "To_Latitude"
 
       ,j."JourneyTime"
       ,v."DepartureMins" + SUM(j."JourneyTime") OVER (PARTITION BY v."VehicleJourneyCode" ORDER BY j."From_SequenceNumber") AS "ArrivalMins_Link"

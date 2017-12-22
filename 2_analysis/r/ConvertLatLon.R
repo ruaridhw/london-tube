@@ -5,7 +5,7 @@ tables$StopPoints <- within(tables$StopPoints, {
   Northing %<>% as.integer
 })
 
-#TODO these projections are ever so slightly off comapred to the
+#TODO these projections are ever so slightly off compared to the
 #     Python module convertbng.util.convert_lonlat
 #     is there a more accurate projection?
 #TODO Check results against Google Maps tube station geocode
@@ -20,4 +20,3 @@ cord.UTM <- with(tables$StopPoints,
 cord.latlon <- spTransform(cord.UTM, CRS(wgs84))
 tables$StopPoints <- as_tibble(cord.latlon)
 names(tables$StopPoints) <- c("AtcoCode","CommonName","NptgLocalityRef","Lon","Lat")
-

@@ -21,15 +21,17 @@ WITH arrival_calc AS (
 		,j."WaitTime"
 		,j."JourneyTime"
 
-		--,arr."ArrivalMins_Link"
 		,v."DepartureMins" + SUM(j."JourneyTime") OVER (PARTITION BY v."VehicleJourneyCode" ORDER BY j."From_SequenceNumber") AS "ArrivalMins_Link"
-
+		,j."To_SequenceNumber" = MAX(j."To_SequenceNumber") OVER (PARTITION BY v."VehicleJourneyCode") AS "Flag_LastStop"
+		
+		/* Used for debugging
 		,FIRST_VALUE(p1."CommonName") OVER (PARTITION BY v."VehicleJourneyCode"
 		    ORDER BY j."From_SequenceNumber" ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS "OriginStopPointName"
 
 		,LAST_VALUE(p2."CommonName") OVER (PARTITION BY v."VehicleJourneyCode"
 		    ORDER BY j."From_SequenceNumber" ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS "DestStopPointName"
-
+		*/
+		
 	FROM "VehicleJourneys" v
 
 	LEFT JOIN "JourneyPatterns" s

@@ -1,6 +1,6 @@
-#######################################################
-################## PARSING FUNCTIONS ##################
-#######################################################
+#' # XML Parsing
+
+#' ## Parsing Functions
 
 def get_xpath(doc, path):
     return doc.xpath(path, namespaces={'txc': 'http://www.transxchange.org.uk/'})
@@ -45,18 +45,16 @@ def get_df(doc, dict_of_paths):
     df = pd.DataFrame.from_items(cols)
     return df
 
-#######################################################
-######################## XPATHS #######################
-#######################################################
+#' ## XPaths
 
-## NptgLocalities
+#' NptgLocalities
 root_localities = "./txc:NptgLocalities/txc:AnnotatedNptgLocalityRef"
 NptgLocalities = {
     "NptgLocalityRef": root_localities + "/txc:NptgLocalityRef/text()",
     "LocalityName": root_localities + "/txc:LocalityName/text()"
 }
 
-## StopPoints
+#' StopPoints
 root_stops = "./txc:StopPoints/txc:StopPoint"
 StopPoints = {
     "AtcoCode": root_stops + "/txc:AtcoCode/text()",
@@ -66,8 +64,7 @@ StopPoints = {
     "Place_Location_Northing": root_stops + "/txc:Place/txc:Location/txc:Northing/text()",
 }
 
-## RouteSections
-## RouteLinks
+#' RouteSections and RouteLinks
 root_routelinks = "./txc:RouteSections/txc:RouteSection/txc:RouteLink"
 RouteLinks = {
     "RouteSections": root_routelinks + "/parent::node()",
@@ -78,7 +75,7 @@ RouteLinks = {
     "Direction": root_routelinks + "/txc:Direction/text()",
 }
 
-## Routes
+#' Routes
 root_routes = "./txc:Routes/txc:Route"
 Routes = {
     "Route": root_routes + "/@id",
@@ -86,8 +83,7 @@ Routes = {
     "RouteSectionRef": root_routes + "/txc:RouteSectionRef/text()",
 }
 
-## JourneyPatternSections
-## JourneyPatternTimingLink
+#' JourneyPatternSections and JourneyPatternTimingLinks
 root_journeysections = "./txc:JourneyPatternSections/txc:JourneyPatternSection/txc:JourneyPatternTimingLink"
 JourneyPatternTimingLinks = {
     "JourneyPatternSections": root_journeysections + "/parent::node()",
@@ -102,7 +98,7 @@ JourneyPatternTimingLinks = {
     "RunTime": root_journeysections + "/txc:RunTime/text()",
 }
 
-## Services
+#' Services
 root_services = "./txc:Services/txc:Service"
 Services = {
     "ServiceCode": root_services + "/txc:ServiceCode/text()",
@@ -118,7 +114,7 @@ Services = {
     "StandardService_Destination": root_services + "/txc:StandardService/txc:Destination/text()",
 }
 
-## JourneyPatterns
+#' JourneyPatterns
 root_journeypatterns = "./txc:Services/txc:Service/txc:StandardService/txc:JourneyPattern"
 JourneyPatterns = {
     "JourneyPattern": root_journeypatterns + "/@id",
@@ -127,7 +123,7 @@ JourneyPatterns = {
     "JourneyPatternSectionRefs": root_journeypatterns + "/txc:JourneyPatternSectionRefs/text()",
 }
 
-## VehicleJourneys
+#' VehicleJourneys
 root_vehiclejourneys = "./txc:VehicleJourneys/txc:VehicleJourney"
 VehicleJourneys = {
     "PrivateCode": root_vehiclejourneys + "/txc:PrivateCode/text()",
@@ -139,6 +135,7 @@ VehicleJourneys = {
     "DepartureTime": root_vehiclejourneys + "/txc:DepartureTime/text()",
 }
 
+#' Create a dictionary with all XPaths
 required_xpaths = {
     "NptgLocalities": NptgLocalities,
     "StopPoints": StopPoints,
@@ -150,6 +147,25 @@ required_xpaths = {
     "VehicleJourneys": VehicleJourneys
 }
 
+#' ## Main
+
+#' Iterate over all the files for a given tube line,
+#' scrape all the relevant data frames,
+#' store them in a nested dictionary indexed by table and file
+#' and output them into a common Line file for each table.
+#'
+#' The Operating Period and Profile information is scraped separately
+#' from the `get_df` function due to the extra level of sophistication required.
+#' These nodes contain a varying number of child nodes where the data is
+#' contained in the tag name and the tag name is not known in advance.
+#'
+#' Due to the fact that the StopPoints and NptgLocalities localities
+#' tables are the only two that contain duplicate information *across*
+#' lines, these are held in memory throughout the iteration and dumped
+#' to a single file with the Line prefix "ALL"
+#'
+#' To enable efficient transition between Python and R, the DFs are
+#' serialised into the Feather format.
 if __name__ == '__main__':
     import os
     import re

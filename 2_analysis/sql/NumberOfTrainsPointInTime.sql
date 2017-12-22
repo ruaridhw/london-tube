@@ -16,7 +16,8 @@ WHERE "VehicleJourneyCode" IN
 		SELECT "VehicleJourneyCode"
 		FROM departures
 		GROUP BY "VehicleJourneyCode"
-		HAVING 540 BETWEEN MIN("DepartureMins_Link") AND MAX("ArrivalMins_Link")
+		-- Time is between the train origin departure time (inclusive) and arrival time at the last stop (exclusive)
+		HAVING 540 >= MIN("DepartureMins_Link") AND 540 < MAX("ArrivalMins_Link")
 	)
 )
 

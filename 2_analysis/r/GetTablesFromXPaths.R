@@ -1,94 +1,119 @@
+#' # Extraction using R
+#' 
+#' Source code used in ManagingData.Rmd.
+#' For full documentation and commentary see that report instead.
 
+#' Read in the first file and setup extraction process
+# ---- extraction_setup
+# Get top level nodeset for first file
+doc <- data.files[1] %>%
+  xml2::read_xml() %>%
+  xml2::xml_ns_strip()
+nodeset <- doc %>%
+  xml2::xml_children()
 
-"/TransXChange/VehicleJourneys/VehicleJourney" %>%
-  lapply(xml2::xml_find_all, x = doc) %>%
-  purrr::map(xml_dig_df, dig = TRUE) %>%
-  purrr::map(dplyr::bind_rows) %>%
-  dplyr::bind_cols()
-
-
-terminal_xpaths <- nodeset %>% ## get all xpaths to parents of parent node
-  xml_get_paths(only_terminal_parent = TRUE) %>% ## collapse xpaths to unique only
+# Get the xpaths to parents of a terminal node
+terminal_xpaths <- nodeset %>%
+  xmltools::xml_get_paths(only_terminal_parent = TRUE) %>%
+  # Filter to unique paths
   unlist() %>%
   unique()
+# ---- 
 
-
-terminal_xpaths[required_terminal_xpaths[[2]]] %>%
-  lapply(xml2::xml_find_all, x = doc) %>%
-  purrr::map(xml_dig_df, dig = TRUE) %>%
-  purrr::map(dplyr::bind_rows) %>%
-  dplyr::bind_cols()
-
-required_terminal_xpaths <- list(
+#' Define subset of xpaths required.
+# ---- required_xpaths
+required_xpaths <- list(
    NptgLocalities = 1
   ,StopPoints = 2:5
-  ,RouteSections = 8:10
+  ,RouteLinks = 8:10
   ,Routes = 11
-  ,JourneyPatternSections = 12:14
-  ,StandardServices = 24
+  ,JourneyPatternTimingLinks = 12:14
+  ,Services = 16
+  ,JourneyPatterns = 24
   ,VehicleJourneys = 26
 )
+# ---- 
 
-# [1] "/TransXChange/NptgLocalities/AnnotatedNptgLocalityRef"
-# [2] "/TransXChange/StopPoints/StopPoint"
-# [3] "/TransXChange/StopPoints/StopPoint/Descriptor"
-# [4] "/TransXChange/StopPoints/StopPoint/Place"
-# [5] "/TransXChange/StopPoints/StopPoint/Place/Location"
-# [8] "/TransXChange/RouteSections/RouteSection/RouteLink"
-# [9] "/TransXChange/RouteSections/RouteSection/RouteLink/From"
-# [10] "/TransXChange/RouteSections/RouteSection/RouteLink/To"
-# [11] "/TransXChange/Routes/Route"
-# [12] "/TransXChange/JourneyPatternSections/JourneyPatternSection/JourneyPatternTimingLink"
-# [13] "/TransXChange/JourneyPatternSections/JourneyPatternSection/JourneyPatternTimingLink/From"
-# [14] "/TransXChange/JourneyPatternSections/JourneyPatternSection/JourneyPatternTimingLink/To"
-# [23] "/TransXChange/Services/Service/StandardService"
-# [24] "/TransXChange/Services/Service/StandardService/JourneyPattern"
-# [26] "/TransXChange/VehicleJourneys/VehicleJourney"
+#' Extract the tables by grouping the results from the sets of xpaths
+# ---- build_tfl
+build_tfl <- function(doc, terminal_xpaths, required_terminal_xpaths) {
+  purrr::map(required_terminal_xpaths, function(xpath_idxs) {
+    # Subset the needed paths
+    terminal_xpaths[xpath_idxs] %>%
+      # Find all matches of each path
+      lapply(xml2::xml_find_all, x = doc) %>%
+      # Extract underlying data
+      purrr::map(xmltools::xml_dig_df) %>%
+      # Combine extracted data into one dataframe
+      purrr::map(dplyr::bind_rows) %>%
+      dplyr::bind_cols()
+  })
+}
+# ---- 
 
-tables <- map(required_terminal_xpaths, function(xpath_idxs) {
-  terminal_xpaths[xpath_idxs] %>%
-    lapply(xml_find_all, x = doc) %>%
-    map(xmltools::xml_dig_df) %>%
-    map(bind_rows) %>%
-    bind_cols
-})
-
-JourneyPatternSectionsNodeset <- "/TransXChange/JourneyPatternSections/JourneyPatternSection" %>%
-  xml_find_all(x = doc)
-
-tables$JourneyPatternSections <-
-  map(JourneyPatternSectionsNodeset, function(Section) {
-    TimingLinks <- Section %>%
-      xml_find_all("JourneyPatternTimingLink")
-    
-    data.table(
-      JourneyPatternSectionID = Section %>%
-        xml_attr("id"),
+#' Get XML attributes and parent IDs
+# ---- retrieve_additional_fields, warning=FALSE, message=FALSE
+library(dplyr)
+retrieve_additional_fields <- function(tfl, doc){
+  JourneyPatternSectionsNodeset <- "/TransXChange/JourneyPatternSections/JourneyPatternSection" %>%
+    xml2::xml_find_all(x = doc)
+  
+  AdditionalTimingLinksData <-
+    purrr::map(JourneyPatternSectionsNodeset, function(Section) {
+      TimingLinks <- Section %>%
+        xml2::xml_find_all("JourneyPatternTimingLink")
       
-      JourneyPatternTimingLinkID = TimingLinks %>%
-        xml_attr("id"),
-      
-      FromSequenceNumber = TimingLinks %>%
-        xml_find_all("From") %>%
-        xml_attr("SequenceNumber") %>%
-        as.integer,
-      
-      ToSequenceNumber = TimingLinks %>%
-        xml_find_all("To") %>%
-        xml_attr("SequenceNumber") %>%
-        as.integer
-    )
-  }) %>%
-  rbindlist %>%
-  as_tibble %>%
-  bind_cols(tables$JourneyPatternSections) %>%
-  rename(FromActivity = Activity, FromStopPointRef = StopPointRef, FromTimingStatus = TimingStatus,
-         ToActivity = Activity1, ToStopPointRef = StopPointRef1, ToTimingStatus = TimingStatus1)
+      data.table(
+        JourneyPatternSectionID = Section %>%
+          xml2::xml_attr("id"),
+        
+        JourneyPatternTimingLinkID = TimingLinks %>%
+          xml2::xml_attr("id"),
+        
+        FromSequenceNumber = TimingLinks %>%
+          xml2::xml_find_all("From") %>%
+          xml2::xml_attr("SequenceNumber") %>%
+          as.integer,
+        
+        ToSequenceNumber = TimingLinks %>%
+          xml2::xml_find_all("To") %>%
+          xml2::xml_attr("SequenceNumber") %>%
+          as.integer
+      )
+    }) %>%
+    rbindlist %>%
+    as_tibble
+  
+  tfl$JourneyPatternTimingLinks <- AdditionalTimingLinksData %>%
+    bind_cols(tfl$JourneyPatternTimingLinks) %>%
+    rename(FromActivity = Activity,
+           FromStopPointRef = StopPointRef,
+           FromTimingStatus = TimingStatus,
+           ToActivity = Activity1,
+           ToStopPointRef = StopPointRef1,
+           ToTimingStatus = TimingStatus1)
+  
+  tfl$JourneyPatterns <-
+    tibble(JourneyPatternID =
+             "/TransXChange/Services/Service/StandardService/JourneyPattern" %>%
+             xml2::xml_find_all(x = doc) %>%
+             xml2::xml_attr("id")
+    ) %>%
+    bind_cols(tfl$JourneyPatterns)
+  
+  tfl
+}
+# ---- 
 
-
-tables$StandardServices <- tibble(JourneyPatternID =
-         "/TransXChange/Services/Service/StandardService/JourneyPattern" %>%
-         xml_find_all(x = doc) %>%
-         xml_attr("id")
-       ) %>%
-  bind_cols(tables$StandardServices)
+#' Full extraction workflow for one file.
+# ---- extract_file
+extract_file <- function(file){
+  doc <- xml2::read_xml(file) %>%
+    xml2::xml_ns_strip()
+  
+  tfl <- build_tfl(doc, terminal_xpaths, required_xpaths)
+  tfl %<>% retrieve_additional_fields(doc)
+  
+  tfl
+}
+str(extract_file(data.files[1]), 1)

@@ -29,6 +29,7 @@ modify_StopPoints <- function(df){
   df
 }
 
+
 # ---- modify_VehicleJourneys
 modify_VehicleJourneys <- function(df){
   within(df, {
@@ -37,6 +38,7 @@ modify_VehicleJourneys <- function(df){
     DepartureMins <- DepartureTime %>% {lubridate::minute(.) + 60 * lubridate::hour(.)}
   })
 }
+
 
 # ---- modify_JourneyPatternTimingLinks
 modify_JourneyPatternTimingLinks <- function(df){
@@ -50,12 +52,14 @@ modify_JourneyPatternTimingLinks <- function(df){
   })
 }
 
+
 # ---- modify_RouteLinks
 modify_RouteLinks <- function(df){
   within(df, {
     Distance %<>% as.integer
   })
 }
+
 
 # ---- modify_Services
 modify_Services <- function(df){
@@ -64,6 +68,7 @@ modify_Services <- function(df){
     OpPeriod_EndDate %<>% as.Date
   })
 }
+
 
 #' Convenience dispatch function
 # ---- modify
