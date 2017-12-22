@@ -1,0 +1,36 @@
+name: "london-tube"
+output_dir: "../docs"
+navbar:
+  title: "London Underground"
+  left:
+    - text: "Home"
+      href: index.html
+    - text: "Managing Data"
+      href: ManagingData.html
+    - text: "Visualising Data"
+      href: VisualisingData.html
+    - text: "Analysis"
+      icon: fa-gear
+      menu:
+        - text: "R"
+        - text: "Scraping"
+          href: GetTablesFromXPaths.html
+        - text: "SQL Upload"
+          href: SQLTables.html
+        - text: "---------"
+        - text: "Python"
+        - text: "Scraping"
+          href: XMLParsing.html
+  right:
+    - icon: fa-github
+      href: https://github.com/ruaridhw
+output:
+  html_document:
+    theme: yeti
+    highlight: pygments
+    include:
+      after_body: footer.html
+    css: styles.css
+    toc: true
+    toc_float: true
+    df_print: paged
