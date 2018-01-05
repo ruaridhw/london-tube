@@ -1,5 +1,5 @@
 name: "london-tube"
-output_dir: "../docs"
+output_dir: "../../gh-pages"
 navbar:
   title: "London Underground"
   left:
@@ -21,6 +21,14 @@ navbar:
         - text: "Python"
         - text: "Scraping"
           href: XMLParsing.html
+        - text: "---------"
+        - text: "SQL"
+        - text: "Days of Week Groups"
+          href: DaysOfWeekGroups.html
+        - text: "Inbound Graph"
+          href: InboundGraph.html
+        - text: "Departure Board"
+          href: DepartureBoard.html
   right:
     - icon: fa-github
       href: https://github.com/ruaridhw
