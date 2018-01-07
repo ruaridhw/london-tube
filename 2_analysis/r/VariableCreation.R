@@ -1,10 +1,14 @@
-#' # Variable Creation
+#' ---
+#' title: "Variable Creation"
+#' author: "Ruaridh Williamson"
+#' ---
 
 #' Functions to assist with typecasting variables from raw XML extraction
 #' and creation of new calculated fields prior to upload to a DBMS
 
 #' This function relies on sp, rgdal, tibble and magrittr
 # ---- modify_StopPoints
+library(rgdal)
 modify_StopPoints <- function(df){
   # Define proj4 coordinate systems
   bng = "+init=epsg:27700"
