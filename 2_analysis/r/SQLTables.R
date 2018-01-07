@@ -1,3 +1,8 @@
+#' ---
+#' title: "SQL Tables"
+#' author: "Ruaridh Williamson"
+#' ---
+
 #' ## Build database
 
 #' Using the primary keys and data types found in the previous section,

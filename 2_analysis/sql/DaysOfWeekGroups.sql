@@ -1,3 +1,18 @@
+/*
+---
+title: "Days of Weeks Groups"
+author: "Ruaridh Williamson"
+---
+
+PostgreSQL table containing the mapping
+of "Day of Week" Index (1 = Monday to 7 = Sunday) with
+the various Operating Profile groups to which they belong
+
+eg. 1 maps to Monday, MondayToFriday, MondayToSaturday, MondayToSunday
+    7 maps to Sunday, MondayToSunday, Weekend
+*/
+
+-- ---- sql_daysofweeks
 CREATE TABLE DaysOfWeek_Groups AS (
 
   /*

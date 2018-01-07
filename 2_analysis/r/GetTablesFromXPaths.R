@@ -1,5 +1,8 @@
-#' # Extraction using R
-#' 
+#' ---
+#' title: "Get Tables from XPaths"
+#' author: "Ruaridh Williamson"
+#' ---
+
 #' Source code used in ManagingData.Rmd.
 #' For full documentation and commentary see that report instead.
 
