@@ -6,6 +6,11 @@
 #' Functions to assist with typecasting variables from raw XML extraction
 #' and creation of new calculated fields prior to upload to a DBMS
 
+library(data.table)
+library(tibble)
+library(magrittr)
+library(lubridate)
+
 #' This function relies on sp, rgdal, tibble and magrittr
 # ---- modify_StopPoints
 library(rgdal)
@@ -76,6 +81,9 @@ modify_Services <- function(df){
 
 #' Convenience dispatch function
 # ---- modify
-if(tablename %in% c("StopPoints", "VehicleJourneys", "JourneyPatternTimingLinks", "RouteLinks", "Services")) {
-  df %<>% list %>% do.call(what = paste0("modify_", tablename))
+modify_df <- function(tablename, df){
+  if(tablename %in% c("StopPoints", "VehicleJourneys", "JourneyPatternTimingLinks", "RouteLinks", "Services")) {
+    df %<>% list %>% do.call(what = paste0("modify_", tablename))
+  }
+  df
 }
