@@ -18,13 +18,13 @@ password <- "mysecretpassword"
 
 #' Create database if it doesn't already exist
 
-con <- dbConnect(drv, host = host, user = user, password = password,
-                 dbname = "postgres")
-dbSendQuery(con, "CREATE DATABASE londontubepython11jan;")
-dbDisconnect(con)
+# con <- dbConnect(drv, host = host, user = user, password = password,
+#                  dbname = "postgres")
+# dbSendQuery(con, "CREATE DATABASE londontubepython;")
+# dbDisconnect(con)
 
 get_con <- function() dbConnect(drv, host = host, user = user, password = password,
-                                dbname = "londontubepython11jan")
+                                dbname = "londontubepython")
 
 source("r/VariableCreation.R") # Load required Variable Creation functions
 
