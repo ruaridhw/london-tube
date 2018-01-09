@@ -1,4 +1,14 @@
-CREATE VIEW inbound_graph AS
+/*
+---
+title: "Inbound Graph"
+author: "Ruaridh Williamson"
+---
+
+PostgreSQL view of all the distinct RouteLinks by Line
+with additional info such as StopPoint Latitude and Longitude
+*/
+
+CREATE OR REPLACE VIEW inbound_graph AS
 
 WITH LINE_ABBR AS (
 
