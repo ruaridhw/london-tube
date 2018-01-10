@@ -3,8 +3,7 @@ title: 'Part One: Managing Data'
 ---
 
 ```{r knitr_setup, include=FALSE}
-#knitr::opts_chunk$set(eval = FALSE)
-knitr::opts_chunk$set(cache = TRUE)
+knitr::opts_chunk$set(cache = FALSE)
 knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
 # read_chunk() now supports SQL chunks in external files
 if(packageVersion("knitr") < "1.17.18")
@@ -33,10 +32,14 @@ The dataset is freely available and is bound by the [TfL Open Data License](http
 To access it, download the zip file at the link below
 
 ```{r proj_setup}
+# Use paths relative to RStudio Project
 root.dir <- rprojroot::find_rstudio_root_file()
-data.dir <- file.path(root.dir, "1_data/1_1_raw_data") # Where we want the files to end up
+# Set where we want the extracted files to end up
+data.dir <- file.path(root.dir, "1_data/1_1_raw_data")
 ```
+
 ```{r download_zip, eval=FALSE}
+# Load app_id and app_key variables from a local passwords file
 source("tfl-developer-passwords.R")
 dataset_url <- "http://data.tfl.gov.uk/tfl/syndication/feeds/journey-planner-timetables.zip"
 dataset_url <- paste0(dataset_url, "?app_id=", app_id, "&app_key=", app_key)
@@ -90,7 +93,7 @@ particular file.
 
 - The *StopPoints* provide the stop locations which
 group up to a given stop "locality" in *NptgLocalities*.
-- The *Routes* are broken down into *RouteSections* and *JourneyPatternSections*
+  - The *Routes* are broken down into *RouteSections* and *JourneyPatternSections*
 - The *Operator* is pretty useless as this is always "LUL" for tube data
 - The *Service* is how the file derives its name so there's one in each
 XML file
@@ -122,26 +125,19 @@ xml_list <- doc %>% # we can also vary the depth
 and inspect the structure of each node underneath
 
 ```{r}
-cat("Localities\n\n")
 str(xml_list$NptgLocalities$AnnotatedNptgLocalityRef)
-cat("\nStop Points\n\n")
 str(xml_list$StopPoints$StopPoint)
-cat("\nRouteSections\n\n")
 str(xml_list$RouteSections$RouteSection[[1]])
-cat("\nRoutes\n\n")
 str(xml_list$Routes$Route)
-cat("\nJourneyPatternSections\n\n")
 str(xml_list$JourneyPatternSections$JourneyPatternSection[[1]])
-cat("\nOperators\n\n")
 str(xml_list$Operators$Operator)
-cat("\nServices\n\n")
+str(xml_list$Services$Service$StandardService$JourneyPattern)
+str(xml_list$VehicleJourneys$VehicleJourney)
+
+# Show service data without the child node JourneyPatterns
 service <- xml_list$Services$Service
 service$StandardService <- NULL
-str(service) # Service data without the child node JourneyPatterns
-cat("\nJourneyPatterns\n\n")
-str(xml_list$Services$Service$StandardService$JourneyPattern)
-cat("\nVehicleJourneys\n\n")
-str(xml_list$VehicleJourneys$VehicleJourney)
+str(service)
 ```
 
 There is clearly a huge amount of information here.
@@ -208,7 +204,7 @@ dates <- sapply(data.files, function(xml_file) {
     XML::xmlRoot() %>%
     XML::xpathApply(xpath.op_period, namespaces = namespace, fun = function(y) XML::xmlValue(y) %>% as.Date)
 }, simplify = FALSE) %>%
-{data.table(names(.), rbindlist(.))}
+  {data.table(names(.), rbindlist(.))}
 names(dates) <- c("File", "StartDate", "EndDate")
 dates[["File"]] <- basename(dates[["File"]])
 head(dates, 10)
@@ -257,7 +253,7 @@ covered in this notebook.
 ## Extraction
 
 ```{r extraction, include=FALSE, eval=TRUE, cache=FALSE}
-knitr::read_chunk(file.path(root.dir, "2_analysis/r/GetTablesFromXPaths.R"))
+knitr::read_chunk(file.path(rprojroot::find_rstudio_root_file(), "2_analysis/r/GetTablesFromXPaths.R"))
 ```
 
 Now that we have a good understanding of what each file contains, we can
@@ -284,18 +280,18 @@ If you wish to execute the chunks interactively, run the corresponding
 ```{r extraction_setup}
 ```
 ```{r print_xpaths}
-terminal_xpaths
+head(terminal_xpaths)
 ```
 
-These are the XPaths to every possible branch of the tree however a lot
+These are the XPaths to every possible terminal branch of the tree however a lot
 of the information isn't particularly useful. For some of the tables,
 we're only interested in specific sections. For example, the *Operational*
 tag isn't interesting as it contains information about the vehicle which
 in this case will always be "Underground Train". This is a similar story
 for the *Operator* which is always "London Underground".
 
-Therefore we can define a subset of the XPaths grouped by the table to which
-they each relate.
+Therefore we can define a subset of the `terminal_xpaths` grouped by the table
+to which they each relate.
 
 ```{r required_xpaths}
 ```
@@ -304,12 +300,12 @@ terminal_xpaths[unlist(required_xpaths)]
 ```
 
 This way, when it comes to extracting the data, all of the information
-found under the 8th, 9th and 10th Paths of `terminal_xpaths` will be
-combined together under the *RouteSections* table.
+found under the 8th, 9th and 10th paths of `terminal_xpaths` will be
+combined together under the *RouteSections* table (see elements 6-8 above).
 
 Now it is just a matter of looping over this list, finding all of the
 matches for each path, extracting the underlying data and combining it
-into a single dataset for each of the seven tables.
+into a single dataset for each of the tables.
 
 ```{r build_tfl}
 ```
@@ -335,7 +331,7 @@ We can define a function `retrieve_additional_fields` which solves these three
 cases and call it after `build_tfl` for each document. Due to its length and
 complexity it is not shown here but can be found in the complete analysis file.
 
-```{r retrieve_additional_fields, eval=TRUE, echo=FALSE}
+```{r retrieve_additional_fields, eval=TRUE, echo=FALSE, warning=FALSE, message=FALSE}
 ```
 ```{r run_retrieve_additional_fields}
 library(magrittr)
@@ -370,7 +366,7 @@ fields in more awkward-to-reach places (and about 500x faster) with
 ## Variable Creation
 
 ```{r variable_creation, include=FALSE, eval=TRUE, cache=FALSE}
-knitr::read_chunk(file.path(root.dir, "2_analysis/r/Variable Creation.R"))
+knitr::read_chunk(file.path(rprojroot::find_rstudio_root_file(), "2_analysis/r/VariableCreation.R"))
 ```
 
 There are a few crucial variables which we'll need along with correct typecasting
@@ -449,7 +445,7 @@ separately.
 # Normalisation and Relational Databases
 
 ```{r sqltables, include=FALSE, eval=TRUE, cache=FALSE}
-knitr::read_chunk(file.path(root.dir, "2_analysis/r/SQLTables.R"))
+knitr::read_chunk(file.path(rprojroot::find_rstudio_root_file(), "2_analysis/r/SQLTables.R"))
 ```
 
 As found in the previous section, the dataset is provided in a fairly
@@ -472,11 +468,11 @@ Thanks to [Docker](https://www.docker.com/what-docker) containers,
 provisioning a clean lightweight Postgres database on your local machine is one
 line of code without any additional setup other than downloading Docker itself.
 
-```{bash docker, eval=FALSE}
+```{bash, eval=FALSE}
 docker run --name postgres_london_tube -p 5432:5432 -d -e POSTGRES_PASSWORD=mysecretpassword postgres:alpine
 ```
 
-*The alpine image is about 1/10th the size of the official postgres container as it uses a significantly smaller distribution of Linux with fewer of postgres' auxilliary features.*
+*The alpine image is about 1/10th the size of the official postgres container as it uses a significantly smaller distribution of Linux with fewer of PostgreSQL's auxilliary features.*
 
 Test that the server is running and the connection works by setting up a development
 database for the project:
