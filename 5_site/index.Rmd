@@ -18,6 +18,15 @@ via a common Application Programming Interface.
 This project is split into two parts which tackle various analytical methods
 and visualisations applied to a segment of this API; network timetabling data.
 
+The dataset being explored is a live feed of the Transport for London
+network timetables. As described on the TfL website:
+
+> The Journey Planner timetable feed contains up-to-date standard
+> timetables for London Underground, bus, DLR, TfL Rail and river
+> services. The timetables are updated every seven days. 
+
+The dataset is freely available and is bound by the [TfL Open Data License](https://tfl.gov.uk/corporate/terms-and-conditions/transport-data-service).
+
 ## Part One
 
 Prior to any form of analysis, we need a structured, rectangular dataset.
@@ -26,7 +35,7 @@ refreshing the timetable API feed which is updated on a weekly basis.
 It starts with examining the structure of the data source before
 extracting all of the relevant data into a "tidy" and normalised format
 ready for pushing to a PostgreSQL database for further analysis.
-For that reason, this part is written in R for the data manipulation
+This notebook is written in R for the data manipulation
 and PostgreSQL for in-database transformation.
 
 For illustration purposes, only London Underground timetables are extracted
@@ -39,9 +48,14 @@ is built around a generic XML schema used by the Department of Transport.
 Once the data has been extracted, cleaned and normalised, the
 second part looks at different ways to visualise network timetable data
 and apply journey planner algorithms to calculate the fastest routes
-to get across London. As with any data science project, the vast majority
+to get across London. Specifically, the notebook compares the depiction
+of the famous London Underground map with a visualisation of the tube lines
+and stations in reality and uses this plot to illustrate the movement of
+train vehicles over time through spatiotemporal animation.
+
+As with any data science project, the vast majority
 of the time is spent performing tasks from Part One however equal weight
-has been given to each in the resulting notebooks.
+has been given to each in the resulting notebooks in terms of content.
 
 ## Context
 
@@ -59,22 +73,16 @@ The course content covered in Part One is
 - Using data from the Internet, parsing XML web data (Week 4)
 - Working with APIs and authentication (Week 5)
 - Manipulation, transformation and extraction of data into "tidy" form (Week 2)
-- Relational databases, normalisation and data integrity (Week 3)
+- Relational databases and table normalisation (Week 3)
 
 Part Two looks at
 
-- Exploratory data visualisation (Weeks 6 and 7)
-- Graph network algorithms and visualisation (Week 11)
+- Exploratory data visualisation using Matplotlib (Weeks 7 and 8)
+- Graph algorithms and visualisation (Week 11)
+- Querying RESTful APIs and parsing JSON data (Weeks 4 and 5)
 
 The content from Week 1
 
 - Version control, website publishing and GitHub pages
 
 is inherent in the publication of this website.
-
-
-
-
-
-
-
