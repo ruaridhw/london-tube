@@ -1,6 +1,9 @@
 ---
 title: 'Part One: Managing Data'
+output: github_document
 ---
+
+[Back to Home](index.html)
 
 ```{r knitr_setup, include=FALSE}
 knitr::opts_chunk$set(cache = FALSE)
@@ -14,21 +17,26 @@ if(packageVersion("knitr") < "1.17.18")
 # Introduction
 
 This notebook forms the first of two outputs in the analysis of
-the TfL London Tube network and is primarily concerned with the
-transformation and manipulation
-of the required datasets in comparison to Part Two which 
-focusses on visualisation.
+the TfL London Tube network. It is primarily concerned with the
+transformation and manipulation of the required datasets in
+comparison to Part Two which focuses on visualisation.
+
+Due to the complexity of the dataset being investigated, there
+are numerous links to external analysis files provided which go
+into greater detail regarding the transformations and data extraction
+performed which do not form part of the notebook.
+Further, the data manipulation code shown here is
+wholly R however when it came to extracting the data
+in practice this was re-written in Python for performance reasons.
+Therefore this code is to illustrate the initial extraction and data
+discovery thought-process moreso than the efficient extraction process.
 
 # APIs and Internet Data
 
-The dataset being explored is a live feed of the Transport for London
-network timetables. As described on the TfL website:
+We start the project with a reproducible way of pulling the dataset
+from the API download link. The results shown in this notebook relate
+to the API feed as at 12th December 2017.
 
-> The Journey Planner timetable feed contains up-to-date standard
-> timetables for London Underground, bus, DLR, TfL Rail and river
-> services. The timetables are updated every seven days. 
-
-The dataset is freely available and is bound by the [TfL Open Data License](https://tfl.gov.uk/corporate/terms-and-conditions/transport-data-service).
 To access it, download the zip file at the link below
 
 ```{r proj_setup}
@@ -46,7 +54,8 @@ dataset_url <- paste0(dataset_url, "?app_id=", app_id, "&app_key=", app_key)
 download.file(dataset_url, file.path(data.dir, "timetables.zip"))
 ```
 
-*Note: You may need to [register](https://api-portal.tfl.gov.uk/) for an API key to access the zip file. In the event that you cannot gain access there is a small demo sample [here](https://tfl.gov.uk/cdn/static/cms/documents/journey-planner-timetables.zip)*
+*Note: You may need to [register](https://api-portal.tfl.gov.uk/) for an API key to
+access the zip file. In the event that you cannot gain access there is a small demo sample [here](https://tfl.gov.uk/cdn/static/cms/documents/journey-planner-timetables.zip)*
 
 Unpack the download once to split out the train/ferry timetables
 from the bus timetables and again to unpack the tube/DLR timetables.
@@ -75,54 +84,69 @@ shape and add any necessary calculations. This will be demonstrated
 for one of the XML files in a manner which can be generalised for
 any other timetable.
 
-## Initial Exploration
+## XML Metadata
 
 Begin by reading in the first XML file.
 
+*NB: I have specifically refrained from loading the `xml2`, `XML` and
+`xmltools` namespaces via `library` throughout in order to illustrate
+which functions belong to which packages more clearly by using `::` for
+each function call.*
+
 ```{r}
+library(magrittr)
 doc <- data.files[1] %>%
   xml2::read_xml()
 doc
 ```
 
-This metadata contains two important pieces of information.
+This metadata contains two important pieces of information:
 
-Firstly, the top level node contains *eight* distinct child nodes. As it turns
-out these are all disparate datasets which all relate to this
-particular file.
+1. The top level node contains *eight* distinct child nodes
+which appear to be completely disparate datasets all relating to this
+particular file:
 
-- The *StopPoints* provide the stop locations which
-group up to a given stop "locality" in *NptgLocalities*.
+  - The [*StopPoints*][1] provide the stop locations which
+group up to a given stop "locality" in [*NptgLocalities*][2].
   - The *Routes* are broken down into *RouteSections* and *JourneyPatternSections*
-- The *Operator* is pretty useless as this is always "LUL" for tube data
-- The *Service* is how the file derives its name so there's one in each
+  - The *Operator* is not useful for the Tube data as there is only one; "LUL"
+  - Each *Service* is how the file derives its name so there's one in each
 XML file
-- Finally the *VehicleJourney* is the most granular level of information
+  - The *VehicleJourney* is the most granular level of information
 as it provides the exact trip link of a vehicle moving from one station
 to the next in a given *JourneyPatternSection*
 
-Secondly, the namespace of the XML file is non-standard. 
-This suggests that the XML structure adheres to the *TransXChange* schema
-provided by the UK Department of Transport for any timetable data.
+2. The namespace of the XML file is non-standard.
+The `schemaLocation` attribute suggests that the XML structure adheres to
+the [*TransXChange*][3] schema
+provided by the UK Department for Transport for timetable data.
 We can configure this namespace for use with any future XPaths
 (the alternative is to simply strip it entirely from the file however
 this takes additional processing time).
+
+[1]: https://en.wikipedia.org/wiki/NaPTAN#NaPTAN_Stops
+[2]: https://www.gov.uk/government/publications/national-public-transport-gazetteer
+[3]: https://www.gov.uk/government/collections/transxchange
 
 ```{r namespace}
 namespace <- c(txc = "http://www.transxchange.org.uk/")
 ```
 
-Once we set up an extraction procedure for this schema it can then
-be applied to any future DoT standard timetable.
+Once we set up an extraction procedure for this schema and namespace
+it can then be applied to *any* timetable that adheres to DfT standards.
+
+## Dataset Structure
 
 To quickly get an idea of the structure we can traverse the document as a list:
 
 ```{r}
-xml_list <- doc %>% # we can also vary the depth
+xml_list <- doc %>%
   xml2::as_list()
 ```
 
-and inspect the structure of each node underneath
+and inspect the structure of a given observation for each of the 8
+tables along with an example
+of the data that each XML node (or attribute) contains.
 
 ```{r}
 str(xml_list$NptgLocalities$AnnotatedNptgLocalityRef)
@@ -140,69 +164,89 @@ service$StandardService <- NULL
 str(service)
 ```
 
-There is clearly a huge amount of information here.
-Four of the tables contain crucial information other than Reference
+Four of the tables contain particularly crucial information other than Reference
 fields and linking identifiers:
 
 **Stop Points**
-- AtcoCode as a unique identifier of the stop across the network. There
-is one for the inbound trains and a second identifier for the same stop
-going the other way. These group up into Localities (under the Place node)
-- CommonName for the stop's name
-- Location for its Easting and Northing coordinates
+
+A tube station at which a given vehicle can stop.
+
+- *AtcoCode* is a unique identifier of the stop across the network. There
+is one for the inbound stops and a second identifier for the same stop
+going the other way. These group up into *Localities* (under the *Place* node)
+- *CommonName* is the stop's name
+- *Location* contains its *Easting* and *Northing* coordinates
 
 **Journey Pattern Sections**
-- From and To fields show every possible trip link between two stations
-- WaitTime is encoded in "PT1M" (assumed to be 1 minute of waiting)
-and is not applicable to each trip link (therefore the tag often disappears!)
-- RunTime is also encoded and provides the time taken for a trip link
+
+A trip link between two **Stop Points** (*From* and *To*) with a given
+*RunTime* and optional *WaitTime*. These combine to an overall **Journey Pattern**.
+
+- *From* and *To* fields show the trip links between two stations
+- *WaitTime* is encoded as "PT1M" for example (assumed to be 1 minute of waiting)
+however is not applicable to every trip link (therefore the XML tag often disappears!)
+- *RunTime* is also encoded and provides the time taken for a trip link
 
 **Services**
-- LineName though this is fairly obvious from the file name
-- Operating Period as this tells us which period of time the timetable
+
+Provides information about the operating rhythm of the timetable
+
+- *LineName* though this is fairly obvious from the file name
+- *Operating Period* as this tells us which period of time the timetable
 is actually active for. This particular timetable is only in effect
 on Christmas Eve.
-- Operating Profile says for which day(s) of the week and bank holidays
+- *Operating Profile* says for which day(s) of the week and bank holidays
 the timetable is and isn't operational. Again, these tags will vary in their
 structure from document to document making these fields quite difficult to parse.
 
 **VehicleJourneys**
-- Operating Profile again as some journeys may only apply to some of the days
+
+A tube vehicle's *Journey Pattern* and the time of departure from its origin
+station.
+
+- *Operating Profile* again as some journeys may only apply to some of the days
 that a service spans
-- Departure Time provides the train *origin* departure time. The difficult part
+- *Departure Time* provides the train *origin* departure time. The difficult part
 is to now interpolate the departure time of *each station* along a journey
 using the RunTime and WaitTime in **Journey Pattern Sections**.
 
-It's also worth noting that the StopPoints and NptgLocalities tables both
-contain dupliate information across every Service (XML file) for a given line and
+It's also worth noting that the **StopPoints** and **NptgLocalities** tables both
+contain duplicate information across every **Service** (XML file) for a given line and
 also contain duplicates *across* lines that share the same stops. Every other
 table has unique information per XML file because the routes, trip links,
 vehicles and journeys are all defined by Service.
 This would mean that the timetable for Christmas Day has
-a completely different set of trip links to that of Boxing Day despite the trains
-physically running on exactly the same routes. This clearly leads to a vast
-amount of redundant information which can be easily cut down by a factor of 10-40x
-by extracting a subset of interest.
+a completely different set of trip links to that of Boxing Day (despite the trains
+physically running on exactly the same journey patterns) purely because there is
+a slight variation in the frequency of Vehicle Journeys between the dates.
+This clearly leads to a vast
+amount of duplicated information which can be easily cut down by a factor of up to 40x
+by extracting a subset of timetables of interest.
+
+For a comprehensive description of the schema if not to appreciate the scale
+and complexity of the dataset, see the official DfT documentation
+[here](http://naptan.dft.gov.uk/transxchange/schema/2.5/doc/TransXChangeSchemaGuide-2.5-v-59.pdf). Page 63 in particular details how many of the elements discussed
+above will be joined in a PostgreSQL database later in this notebook.
 
 ## Subsetting
 
-As seen in the previous section, that entire file was only relevant for
+As seen in the previous section, the entire file shown is only relevant for
 one day of the year. By first filtering the files based on the Operating
 Period and Operating Profile, it's possible to only read in the files
 that relate to a Monday or New Years Day or 17th January.
 
-The bad news is that extracting out the nested Operating Profile information
-isn't easy.
+Here is a table containing every file along with its starting and ending
+operating period dates:
 
-```{r extract_op_period}
-library(magrittr)
+```{r extract_op_period, warning=FALSE, message=FALSE}
 library(data.table)
 xpath.op_period <- ".//txc:Services/txc:Service/txc:OperatingPeriod/*"
 
 dates <- sapply(data.files, function(xml_file) {
-  XML::xmlParse(xml_file) %>% #xml2::read_xml is faster
+  XML::xmlParse(xml_file) %>%
     XML::xmlRoot() %>%
-    XML::xpathApply(xpath.op_period, namespaces = namespace, fun = function(y) XML::xmlValue(y) %>% as.Date)
+    XML::xpathApply(xpath.op_period, namespaces = namespace,
+                    fun = function(y) XML::xmlValue(y) %>% as.Date)
 }, simplify = FALSE) %>%
   {data.table(names(.), rbindlist(.))}
 names(dates) <- c("File", "StartDate", "EndDate")
@@ -211,9 +255,9 @@ head(dates, 10)
 ```
 
 The next step is to filter this dataframe based on whether a date of
-interest falls within the time interval of a file
+interest falls within the time interval of a file:
 
-```{r}
+```{r, warning=FALSE, message=FALSE}
 library(lubridate)
 timetable_date <- lubridate::today()
 relevant_dates <- dates %$%
@@ -225,16 +269,18 @@ relevant_dates <- dates %$%
 head(relevant_dates, 10)
 ```
 
-Now we've cut down the 84 files to roughly a quarter of the number.
+Now we've cut down the 84 files to roughly a quarter depending on the
+chosen `timetable_date`.
 
-The other option (to filter based on the days of the week) is even more
-convoluted. It should be as simply as filtering on the tags underneath
-Journey Operating Profile however here's a list of the unique set of tags
+The other option (to filter based on the days of the week) is
+unfortunately even more convoluted.
+It should be as simply as filtering on the tags underneath
+Journey Operating Profile however here's a list of the unique set of tags:
 
 ```{r subset_given_day}
 xpath.days_of_week <- ".//txc:VehicleJourneys/txc:VehicleJourney/txc:OperatingProfile/txc:RegularDayType/txc:DaysOfWeek/*"
 daysofweek <- sapply(data.files, function(xml_file) {
-  XML::xmlParse(xml_file) %>% #xml2::read_xml is faster
+  XML::xmlParse(xml_file) %>%
     XML::xmlRoot() %>%
     XML::xpathApply(xpath.days_of_week, namespaces = namespace, fun = XML::xmlName)
 }, simplify = FALSE) %>%
@@ -247,8 +293,9 @@ The "days of the week" also include values such as "MondayToFriday",
 "Weekend" as well as "MondayToSaturday" and "MondayToSunday" under the
 Service Operating Profile. So we would need to create a mapping function
 between a given date and all of the possible "days of the week" it could
-fall under. This is accounted for [here] and [here] however won't be
-covered in this notebook.
+fall under.
+As an example of how this can be accounted for, see
+[this PostgreSQL table](DaysOfWeekGroups.html).
 
 ## Extraction
 
@@ -270,7 +317,7 @@ Firstly, we'll want to retrieve the parent XPaths for each of the nodes
 containing useful information. This is done simplest with a helper function
 `xml_get_paths` from the [xmltools](https://github.com/dantonnoriega/xmltools) library.
 
-<!-- 
+<!--
 The empty code chunks represent code that lives in external files.
 If you wish to execute the chunks interactively, run the corresponding
 `read_chunk` (see previous chunk) to source the code and execute it with
@@ -314,22 +361,24 @@ tfl <- build_tfl(doc, terminal_xpaths, required_xpaths)
 str(tfl, 1)
 ```
 
-The result is the `tfl` list which contains the seven tables with any number
-of observations in each.
+The result is the `tfl` list which contains the eight tables corresponding
+to the top-level nodes of this single XML file.
 
-Due to the flexibility of XML however, there's still a lot missing...
+Due to the flexibility of XML and the TransXChange schema however, there's
+still a lot missing...
 
 1. A number of important fields are found in the "id" *attribute* of certain tags,
-not in the tag text as we might expect.
+not in the tag's text as we might expect.
 1. The stop sequence numbers are contained in a "SequenceNumber" attribute
 1. Some tables have a parent which contains join information. For example, the
 JourneyPatterns table is defined at the level of each Journey Pattern Section
-however we are missing the Journey Pattern ID as this is the parent node
+however we are missing the foreign key Journey Pattern ID as this is the parent node
 of each Section and therefore unable to be parsed with the same XPath.
 
 We can define a function `retrieve_additional_fields` which solves these three
 cases and call it after `build_tfl` for each document. Due to its length and
-complexity it is not shown here but can be found in the complete analysis file.
+complexity it is not shown here but can be found in the
+[complete analysis file](GetTablesFromXPaths.html).
 
 ```{r retrieve_additional_fields, eval=TRUE, echo=FALSE, warning=FALSE, message=FALSE}
 ```
@@ -350,8 +399,8 @@ and then loop this function over the entire directory of files:
 tfl_all <- purrr::map(data.files, extract_file)
 ```
 
-Unfortunately, the bad news is this code chunk takes a **very** long time to run
-so don't execute it unless you plan on waiting all night. Literally...
+Unfortunately, the bad news is this line of code takes a **very** long time
+to run so don't execute it unless you plan on waiting all night. Literally...
 
 Despite a few good libraries, R is pretty shocking at XML scraping
 when compared to the `lxml` Python library. The versatility of `lxml`
@@ -359,9 +408,9 @@ is also significantly better when it comes to traversing XML trees
 efficiently and extracting data in nested nodes, parent nodes and attributes
 as we require.
 
-To cope with this problem, the dataset was instead scraped with even more
-fields in more awkward-to-reach places (and about 500x faster) with
-[this file](XMLParsing.html).
+To cope with this problem, the dataset was instead scraped (with even more
+fields in more hard-to-reach places and about 500x faster) with
+[this file](XMLParsing.html) which calls a custom-built [TfL Class](TfLTimetable.html).
 
 ## Variable Creation
 
@@ -369,11 +418,13 @@ fields in more awkward-to-reach places (and about 500x faster) with
 knitr::read_chunk(file.path(rprojroot::find_rstudio_root_file(), "2_analysis/r/VariableCreation.R"))
 ```
 
-There are a few crucial variables which we'll need along with correct typecasting
-for any further analysis so we can create these in R before handing over to a
-database. Due to the potential scale of the join operations (had we not already
+There are a few crucial variables which we'll need to add along with correctly
+typecasting the current information for any further analysis.
+This is best done in R before handing over to a database.
+Due to the potential scale of the join operations (had we not already
 subsetted the dataset), additional variables which are calculations *across*
-tables will be left to the database stage.
+tables will be left to the database stage. This is also to preserve the
+normalised nature of the tables within the database.
 
 ### Latitude and Longitude
 
@@ -402,7 +453,8 @@ table(tfl$JourneyPatternTimingLinks$RunTime)
 
 Unfortunately this frequency table shows that the duration is presented as a text field
 where it's assumed the "M" indicates the RunTime is rounded to the nearest minute.
-Judging by the "0S" field, this would also suggest that a huge number of links take zero seconds!
+Judging by the "0S" field, this would also suggest that a number of links
+take zero seconds!
 Clearly the duration has been rounded to the nearest minute however it also
 turns out that every instance of zero RunTime has at least 1 minute of WaitTime at the
 next station.
@@ -415,7 +467,7 @@ tfl$JourneyPatternTimingLinks %>%
 ```
 
 Therefore, we can convert the RunTime and WaitTime to integer variables by extracting
-the third character from every observation and build a new variable JourneyTime which
+the third character from every observation and build a new variable "JourneyTime" which
 takes into account the total RunTime and WaitTime which we now know will always
 be at least 1 minute:
 
@@ -431,11 +483,12 @@ head(tfl$VehicleJourneys$DepartureTime)
 
 So it looks like this variable is a time stamp which is also rounded to the nearest minute.
 
-Since we are now dealing solely in minutes, it would make the most sense to cast
-this DepartureTime field as the number of minutes since midnight. This makes it less
-human-readable however addition of DepartureTime and JourneyTime is now very
-straightforward and doesn't rely on datetime typecasting or datediff functions.
-That said, in the event that we're using a database that handles datetimes well,
+Since we are now dealing solely in minutes on a day-by-day basis,
+it would make the most sense to cast
+this DepartureTime field as "the number of minutes since midnight". This makes it less
+human-readable however addition of DepartureTime with JourneyTime is now very
+straightforward and doesn't rely on date-time typecasting or datediff functions.
+That said, in the event that we're using a database that handles date-times well,
 it doesn't hurt to correctly cast DepartureTime and keep it in the data frame
 separately.
 
@@ -448,11 +501,8 @@ separately.
 knitr::read_chunk(file.path(rprojroot::find_rstudio_root_file(), "2_analysis/r/SQLTables.R"))
 ```
 
-As found in the previous section, the dataset is provided in a fairly
-normalised form already (3rd normal form for nearly every table).
-This makes it very easy to simply push the tables as-is to a database
-whilst specifying the various primary and foreign key relations between
-each table.
+As found in the previous section, the dataset is provided in 3rd normal form
+already making it very easy to simply push the tables as-is to a database.
 
 ## DBMS Setup
 
@@ -477,28 +527,20 @@ docker run --name postgres_london_tube -p 5432:5432 -d -e POSTGRES_PASSWORD=myse
 Test that the server is running and the connection works by setting up a development
 database for the project:
 
+```{r load_rpostgresql, warning=FALSE, message=FALSE, echo=FALSE}
+library(RPostgreSQL)
+```
+
 ```{r create_db, eval=FALSE}
 ```
 
 ```{r get_con}
 ```
 
-
-## Data Integrity TBD
-
-Derive and check primary keys and data types. Discuss table normalisation.
-
-```{r sql_keys}
-```
-
 ## Build database
 
-Using the primary keys and data types found in the previous section,
-we can write a function that drops an existing table,
-builds a new table with the provided keys and
-data types and populates the table with data. Now, the entire database
-can be created in one hit by using `pmap` to loop the function over all
-eight tables sequentially.
+We can write a function that loops over all eight tables sequentially
+adding them to the database whilst dropping any existing tables.
 
 ```{r create_tables}
 ```
@@ -512,6 +554,10 @@ dbDisconnect(con)
 ```
 
 ## Joining Tables
+
+```{r DepartureBoard, include=FALSE, eval=TRUE, cache=FALSE}
+knitr::read_chunk(file.path(rprojroot::find_rstudio_root_file(), "2_analysis/sql/DepartureBoard.sql"))
+```
 
 To build out the timetable, we've seen that there are two crucial tables:
 
@@ -530,54 +576,35 @@ The departures board table is achieved as follows:
 1. Calculate *ArrivalMins_Link* (arrival time of each train into each station)
 as the origin departure time (*DepartureMins*)
 plus the cumulative sum of *JourneyTime* ordered by link sequence for each vehicle
-1. Calculate *DepartureMins_Link* as the preceding link's arrival time. For the first link,
-it's the origin departure time.
+1. Calculate *DepartureMins_Link* as the preceding link's arrival time.
+For the first link, it's the origin departure time.
 
 For analysis later on, we also want to flag whether the link is the last trip in the
 vehicle's journey. This just involves checking whether the link sequence is the largest
 value for that vehicle.
 
-As you can imagine, this table is pretty big at 6,632,701 rows.
+The table-valued function `departureboard` is as follows:
+
+```{sql sql_departures, eval=FALSE}
+```
+
+As you can imagine, when pushing every timetable to the database
+this table blows out to 6.63M rows.
 In fact, as discussed earlier, the vast majority of it is redundant information.
-Entire XML files are duplicated for special
-calendar days such as Bank Holidays, New Years, Christmas etc. hence the need to sample the data.
-When we pushed the data to Postgres, the Python code scraped every file for completeness
-so this sampling now occurs as part of the departures board query.
+Entire XML files are duplicated for special calendar days such as
+Bank Holidays, New Years, Christmas etc. hence the need to sample the data.
+
+If using the Python methodology of scraping the dataset for all files, the
+sampling process discussed earlier now occurs as part of the Departures Board query
+`WHERE` clause.
+
 Essentially we just filter on the Operating Profile of the Services and Vehicle
-Journeys to be one day of the week and filter the Operating Periods to be those that contain
-a given date.
-Now, by passing in the date Wednesday 20th Dec 2017 the table size has reduced to 243,847 rows.
+Journeys to be one day of the week and filter the Operating Periods to be
+those that contain a given date.
+Now, by passing in the date "Wednesday 20th Dec 2017" for examplex the table size has reduced
+to 244K rows.
 
-## Advanced Queries
-
-```{r advanced_queries, message=FALSE, include=FALSE, eval=TRUE, cache=FALSE}
-knitr::read_chunk(file.path(root.dir, "2_analysis/sql/NumberOfTrainsPointInTime.sql"))
-library(RPostgreSQL)
-con <- get_con()
-```
-
-With a properly normalised database we can now go on to query the data in infinitely
-many ways. One such example would be to answer the question
-
-> How many trains are in the network at 8:37am on Monday 18th December 2017
-and where are they?
-
-One way to go about this is to filter the Departures Board based on 8:37am being
-between the train origin departure time (inclusive) and arrival time at the last stop (exclusive).
-
-To get the total number of trains in the network we just need to count the unique
-number of vehicles in this result set. The tricky part is determining *where* each
-train is because of the trains which are not exactly at a station at 8:37am.
-
-If a train arrives exactly at 8:37am it will get double counted as both a departure
-and arrival (since these happen instantaneously on the minute) so we first need to filter
-to the trip links where the trains are at or *approaching* a station.
-
-The last step is to filter to a single link for each vehicle that is *closest* to 8:37am.
-The final result set is the trains in the network at 8:37am with the name of the stop where
-they are either exactly stationed or next arriving.
-
-
-```{sql sql_trains_point_in_time, connection=con, eval = FALSE}
-```
-
+As we now have the dataset in a cleaned and useable format, this completes the
+Managing Data notebook.
+We will now go on to visualise this newly created Departure Board table
+in [Part Two](VisualisingData.html)
