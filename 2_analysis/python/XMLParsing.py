@@ -3,16 +3,13 @@
 #' author: "Ruaridh Williamson"
 #' ---
 
-#' This file contains a `Main()` function used for extracting the full
-#' set of features from the TransXChange timetable data in preference
-#' to the R methodology illustrated in the "Managing Data" notebook.
-#' The reason for this is the `lxml` library is significantly more performant
-#' and versatile for extracting the non-standard XML data from various
-#' nested nodes, attributes and varying tags.
+#' This script contains a "main" function which implements the Class TfLTimetable
+#' found [here](TfLTimetable.html) in preference to the R methodology
+#' illustrated in the "Managing Data" notebook.
 #'
-#' This function calls a number of functions defined in a custom TfLTimetable Class
-#' based on the lxml ElementTree. For that Class definition
-#' see [TfLTimetable.py](TfLTimetable.html).
+#' The reason for this is the `lxml` library is significantly more
+#' performant and versatile for extracting the non-standard XML data from
+#' various nested nodes, attributes and varying tags.
 #'
 #' # Main method
 #'
@@ -37,23 +34,42 @@
 #' To enable efficient transition between Python and R, the DFs are
 #' serialised into the Feather format.
 #'
-#' This source file is invoked with `$python3.6 XMLParsing.py` provided the
-#' TfLTimetable module is in the local path or otherwise installed.
-#'
 #' [Source code](https://github.com/ruaridhw/london-tube/blob/master/2_analysis/python/XMLParsing.py)
 
 #+ xmlparsing, engine='python'
-if __name__ == '__main__':
+import click
+@click.command()
+@click.argument('input_dir', required=1, type=click.Path(exists=True))
+@click.argument('output_dir', required=1, type=click.Path(exists=True))
+def main(input_dir, output_dir):
+    """
+        This script is used for extracting the full set of features from the
+        TransXChange timetable data.
+
+        This function calls a number of functions defined in a custom
+        TfLTimetable Class based on the lxml ElementTree.
+        For that Class definition see TfLTimetable.py.
+
+        This source file is invoked with two arguments:
+
+            input:    The location of the XML files for parsing. eg ../1_data/1_1_raw_data/timetables/data
+
+            output:   The location to output the resulting tidy Feather dataframes. eg ../1_data/1_2_processed_data
+
+        `$python3 python/XMLParsing.py ../1_data/1_1_raw_data/timetables/data ../1_data/1_2_processed_data`
+
+        The TfLTimetable module must be in the local path or otherwise installed.
+    """
     import os
     import re
+
     import feather
     import pandas as pd
 
     import TfLTimetable as tfl
 
-    project_dir = os.path.expanduser("~/Programming/R/london-tube/master/")
-    data_dir_input = project_dir + "1_data/1_1_raw_data/timetables/data/"
-    data_dir_output = project_dir + "1_data/1_2_processed_data"
+    data_dir_input = input_dir
+    data_dir_output = output_dir
 
     files_all_lines = os.listdir(data_dir_input)
 
@@ -114,11 +130,14 @@ if __name__ == '__main__':
         for tablename, files in output_tables.items():
             df = pd.concat(files, axis=0)
             df.drop_duplicates(inplace=True)
-            feather.write_dataframe(df, data_dir_output + "/" + line + "-" + \
+            feather.write_dataframe(df, data_dir_output + "/" + line + "-" +
                                     tablename + ".feather")
 
     print('Dumping common tables to output directory: {}'.format(data_dir_output))
     line = "ALL"
     for tablename, df in output_tables_common.items():
-        feather.write_dataframe(df, data_dir_output + "/" + line + "-" + \
+        feather.write_dataframe(df, data_dir_output + "/" + line + "-" +
                                 tablename + ".feather")
+
+if __name__ == '__main__':
+    main()
