@@ -53,8 +53,11 @@ CREATE OR REPLACE FUNCTION departureboard(IN _timetable_date text)
     ,"To_Longitude"
     ,"To_Latitude"
     ,"JourneyTime"
-    -- DepartureMins_Link is the ArrivalMins_Link of the previous row partitioned by vehicle and ordered by stop sequence
-    ,LAG("ArrivalMins_Link", 1, "DepartureMins") OVER (PARTITION BY "VehicleJourneyCode" ORDER BY "From_SequenceNumber") AS "DepartureMins_Link"
+    -- DepartureMins_Link is the ArrivalMins_Link of the previous row
+    -- partitioned by vehicle and ordered by stop sequence
+    ,LAG("ArrivalMins_Link", 1, "DepartureMins") OVER
+      (PARTITION BY "VehicleJourneyCode" ORDER BY "From_SequenceNumber")
+      AS "DepartureMins_Link"
     ,"ArrivalMins_Link"
     ,"Flag_LastStop"
 
@@ -67,8 +70,10 @@ CREATE OR REPLACE FUNCTION departureboard(IN _timetable_date text)
       ,v."DepartureMins"
 
       ,j."From_SequenceNumber"
-      -- Re-create SequenceNumber for each vehicle by ranking the current SequenceNumber within a vehicle partition
-      ,RANK() OVER (PARTITION BY v."VehicleJourneyCode" ORDER BY j."From_SequenceNumber") "From_VehicleSequenceNumber"
+      -- Re-create SequenceNumber for each vehicle by ranking the current SequenceNumber
+      -- within a vehicle partition
+      ,RANK() OVER (PARTITION BY v."VehicleJourneyCode" ORDER BY j."From_SequenceNumber")
+        "From_VehicleSequenceNumber"
       ,j."From_StopPointRef"
       ,p1."CommonName" "From_StopPointName"
       ,p1."Longitude" "From_Longitude"
@@ -80,9 +85,13 @@ CREATE OR REPLACE FUNCTION departureboard(IN _timetable_date text)
 
       ,j."JourneyTime"
       -- Create ArrivalMins_Link as DepartureMins plus the cumulative JourneyTime
-      ,v."DepartureMins" + SUM(j."JourneyTime") OVER (PARTITION BY v."VehicleJourneyCode" ORDER BY j."From_SequenceNumber") AS "ArrivalMins_Link"
-      -- Flag whether the current To_SequenceNumber is the greatest within a Vehicle partition
-      ,j."To_SequenceNumber" = MAX(j."To_SequenceNumber") OVER (PARTITION BY v."VehicleJourneyCode") AS "Flag_LastStop"
+      ,v."DepartureMins" + SUM(j."JourneyTime") OVER
+        (PARTITION BY v."VehicleJourneyCode" ORDER BY j."From_SequenceNumber")
+        AS "ArrivalMins_Link"
+      -- Flag whether the current To_SequenceNumber is the greatest within a
+      -- Vehicle partition
+      ,j."To_SequenceNumber" = MAX(j."To_SequenceNumber") OVER
+        (PARTITION BY v."VehicleJourneyCode") AS "Flag_LastStop"
 
     /* Journey and Timing Link Tables */
     FROM "VehicleJourneys" v
@@ -107,8 +116,12 @@ CREATE OR REPLACE FUNCTION departureboard(IN _timetable_date text)
 
     WHERE
     -- Filter to timetables that have services and journeys on _timetable_date day of the week
-          d1."DaysOfWeek" IN (SELECT "DayGroup" FROM DaysOfWeek_Groups WHERE "DayIndex" = DATE_PART('ISODOW', CAST(_timetable_date AS date)))
-      AND d2."DaysOfWeek" IN (SELECT "DayGroup" FROM DaysOfWeek_Groups WHERE "DayIndex" = DATE_PART('ISODOW', CAST(_timetable_date AS date)))
+          d1."DaysOfWeek" IN (SELECT "DayGroup" FROM DaysOfWeek_Groups
+                              WHERE "DayIndex" = DATE_PART('ISODOW',
+                                                           CAST(_timetable_date AS date)))
+      AND d2."DaysOfWeek" IN (SELECT "DayGroup" FROM DaysOfWeek_Groups
+                              WHERE "DayIndex" = DATE_PART('ISODOW',
+                                                           CAST(_timetable_date AS date)))
 
     -- Filter to timetables that are operating on _timetable_date
       AND CAST(_timetable_date AS date) BETWEEN b."OpPeriod_StartDate" AND b."OpPeriod_EndDate"
