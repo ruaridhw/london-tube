@@ -5,3 +5,6 @@
 .Ruserdata
 .ipynb_checkpoints/
 1_data/
+_build_site/
+*password*
+*.mp4
