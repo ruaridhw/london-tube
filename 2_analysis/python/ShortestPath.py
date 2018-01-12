@@ -1,6 +1,5 @@
 #' ---
 #' title: "Shortest Path"
-#' author: "Ruaridh Williamson"
 #' ---
 
 #' This file provides the algorithms implemented
@@ -15,6 +14,8 @@
 #' Due to its size, this pickle object is kept
 #' on a separate branch from master to keep
 #' the master clone size small.
+#'
+#' [Source code](https://github.com/ruaridhw/london-tube/blob/master/2_analysis/python/ShortestPath.py)
 
 #+ shortestpath, engine='python'
 import networkx as nx

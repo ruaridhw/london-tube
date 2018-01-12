@@ -1,17 +1,15 @@
-/*
----
-title: "Departure Board"
-author: "Ruaridh Williamson"
----
-
-PostgreSQL function which takes an ISO formatted date as input
-and returns a table all train departures for that day.
-
-Each row represents the movement of one vehicle from
-a StopPoint to the successive StopPoint.
-*/
-
--- ---- sql_departures
+--' ---
+--' title: "Departure Board"
+--' ---
+--' 
+--' PostgreSQL function which takes an ISO formatted date as input
+--' and returns a table all train departures for that day.
+--' 
+--' Each row represents the movement of one vehicle from
+--' a StopPoint to the successive StopPoint.
+--'
+--' [Source code](https://github.com/ruaridhw/london-tube/blob/master/2_analysis/sql/DepartureBoard.sql)
+-- ---- sql_departures, engine='sql'
 CREATE OR REPLACE FUNCTION departureboard(IN _timetable_date text)
   RETURNS TABLE (
     "VehicleJourneyCode" text,

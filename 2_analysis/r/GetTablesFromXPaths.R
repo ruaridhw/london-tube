@@ -1,12 +1,14 @@
 #' ---
 #' title: "Get Tables from XPaths"
-#' author: "Ruaridh Williamson"
 #' ---
 
-#' Source code used in ManagingData.Rmd.
+#' Source code used in [ManagingData.Rmd](ManagingData.html).
+#' 
 #' For full documentation and commentary see that report instead.
-
+#'
 #' Read in the first file and setup extraction process
+#' 
+#' [Source code](https://github.com/ruaridhw/london-tube/blob/master/2_analysis/r/GetTablesFromXPaths.R)
 # ---- extraction_setup
 # Get top level nodeset for first file
 doc <- data.files[1] %>%

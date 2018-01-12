@@ -1,6 +1,5 @@
 #' ---
 #' title: "TfL Timetable"
-#' author: "Ruaridh Williamson"
 #' ---
 
 #' This file provides a custom class for parsing the

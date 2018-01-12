@@ -1,6 +1,5 @@
 #' ---
 #' title: "XML Parsing"
-#' author: "Ruaridh Williamson"
 #' ---
 
 #' This script contains a "main" function which implements the Class TfLTimetable

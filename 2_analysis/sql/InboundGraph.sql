@@ -1,13 +1,12 @@
-/*
----
-title: "Inbound Graph"
-author: "Ruaridh Williamson"
----
-
-PostgreSQL view of all the distinct RouteLinks by Line
-with additional info such as StopPoint Latitude and Longitude
-*/
-
+--' ---
+--' title: "Inbound Graph"
+--' ---
+--' 
+--' PostgreSQL view of all the distinct RouteLinks by Line
+--' with additional info such as StopPoint Latitude and Longitude
+--'
+--' [Source code](https://github.com/ruaridhw/london-tube/blob/master/2_analysis/sql/InboundGraph.sql)
+-- ---- sql_inboundgraph, engine='sql'
 CREATE OR REPLACE VIEW inbound_graph AS
 
 WITH LINE_ABBR AS (

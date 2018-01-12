@@ -1,6 +1,5 @@
 #' ---
 #' title: "Feather Upload"
-#' author: "Ruaridh Williamson"
 #' ---
 #'
 #' This script reads a directory of Feather files as output from XMLParsing.py
@@ -9,6 +8,8 @@
 #' Note: Since the `dbWriteTable` statement uses `append = TRUE` to upload
 #' successive dataframes to the same table, if recalling this upload procedure
 #' all tables will need to be manually truncated first.
+#' 
+#' [Source code](https://github.com/ruaridhw/london-tube/blob/master/2_analysis/r/FeatherUpload.R)
 
 library(RPostgreSQL)
 drv <- dbDriver("PostgreSQL")

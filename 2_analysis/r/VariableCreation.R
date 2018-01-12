@@ -1,10 +1,11 @@
 #' ---
 #' title: "Variable Creation"
-#' author: "Ruaridh Williamson"
 #' ---
-
+#'
 #' Functions to assist with typecasting variables from raw XML extraction
 #' and creation of new calculated fields prior to upload to a DBMS
+#' 
+#' [Source code](https://github.com/ruaridhw/london-tube/blob/master/2_analysis/r/VariableCreation.R)
 
 library(data.table)
 library(tibble)

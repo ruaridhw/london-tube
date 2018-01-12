@@ -1,17 +1,17 @@
 #' ---
 #' title: "SQL Tables"
-#' author: "Ruaridh Williamson"
 #' ---
-
+#'
 #' ## Build database
-
+#'
 #' Using the primary keys and data types found in the previous section,
 #' we can write a function that drops an existing table,
 #' builds a new table with the provided keys and
 #' data types and populates the table with data. Now, the entire database
 #' can be created in one hit by using `pmap` to loop the function over all
 #' eight tables sequentially.
-
+#'
+#' [Source code](https://github.com/ruaridhw/london-tube/blob/master/2_analysis/r/SQLTables.R)
 # ---- docker, engine="bash", eval=F
 # docker run --name postgres_london_tube -p 5432:5432 -d -e POSTGRES_PASSWORD=mysecretpassword postgres:alpine
 
