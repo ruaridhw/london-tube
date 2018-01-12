@@ -1,14 +1,9 @@
 ---
-title: "R Notebook"
-output: html_notebook
+title: "Data Dictionary"
 ---
 
-```{r}
-xml2::xml_structure(doc)
-```
-
-```{r}
-xml_children(doc)
+```{r knitr_setup, include=FALSE}
+knitr::opts_chunk$set(eval = FALSE)
 ```
 
 - NptgLocalities
@@ -109,8 +104,3 @@ xml_children(doc)
     - LineRef (Foreign Key to Line)
     - *JourneyPatternRef* (Foreign Key to JourneyPattern)
     - *DepartureTime* (Timetabled departure)
-
-
-```{r}
-as.character(xml_children(xml_children(doc)[5])[1])
-```
