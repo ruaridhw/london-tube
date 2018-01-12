@@ -1,12 +1,12 @@
 #' ---
 #' title: "Get Tables from XPaths"
 #' ---
-
-#' Source code used in [ManagingData.Rmd](ManagingData.html).
-#' 
-#' For full documentation and commentary see that report instead.
 #'
-#' Read in the first file and setup extraction process
+#' Read in the first XML timetable file for inspection and
+#' setup extraction process.
+#' 
+#' Source code used in [ManagingData.Rmd](ManagingData.html).
+#' For full documentation and commentary see that report instead.
 #' 
 #' [Source code](https://github.com/ruaridhw/london-tube/blob/master/2_analysis/r/GetTablesFromXPaths.R)
 # ---- extraction_setup
@@ -60,20 +60,35 @@ build_tfl <- function(doc, terminal_xpaths, required_terminal_xpaths) {
 # ---- retrieve_additional_fields, warning=FALSE, message=FALSE
 library(dplyr)
 retrieve_additional_fields <- function(tfl, doc){
-  JourneyPatternSectionsNodeset <- "/TransXChange/JourneyPatternSections/JourneyPatternSection" %>%
-    xml2::xml_find_all(x = doc)
+  RouteSectionsNodeset <-
+    xml2::xml_find_all(doc, "/TransXChange/RouteSections/RouteSection")
+  
+  AdditionalRouteLinksData <-
+    purrr::map(RouteSectionsNodeset, function(Section) {
+      RouteLinks <- xml2::xml_find_all(Section, "RouteLink")
+      data.table(
+        RouteSectionID = xml2::xml_attr(Section, "id"),
+        RouteLinkID = xml2::xml_attr(RouteLinks, "id")
+      )
+    }) %>%
+    rbindlist %>%
+    as_tibble
+  
+  tfl$RouteLinks <- AdditionalRouteLinksData %>%
+    bind_cols(tfl$RouteLinks) %>%
+    rename(FromStopPointRef = StopPointRef,
+           ToStopPointRef = StopPointRef1)
+  
+  JourneyPatternSectionsNodeset <-
+    xml2::xml_find_all(doc, "/TransXChange/JourneyPatternSections/JourneyPatternSection")
   
   AdditionalTimingLinksData <-
     purrr::map(JourneyPatternSectionsNodeset, function(Section) {
-      TimingLinks <- Section %>%
-        xml2::xml_find_all("JourneyPatternTimingLink")
+      TimingLinks <- xml2::xml_find_all(Section, "JourneyPatternTimingLink")
       
       data.table(
-        JourneyPatternSectionID = Section %>%
-          xml2::xml_attr("id"),
-        
-        JourneyPatternTimingLinkID = TimingLinks %>%
-          xml2::xml_attr("id"),
+        JourneyPatternSectionID = xml2::xml_attr(Section, "id"),
+        JourneyPatternTimingLinkID = xml2::xml_attr(TimingLinks, "id"),
         
         FromSequenceNumber = TimingLinks %>%
           xml2::xml_find_all("From") %>%
