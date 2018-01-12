@@ -13,6 +13,8 @@ navbar:
       icon: fa-gear
       menu:
         - text: "R"
+        - text: "Download Data"
+          href: GetData.html
         - text: "Scraping"
           href: GetTablesFromXPaths.html
         - text: "Variable Creation"

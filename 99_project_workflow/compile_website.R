@@ -16,6 +16,7 @@ file.copy(from=list.files("3_notebooks", pattern = ".Rmd$", full.names = TRUE), 
 
 # Copy specific analysis source files
 source_files <- c(
+  "2_analysis/r/GetData.R",
   "2_analysis/r/GetTablesFromXPaths.R",
   "2_analysis/r/SQLTables.R",
   "2_analysis/r/VariableCreation.R",

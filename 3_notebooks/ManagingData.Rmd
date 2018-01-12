@@ -13,7 +13,6 @@ if(packageVersion("knitr") < "1.17.18")
   stop("Require development version of knitr from GitHub for latest Rmd functionality")
 ```
 
-
 # Introduction
 
 This notebook forms the first of two outputs in the analysis of
@@ -33,6 +32,10 @@ discovery thought-process moreso than the efficient extraction process.
 
 # APIs and Internet Data
 
+```{r get_data, include=FALSE, eval=TRUE, cache=FALSE}
+knitr::read_chunk(file.path(rprojroot::find_rstudio_root_file(), "2_analysis/r/GetData.R"))
+```
+
 We start the project with a reproducible way of pulling the dataset
 from the API download link. The results shown in this notebook relate
 to the API feed as at 12th December 2017.
@@ -40,18 +43,9 @@ to the API feed as at 12th December 2017.
 To access it, download the zip file at the link below
 
 ```{r proj_setup}
-# Use paths relative to RStudio Project
-root.dir <- rprojroot::find_rstudio_root_file()
-# Set where we want the extracted files to end up
-data.dir <- file.path(root.dir, "1_data/1_1_raw_data")
 ```
 
 ```{r download_zip, eval=FALSE}
-# Load app_id and app_key variables from a local passwords file
-source("tfl-developer-passwords.R")
-dataset_url <- "http://data.tfl.gov.uk/tfl/syndication/feeds/journey-planner-timetables.zip"
-dataset_url <- paste0(dataset_url, "?app_id=", app_id, "&app_key=", app_key)
-download.file(dataset_url, file.path(data.dir, "timetables.zip"))
 ```
 
 *Note: You may need to [register](https://api-portal.tfl.gov.uk/) for an API key to
@@ -61,14 +55,9 @@ Unpack the download once to split out the train/ferry timetables
 from the bus timetables and again to unpack the tube/DLR timetables.
 
 ```{r unzip, eval=FALSE}
-unzip(file.path(data.dir, "timetables.zip"), exdir = file.path(data.dir, "timetables"))
-unzip(list.files(file.path(data.dir, "timetables"), pattern = "LULDLR", full.names = TRUE),
-      exdir = file.path(data.dir, "/timetables/data"))
 ```
+
 ```{r show_xml_files}
-data.files <- list.files(file.path(data.dir, "/timetables/data"),
-                         pattern = "tfl_1-[^.]+\\.xml", full.names = TRUE)
-print(head(basename(data.files)))
 ```
 
 The result is 600-800MB of XML files containing the most up-to-date
