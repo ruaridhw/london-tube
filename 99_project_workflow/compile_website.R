@@ -27,12 +27,14 @@ source_files <- c(
   
   "2_analysis/sql/DaysOfWeekGroups.sql",
   "2_analysis/sql/DepartureBoard.sql",
-  "2_analysis/sql/InboundGraph.sql")
+  "2_analysis/sql/InboundGraph.sql",
+  
+  "2_analysis/PrepareData.sh")
 file.copy(from=source_files, to=build_dir, overwrite = TRUE)
 
 # Apply knitr::spin to the analysis files to compile them to .Rmd reports
-spin_files <- list.files(build_dir, pattern = "\\.(R|py|sql)$", full.names = TRUE)
-spin_output <- lapply(spin_files, knitr::spin, format = "Rmd", knit = FALSE) %>% unlist
+spin_files <- list.files(build_dir, pattern = "\\.(R|py|sql|sh)$", full.names = TRUE)
+spin_output <- lapply(spin_files, knitr::spin, format = "Rmd", knit = FALSE, doc = "^(#|--)+'[ ]?") %>% unlist
 
 # Set `eval=FALSE` temporarily to avoid compiling the
 # code chunks in the source files beyond plain markdown

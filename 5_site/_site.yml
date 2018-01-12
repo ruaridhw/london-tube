@@ -39,6 +39,10 @@ navbar:
           href: DepartureBoard.html
         - text: "Days of Week Groups"
           href: DaysOfWeekGroups.html
+        - text: "---------"
+        - text: "Workflow"
+        - text: "Prepare Data"
+          href: PrepareData.html
   right:
     - icon: fa-github
       href: https://github.com/ruaridhw
