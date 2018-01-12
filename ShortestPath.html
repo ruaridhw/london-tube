@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<title>ShortestPath.utf8</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cerulean.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet" />
+<script src="site_libs/pagedtable-1.1/js/pagedtable.js"></script>
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+div.sourceLine, a.sourceLine { display: inline-block; min-height: 1.25em; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; }
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+div.sourceLine, a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource div.sourceLine, .numberSource a.sourceLine
+  { position: relative; }
+pre.numberSource div.sourceLine::before, .numberSource a.sourceLine::before
+  { content: attr(data-line-number);
+    position: absolute; left: -5em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em; }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; color: #aaaaaa;  padding-left: 4px; }
+@media screen {
+a.sourceLine::before { text-decoration: underline; color: initial; }
+}
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.bn { color: #40a070; } /* BaseN */
+code span.fl { color: #40a070; } /* Float */
+code span.ch { color: #4070a0; } /* Char */
+code span.st { color: #4070a0; } /* String */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.ot { color: #007020; } /* Other */
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.fu { color: #06287e; } /* Function */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code span.cn { color: #880000; } /* Constant */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.im { } /* Import */
+code span.va { color: #19177c; } /* Variable */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.op { color: #666666; } /* Operator */
+code span.bu { } /* BuiltIn */
+code span.ex { } /* Extension */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.at { color: #7d9029; } /* Attribute */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+<link rel="stylesheet" href="styles.css" type="text/css" />
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+  padding-left: 25px;
+  text-indent: 0;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">London Underground</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="ManagingData.html">Managing Data</a>
+</li>
+<li>
+  <a href="VisualisingData.html">Visualising Data</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    <span class="fa fa-gear"></span>
+     
+    Analysis
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li class="dropdown-header">R</li>
+    <li>
+      <a href="GetTablesFromXPaths.html">Scraping</a>
+    </li>
+    <li>
+      <a href="VariableCreation.html">Variable Creation</a>
+    </li>
+    <li>
+      <a href="SQLTables.html">SQL Upload</a>
+    </li>
+    <li>
+      <a href="FeatherUpload.html">Feather Upload</a>
+    </li>
+    <li class="divider"></li>
+    <li class="dropdown-header">Python</li>
+    <li>
+      <a href="XMLParsing.html">Scraping</a>
+    </li>
+    <li>
+      <a href="TfLTimetable.html">TfL Timetable Class</a>
+    </li>
+    <li>
+      <a href="ShortestPath.html">Shortest Path</a>
+    </li>
+    <li class="divider"></li>
+    <li class="dropdown-header">SQL</li>
+    <li>
+      <a href="InboundGraph.html">Inbound Graph</a>
+    </li>
+    <li>
+      <a href="DepartureBoard.html">Departure Board</a>
+    </li>
+    <li>
+      <a href="DaysOfWeekGroups.html">Days of Week Groups</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/ruaridhw">
+    <span class="fa fa-github"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+
+</div>
+
+
+<div id="shortest-path" class="section level1">
+<h1>Shortest Path</h1>
+<p>This file provides the algorithms implemented in the Visualising Data notebook in order to use as a standalone module.</p>
+<p>The NetworkX object for the Departures Board query used in the notebook is also provided to avoid having to setup a database and run any preceding extraction code.</p>
+<p>Due to its size, this pickle object is kept on a separate branch from master to keep the master clone size small.</p>
+<p><a href="https://github.com/ruaridhw/london-tube/blob/master/2_analysis/python/ShortestPath.py">Source code</a></p>
+<pre class="sourceCode python" id="cb1"><code class="sourceCode python"><div class="sourceLine" id="cb1-1" data-line-number="1"><span class="im">import</span> networkx <span class="im">as</span> nx</div>
+<div class="sourceLine" id="cb1-2" data-line-number="2"></div>
+<div class="sourceLine" id="cb1-3" data-line-number="3">example_path_query <span class="op">=</span> {</div>
+<div class="sourceLine" id="cb1-4" data-line-number="4">    <span class="st">&#39;From_StopPointName&#39;</span>: <span class="st">&#39;Bank&#39;</span>,</div>
+<div class="sourceLine" id="cb1-5" data-line-number="5">    <span class="st">&#39;To_StopPointName&#39;</span>: <span class="st">&#39;Victoria&#39;</span>,</div>
+<div class="sourceLine" id="cb1-6" data-line-number="6">    <span class="st">&#39;time&#39;</span>: <span class="dv">9</span> <span class="op">*</span> <span class="dv">60</span>,</div>
+<div class="sourceLine" id="cb1-7" data-line-number="7">    <span class="st">&#39;leave_after&#39;</span>: <span class="va">True</span></div>
+<div class="sourceLine" id="cb1-8" data-line-number="8">}</div>
+<div class="sourceLine" id="cb1-9" data-line-number="9"></div>
+<div class="sourceLine" id="cb1-10" data-line-number="10"><span class="kw">def</span> setup_shortest_path(path_query):</div>
+<div class="sourceLine" id="cb1-11" data-line-number="11">    <span class="co">&quot;&quot;&quot;</span></div>
+<div class="sourceLine" id="cb1-12" data-line-number="12"><span class="co">        Add the Start and End nodes to the network for the given query</span></div>
+<div class="sourceLine" id="cb1-13" data-line-number="13"><span class="co">        Connect them to the departures and arrivals for the relevant stations</span></div>
+<div class="sourceLine" id="cb1-14" data-line-number="14"><span class="co">    &quot;&quot;&quot;</span></div>
+<div class="sourceLine" id="cb1-15" data-line-number="15"></div>
+<div class="sourceLine" id="cb1-16" data-line-number="16">    <span class="co"># For &quot;Leave After&quot; query, assign the leaving time to the start node</span></div>
+<div class="sourceLine" id="cb1-17" data-line-number="17">    <span class="co"># and leave arriving time as unknown</span></div>
+<div class="sourceLine" id="cb1-18" data-line-number="18">    <span class="cf">if</span> path_query[<span class="st">&#39;leave_after&#39;</span>] <span class="op">==</span> <span class="va">True</span>:</div>
+<div class="sourceLine" id="cb1-19" data-line-number="19"></div>
+<div class="sourceLine" id="cb1-20" data-line-number="20">        H.add_node(<span class="st">&#39;Start&#39;</span>, StopPointName <span class="op">=</span> path_query[<span class="st">&#39;From_StopPointName&#39;</span>],</div>
+<div class="sourceLine" id="cb1-21" data-line-number="21">                   MinuteOfDay <span class="op">=</span> path_query[<span class="st">&#39;time&#39;</span>], movement <span class="op">=</span> <span class="st">&#39;Departure&#39;</span>)</div>
+<div class="sourceLine" id="cb1-22" data-line-number="22"></div>
+<div class="sourceLine" id="cb1-23" data-line-number="23">        H.add_node(<span class="st">&#39;End&#39;</span>, StopPointName <span class="op">=</span> path_query[<span class="st">&#39;To_StopPointName&#39;</span>],</div>
+<div class="sourceLine" id="cb1-24" data-line-number="24">                   MinuteOfDay <span class="op">=</span> <span class="va">None</span>, movement <span class="op">=</span> <span class="st">&#39;Arrival&#39;</span>)</div>
+<div class="sourceLine" id="cb1-25" data-line-number="25"></div>
+<div class="sourceLine" id="cb1-26" data-line-number="26">    <span class="co"># For &quot;Arrive Before&quot; query, assign the arriving time to the end node</span></div>
+<div class="sourceLine" id="cb1-27" data-line-number="27">    <span class="co"># and leave departure time as unknown</span></div>
+<div class="sourceLine" id="cb1-28" data-line-number="28">    <span class="cf">else</span>:</div>
+<div class="sourceLine" id="cb1-29" data-line-number="29">        H.add_node(<span class="st">&#39;Start&#39;</span>, StopPointName <span class="op">=</span> path_query[<span class="st">&#39;From_StopPointName&#39;</span>],</div>
+<div class="sourceLine" id="cb1-30" data-line-number="30">                   MinuteOfDay <span class="op">=</span> <span class="va">None</span>, movement <span class="op">=</span> <span class="st">&#39;Departure&#39;</span>)</div>
+<div class="sourceLine" id="cb1-31" data-line-number="31"></div>
+<div class="sourceLine" id="cb1-32" data-line-number="32">        H.add_node(<span class="st">&#39;End&#39;</span>, StopPointName <span class="op">=</span> path_query[<span class="st">&#39;To_StopPointName&#39;</span>],</div>
+<div class="sourceLine" id="cb1-33" data-line-number="33">                   MinuteOfDay <span class="op">=</span> path_query[<span class="st">&#39;time&#39;</span>], movement <span class="op">=</span> <span class="st">&#39;Arrival&#39;</span>)</div>
+<div class="sourceLine" id="cb1-34" data-line-number="34"></div>
+<div class="sourceLine" id="cb1-35" data-line-number="35">    <span class="cf">for</span> n, n_data <span class="kw">in</span> H.nodes(data<span class="op">=</span><span class="va">True</span>):</div>
+<div class="sourceLine" id="cb1-36" data-line-number="36">        <span class="co"># Don&#39;t want to add an edge from &#39;Start&#39; to &#39;End&#39;, &#39;End&#39; to &#39;End&#39; or &#39;Start&#39; to &#39;Start&#39;</span></div>
+<div class="sourceLine" id="cb1-37" data-line-number="37">        <span class="cf">if</span> n <span class="op">==</span> <span class="st">&#39;Start&#39;</span> <span class="kw">or</span> n <span class="op">==</span> <span class="st">&#39;End&#39;</span>:</div>
+<div class="sourceLine" id="cb1-38" data-line-number="38">            <span class="cf">continue</span></div>
+<div class="sourceLine" id="cb1-39" data-line-number="39"></div>
+<div class="sourceLine" id="cb1-40" data-line-number="40">        <span class="cf">if</span> path_query[<span class="st">&#39;leave_after&#39;</span>] <span class="op">==</span> <span class="va">True</span>:</div>
+<div class="sourceLine" id="cb1-41" data-line-number="41">            <span class="co"># Cannot catch a train that has already left</span></div>
+<div class="sourceLine" id="cb1-42" data-line-number="42">            <span class="cf">if</span> n_data[<span class="st">&#39;MinuteOfDay&#39;</span>] <span class="op">&gt;=</span> path_query[<span class="st">&#39;time&#39;</span>]:</div>
+<div class="sourceLine" id="cb1-43" data-line-number="43"></div>
+<div class="sourceLine" id="cb1-44" data-line-number="44">                <span class="cf">if</span> path_query[<span class="st">&#39;From_StopPointName&#39;</span>] <span class="kw">in</span> n_data[<span class="st">&#39;StopPointName&#39;</span>]:</div>
+<div class="sourceLine" id="cb1-45" data-line-number="45">                    H.add_edge(<span class="st">&#39;Start&#39;</span>, n, movement <span class="op">=</span> <span class="st">&#39;Start&#39;</span>,</div>
+<div class="sourceLine" id="cb1-46" data-line-number="46">                               cost <span class="op">=</span> n_data[<span class="st">&#39;MinuteOfDay&#39;</span>] <span class="op">-</span> path_query[<span class="st">&#39;time&#39;</span>])</div>
+<div class="sourceLine" id="cb1-47" data-line-number="47"></div>
+<div class="sourceLine" id="cb1-48" data-line-number="48">                <span class="cf">if</span> path_query[<span class="st">&#39;To_StopPointName&#39;</span>] <span class="kw">in</span> n_data[<span class="st">&#39;StopPointName&#39;</span>]:</div>
+<div class="sourceLine" id="cb1-49" data-line-number="49">                    H.add_edge(n, <span class="st">&#39;End&#39;</span>, movement <span class="op">=</span> <span class="st">&#39;End&#39;</span>,</div>
+<div class="sourceLine" id="cb1-50" data-line-number="50">                               cost <span class="op">=</span> <span class="dv">0</span>)</div>
+<div class="sourceLine" id="cb1-51" data-line-number="51">        <span class="cf">else</span>:</div>
+<div class="sourceLine" id="cb1-52" data-line-number="52"></div>
+<div class="sourceLine" id="cb1-53" data-line-number="53">            <span class="co"># No point catching a train that leaves after we want to arrive</span></div>
+<div class="sourceLine" id="cb1-54" data-line-number="54">            <span class="cf">if</span> n_data[<span class="st">&#39;MinuteOfDay&#39;</span>] <span class="op">&lt;=</span> path_query[<span class="st">&#39;time&#39;</span>]:</div>
+<div class="sourceLine" id="cb1-55" data-line-number="55"></div>
+<div class="sourceLine" id="cb1-56" data-line-number="56">                <span class="cf">if</span> path_query[<span class="st">&#39;From_StopPointName&#39;</span>] <span class="kw">in</span> n_data[<span class="st">&#39;StopPointName&#39;</span>]:</div>
+<div class="sourceLine" id="cb1-57" data-line-number="57">                    H.add_edge(<span class="st">&#39;Start&#39;</span>, n, movement <span class="op">=</span> <span class="st">&#39;Start&#39;</span>,</div>
+<div class="sourceLine" id="cb1-58" data-line-number="58">                               cost <span class="op">=</span> <span class="dv">0</span>)</div>
+<div class="sourceLine" id="cb1-59" data-line-number="59"></div>
+<div class="sourceLine" id="cb1-60" data-line-number="60">                <span class="cf">if</span> path_query[<span class="st">&#39;To_StopPointName&#39;</span>] <span class="kw">in</span> n_data[<span class="st">&#39;StopPointName&#39;</span>]:</div>
+<div class="sourceLine" id="cb1-61" data-line-number="61">                    H.add_edge(n, <span class="st">&#39;End&#39;</span>, movement <span class="op">=</span> <span class="st">&#39;End&#39;</span>,</div>
+<div class="sourceLine" id="cb1-62" data-line-number="62">                               cost <span class="op">=</span> path_query[<span class="st">&#39;time&#39;</span>] <span class="op">-</span> n_data[<span class="st">&#39;MinuteOfDay&#39;</span>])</div>
+<div class="sourceLine" id="cb1-63" data-line-number="63"></div>
+<div class="sourceLine" id="cb1-64" data-line-number="64"><span class="kw">def</span> minutes_to_time(minutes_past_midnight):</div>
+<div class="sourceLine" id="cb1-65" data-line-number="65">    <span class="co">&quot;&quot;&quot;</span></div>
+<div class="sourceLine" id="cb1-66" data-line-number="66"><span class="co">        Reformat a decimal &#39;minutes past midnight&#39; to a time string rounded to the nearest second</span></div>
+<div class="sourceLine" id="cb1-67" data-line-number="67"><span class="co">    &quot;&quot;&quot;</span></div>
+<div class="sourceLine" id="cb1-68" data-line-number="68">    hours, remainder <span class="op">=</span> <span class="bu">divmod</span>(minutes_past_midnight <span class="op">*</span> <span class="dv">60</span>, <span class="dv">3600</span>)</div>
+<div class="sourceLine" id="cb1-69" data-line-number="69">    minutes, seconds <span class="op">=</span> <span class="bu">divmod</span>(remainder, <span class="dv">60</span>)</div>
+<div class="sourceLine" id="cb1-70" data-line-number="70">    <span class="cf">return</span> <span class="st">&#39;</span><span class="sc">{:02.0f}</span><span class="st">:</span><span class="sc">{:02.0f}</span><span class="st">:</span><span class="sc">{:02.0f}</span><span class="st">&#39;</span>.<span class="bu">format</span>(hours, minutes, <span class="bu">int</span>(seconds))</div>
+<div class="sourceLine" id="cb1-71" data-line-number="71"></div>
+<div class="sourceLine" id="cb1-72" data-line-number="72"></div>
+<div class="sourceLine" id="cb1-73" data-line-number="73"><span class="kw">def</span> print_path(path):</div>
+<div class="sourceLine" id="cb1-74" data-line-number="74">    <span class="co">&quot;&quot;&quot;</span></div>
+<div class="sourceLine" id="cb1-75" data-line-number="75"><span class="co">        Iterate through a journey&#39;s shortest path and print only the relevant information</span></div>
+<div class="sourceLine" id="cb1-76" data-line-number="76"><span class="co">        ie. When to board a train, change trains or leave a station</span></div>
+<div class="sourceLine" id="cb1-77" data-line-number="77"><span class="co">    &quot;&quot;&quot;</span></div>
+<div class="sourceLine" id="cb1-78" data-line-number="78">    <span class="cf">for</span> u,v <span class="kw">in</span> <span class="bu">zip</span>(path,path[<span class="dv">1</span>:]):</div>
+<div class="sourceLine" id="cb1-79" data-line-number="79">        u_data <span class="op">=</span> H.nodes(data<span class="op">=</span><span class="va">True</span>)[u]</div>
+<div class="sourceLine" id="cb1-80" data-line-number="80">        v_data <span class="op">=</span> H.nodes(data<span class="op">=</span><span class="va">True</span>)[v]</div>
+<div class="sourceLine" id="cb1-81" data-line-number="81">        edge_data <span class="op">=</span> H[u][v]</div>
+<div class="sourceLine" id="cb1-82" data-line-number="82"></div>
+<div class="sourceLine" id="cb1-83" data-line-number="83">        <span class="co"># Starting information</span></div>
+<div class="sourceLine" id="cb1-84" data-line-number="84">        <span class="cf">if</span> edge_data[<span class="st">&#39;movement&#39;</span>] <span class="op">==</span> <span class="st">&#39;Start&#39;</span>:</div>
+<div class="sourceLine" id="cb1-85" data-line-number="85">            <span class="bu">print</span>(<span class="st">&#39;Start journey from </span><span class="sc">{}</span><span class="st"> at </span><span class="sc">{}</span><span class="ch">\n</span><span class="st">&#39;</span>.<span class="bu">format</span>(u_data[<span class="st">&#39;StopPointName&#39;</span>],</div>
+<div class="sourceLine" id="cb1-86" data-line-number="86">                                                  minutes_to_time(v_data[<span class="st">&#39;MinuteOfDay&#39;</span>] <span class="op">-</span> edge_data[<span class="st">&#39;cost&#39;</span>])))</div>
+<div class="sourceLine" id="cb1-87" data-line-number="87"></div>
+<div class="sourceLine" id="cb1-88" data-line-number="88">        <span class="co"># Changing onto a train from waiting at a platform</span></div>
+<div class="sourceLine" id="cb1-89" data-line-number="89">        <span class="cf">elif</span> previous_edge[<span class="st">&#39;movement&#39;</span>] <span class="op">==</span> <span class="st">&#39;Start&#39;</span> <span class="kw">or</span> <span class="op">\</span></div>
+<div class="sourceLine" id="cb1-90" data-line-number="90">             (previous_edge[<span class="st">&#39;movement&#39;</span>] <span class="op">==</span> <span class="st">&#39;Stay&#39;</span> <span class="kw">and</span> previous_edge[<span class="st">&#39;movement&#39;</span>] <span class="op">!=</span> edge_data[<span class="st">&#39;movement&#39;</span>]):</div>
+<div class="sourceLine" id="cb1-91" data-line-number="91">            <span class="bu">print</span>(<span class="st">&#39;Board the </span><span class="sc">{:&gt;7}</span><span class="st"> line train from </span><span class="sc">{}</span><span class="st"> at </span><span class="sc">{}</span><span class="st">&#39;</span>.<span class="bu">format</span>(edge_data[<span class="st">&#39;movement&#39;</span>],</div>
+<div class="sourceLine" id="cb1-92" data-line-number="92">                                                             u_data[<span class="st">&#39;StopPointName&#39;</span>],</div>
+<div class="sourceLine" id="cb1-93" data-line-number="93">                                                             minutes_to_time(u_data[<span class="st">&#39;MinuteOfDay&#39;</span>])))</div>
+<div class="sourceLine" id="cb1-94" data-line-number="94"></div>
+<div class="sourceLine" id="cb1-95" data-line-number="95">        <span class="co"># Changing off a train from travelling through any number of stops</span></div>
+<div class="sourceLine" id="cb1-96" data-line-number="96">        <span class="cf">elif</span> edge_data[<span class="st">&#39;movement&#39;</span>] <span class="op">!=</span> previous_edge[<span class="st">&#39;movement&#39;</span>] <span class="kw">and</span> edge_data[<span class="st">&#39;movement&#39;</span>] <span class="op">==</span> <span class="st">&#39;Stay&#39;</span>:</div>
+<div class="sourceLine" id="cb1-97" data-line-number="97">            <span class="bu">print</span>(<span class="st">&#39;Disembark the </span><span class="sc">{:&gt;3}</span><span class="st"> line train at </span><span class="sc">{}</span><span class="st"> at </span><span class="sc">{}</span><span class="st">&#39;</span>.<span class="bu">format</span>(previous_edge[<span class="st">&#39;movement&#39;</span>],</div>
+<div class="sourceLine" id="cb1-98" data-line-number="98">                                                               u_data[<span class="st">&#39;StopPointName&#39;</span>], </div>
+<div class="sourceLine" id="cb1-99" data-line-number="99">                                                               minutes_to_time(u_data[<span class="st">&#39;MinuteOfDay&#39;</span>])))</div>
+<div class="sourceLine" id="cb1-100" data-line-number="100"></div>
+<div class="sourceLine" id="cb1-101" data-line-number="101">        <span class="co"># Finishing information</span></div>
+<div class="sourceLine" id="cb1-102" data-line-number="102">        <span class="cf">elif</span> edge_data[<span class="st">&#39;movement&#39;</span>] <span class="op">==</span> <span class="st">&#39;End&#39;</span>:</div>
+<div class="sourceLine" id="cb1-103" data-line-number="103">            <span class="bu">print</span>(<span class="st">&#39;</span><span class="ch">\n</span><span class="st">Finish journey at </span><span class="sc">{}</span><span class="st"> at </span><span class="sc">{}</span><span class="st">&#39;</span>.<span class="bu">format</span>(u_data[<span class="st">&#39;StopPointName&#39;</span>],</div>
+<div class="sourceLine" id="cb1-104" data-line-number="104">                                                 minutes_to_time(u_data[<span class="st">&#39;MinuteOfDay&#39;</span>])))</div>
+<div class="sourceLine" id="cb1-105" data-line-number="105"></div>
+<div class="sourceLine" id="cb1-106" data-line-number="106">        previous_edge <span class="op">=</span> edge_data</div>
+<div class="sourceLine" id="cb1-107" data-line-number="107"></div>
+<div class="sourceLine" id="cb1-108" data-line-number="108"><span class="kw">def</span> plan_journey(H, path_query):</div>
+<div class="sourceLine" id="cb1-109" data-line-number="109">    <span class="co">&quot;&quot;&quot;</span></div>
+<div class="sourceLine" id="cb1-110" data-line-number="110"><span class="co">        Add Start and End nodes to the network temporarily based on `path_query`</span></div>
+<div class="sourceLine" id="cb1-111" data-line-number="111"><span class="co">        Calculate and print shortest path</span></div>
+<div class="sourceLine" id="cb1-112" data-line-number="112"><span class="co">        Remove Start and End nodes (along with any induced edges) to &#39;clean&#39; network for next query</span></div>
+<div class="sourceLine" id="cb1-113" data-line-number="113"><span class="co">    &quot;&quot;&quot;</span></div>
+<div class="sourceLine" id="cb1-114" data-line-number="114">    setup_shortest_path(path_query)</div>
+<div class="sourceLine" id="cb1-115" data-line-number="115">    path <span class="op">=</span> nx.shortest_path(H, source<span class="op">=</span><span class="st">&#39;Start&#39;</span>, target<span class="op">=</span><span class="st">&#39;End&#39;</span>, weight<span class="op">=</span><span class="st">&#39;cost&#39;</span>)</div>
+<div class="sourceLine" id="cb1-116" data-line-number="116">    print_path(path)</div>
+<div class="sourceLine" id="cb1-117" data-line-number="117">    H.remove_nodes_from([<span class="st">&#39;Start&#39;</span>, <span class="st">&#39;End&#39;</span>])</div>
+<div class="sourceLine" id="cb1-118" data-line-number="118"></div>
+<div class="sourceLine" id="cb1-119" data-line-number="119"><span class="cf">if</span> <span class="va">__name__</span> <span class="op">==</span> <span class="st">&#39;__main__&#39;</span>:</div>
+<div class="sourceLine" id="cb1-120" data-line-number="120">    </div>
+<div class="sourceLine" id="cb1-121" data-line-number="121">    <span class="co"># Location of NetworkX GPickle object</span></div>
+<div class="sourceLine" id="cb1-122" data-line-number="122">    <span class="bu">file</span> <span class="op">=</span> <span class="st">&quot;../../1_data/1_3_saved_analysis_objects/DeparturesGraph20171218.gpickle&quot;</span></div>
+<div class="sourceLine" id="cb1-123" data-line-number="123">    </div>
+<div class="sourceLine" id="cb1-124" data-line-number="124">    H <span class="op">=</span> nx.read_gpickle(<span class="bu">file</span>)</div>
+<div class="sourceLine" id="cb1-125" data-line-number="125">    </div>
+<div class="sourceLine" id="cb1-126" data-line-number="126">    query <span class="op">=</span> example_path_query</div>
+<div class="sourceLine" id="cb1-127" data-line-number="127">    plan_journey(H, query)</div>
+<div class="sourceLine" id="cb1-128" data-line-number="128">    </div>
+<div class="sourceLine" id="cb1-129" data-line-number="129">    <span class="bu">print</span>(<span class="st">&#39;</span><span class="ch">\n</span><span class="st">&#39;</span>)</div>
+<div class="sourceLine" id="cb1-130" data-line-number="130">    query[<span class="st">&#39;To_StopPointName&#39;</span>] <span class="op">=</span> <span class="st">&#39;Mile End&#39;</span></div>
+<div class="sourceLine" id="cb1-131" data-line-number="131">    plan_journey(H, query)</div>
+<div class="sourceLine" id="cb1-132" data-line-number="132"></div>
+<div class="sourceLine" id="cb1-133" data-line-number="133"><span class="co">#&gt; Start journey from Bank at 09:00:00</span></div>
+<div class="sourceLine" id="cb1-134" data-line-number="134"><span class="co">#&gt;</span></div>
+<div class="sourceLine" id="cb1-135" data-line-number="135"><span class="co">#&gt; Board the     CEN line train from Bank at 09:01:00</span></div>
+<div class="sourceLine" id="cb1-136" data-line-number="136"><span class="co">#&gt; Disembark the CEN line train at Oxford Circus at 09:09:00</span></div>
+<div class="sourceLine" id="cb1-137" data-line-number="137"><span class="co">#&gt; Board the     VIC line train from Oxford Circus at 09:10:00</span></div>
+<div class="sourceLine" id="cb1-138" data-line-number="138"><span class="co">#&gt;</span></div>
+<div class="sourceLine" id="cb1-139" data-line-number="139"><span class="co">#&gt; Finish journey at Victoria at 09:14:00</span></div>
+<div class="sourceLine" id="cb1-140" data-line-number="140"><span class="co">#&gt;</span></div>
+<div class="sourceLine" id="cb1-141" data-line-number="141"><span class="co">#&gt; Start journey from Bank at 09:00:00</span></div>
+<div class="sourceLine" id="cb1-142" data-line-number="142"><span class="co">#&gt;</span></div>
+<div class="sourceLine" id="cb1-143" data-line-number="143"><span class="co">#&gt; Board the     CEN line train from Bank at 09:00:00</span></div>
+<div class="sourceLine" id="cb1-144" data-line-number="144"><span class="co">#&gt;</span></div>
+<div class="sourceLine" id="cb1-145" data-line-number="145"><span class="co">#&gt; Finish journey at Mile End at 09:07:00</span></div></code></pre>
+</div>
+
+<p>Copyright &copy; Ruaridh Williamson 2017</p>
+<p>Powered by TfL Open Data //
+Contains OS data &copy; Crown copyright and database rights 2016</p>
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
