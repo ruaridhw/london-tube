@@ -15,26 +15,34 @@ navbar:
         - text: "R"
         - text: "Scraping"
           href: GetTablesFromXPaths.html
+        - text: "Variable Creation"
+          href: VariableCreation.html
         - text: "SQL Upload"
           href: SQLTables.html
+        - text: "Feather Upload"
+          href: FeatherUpload.html
         - text: "---------"
         - text: "Python"
         - text: "Scraping"
           href: XMLParsing.html
+        - text: "TfL Timetable Class"
+          href: TfLTimetable.html
+        - text: "Shortest Path"
+          href: ShortestPath.html
         - text: "---------"
         - text: "SQL"
-        - text: "Days of Week Groups"
-          href: DaysOfWeekGroups.html
         - text: "Inbound Graph"
           href: InboundGraph.html
         - text: "Departure Board"
           href: DepartureBoard.html
+        - text: "Days of Week Groups"
+          href: DaysOfWeekGroups.html
   right:
     - icon: fa-github
       href: https://github.com/ruaridhw
 output:
   html_document:
-    theme: yeti
+    theme: cerulean
     highlight: pygments
     include:
       after_body: footer.html
