@@ -49,7 +49,7 @@ navbar:
 output:
   html_document:
     theme: cerulean
-    highlight: pygments
+    highlight: tango
     include:
       after_body: footer.html
     css: styles.css

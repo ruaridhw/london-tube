@@ -27,23 +27,24 @@ network timetables. As described on the TfL website:
 
 The dataset is freely available and is bound by the [TfL Open Data License](https://tfl.gov.uk/corporate/terms-and-conditions/transport-data-service).
 
-## Part One
+## Part One: Managing Data
 
 Prior to any form of analysis, we need a structured, rectangular dataset.
 The first part of the project involves building a reproducible workflow for
 refreshing the timetable API feed which is updated on a weekly basis.
 It starts with examining the structure of the data source before
-extracting all of the relevant data into a "tidy" and normalised format
+extracting all of the relevant data into a "tidy" and normalised format,
+adding any additional variables and typecasting extracted information
 ready for pushing to a PostgreSQL database for further analysis.
 This notebook is written in R for the data manipulation
 and PostgreSQL for in-database transformation.
 
-For illustration purposes, only London Underground timetables are extracted
+For the purposes of this project, only London Underground timetables are extracted
 and processed however the methods presented here extend to any tube, train,
 bus, ferry or tram timetable across Great Britain as the extraction process
-is built around a generic XML schema used by the Department of Transport.
+is built around a generic XML schema used by the UK Department for Transport.
 
-## Part Two
+## Part Two: Visualising Data
 
 Once the data has been extracted, cleaned and normalised, the
 second part looks at different ways to visualise network timetable data

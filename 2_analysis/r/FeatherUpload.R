@@ -10,6 +10,8 @@
 #' all tables will need to be manually truncated first.
 #' 
 #' [Source code](https://github.com/ruaridhw/london-tube/blob/master/2_analysis/r/FeatherUpload.R)
+# ---- docker, engine="bash", eval=F
+# docker run --name postgres_london_tube -p 5432:5432 -d -e POSTGRES_PASSWORD=mysecretpassword postgres:alpine
 
 library(RPostgreSQL)
 drv <- dbDriver("PostgreSQL")
@@ -44,8 +46,8 @@ lapply(files, function(file){
 })
 
 #' RPostgreSQL does not support "time" db data type.
-#' [Uploads POSIXct as "timestamp with time zone"][1] so we need to strip date and timezone
-#' [1]: https://github.com/tomoakin/RPostgreSQL/blob/f93cb17cf584d57ced5045a46d16d2bfe05a2769/RPostgreSQL/R/PostgreSQLSupport.R#L717
+#' [Uploads POSIXct as "timestamp with time zone"](https://github.com/tomoakin/RPostgreSQL/blob/f93cb17cf584d57ced5045a46d16d2bfe05a2769/RPostgreSQL/R/PostgreSQLSupport.R#L717)
+#' so we need to strip date and timezone
 dbSendQuery(con, paste('ALTER TABLE "VehicleJourneys"',
                        'ALTER COLUMN "DepartureTime" TYPE time(6) USING "DepartureTime"::time(6);'
                        ))
