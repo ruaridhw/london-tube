@@ -3,14 +3,18 @@
 #' title: "Prepare Data"
 #' ---
 #'
-#' This script performs all the necessary actions to scrape the directory
-#' of XML timetables from the `1_data/1_1_raw_data/timetables/data` folder
+#' This script performs all the necessary actions to download a directory
+#' of XML timetables from the http://data.tfl.gov.uk API
 #' and pushes all of the tables to a PostgreSQL instance.
 
-#' [XMLParsing.py](XMLParsing.html) contains the locations of the input and output
-#' data directories.
-#' It parses the raw XML to a number of Pandas dataframes and dumps a directory
-#' of Feather files for interpretation by R
+#' The download script relies on the local file `tfl-developer-passwords.R`
+#' having valid `app_id` and `app_key` TfL API credentials.
+#' It downloads the necessary zip file and unpacks the Underground timetables
+#' to a local directory `../1_data/1_1_raw_data/timetables/data`
+Rscript r/GetData.R
+
+#' [This script](XMLParsing.html) parses the raw XML to a number of Pandas
+#' dataframes and dumps a directory of Feather files for interpretation by R
 #' For usage see `python3 python/XMLParsing.py --help`
 python3 python/XMLParsing.py ../1_data/1_1_raw_data/timetables/data ../1_data/1_2_processed_data
 
