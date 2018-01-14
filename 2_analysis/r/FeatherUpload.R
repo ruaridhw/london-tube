@@ -26,14 +26,18 @@ password <- "mysecretpassword"
 # dbSendQuery(con, "CREATE DATABASE londontubepython;")
 # dbDisconnect(con)
 
-get_con <- function() dbConnect(drv, host = host, user = user, password = password,
-                                dbname = "londontubepython")
+get_con <- function() {
+  dbConnect(drv,
+            host = host, user = user, password = password,
+            dbname = "londontubepython")
+}
 
 source("r/VariableCreation.R") # Load required Variable Creation functions
 
 library(feather)
 con <- get_con()
-files <- list.files("../1_data/1_2_processed_data", full.names = TRUE) # relative to london-tube.Rproj
+files <- list.files(file.path(root.dir, "1_data/1_2_processed_data"),
+                    full.names = TRUE)
 then <- Sys.time()
 lapply(files, function(file){
   df <- feather::read_feather(file)

@@ -17,18 +17,19 @@ library(lubridate)
 library(rgdal)
 modify_StopPoints <- function(df){
   # Define proj4 coordinate systems
-  bng = "+init=epsg:27700"
-  latlon = "+proj=longlat +datum=WGS84"
+  bng <- "+init=epsg:27700"
+  latlon <- "+proj=longlat +datum=WGS84"
 
   # Create spatial object using BNG coordinates
   coord.bng <-
     with(df,
-         SpatialPointsDataFrame(cbind(Place_Location_Easting, Place_Location_Northing) %>%
-                                  as.integer() %>% matrix(ncol = 2),
-                                data = tibble(AtcoCode,
-                                              Descriptor_CommonName,
-                                              Place_NptgLocalityRef),
-                                proj4string = CRS(bng)))
+         SpatialPointsDataFrame(
+           cbind(Place_Location_Easting, Place_Location_Northing) %>%
+             as.integer() %>% matrix(ncol = 2),
+           data = tibble(AtcoCode,
+                         Descriptor_CommonName,
+                         Place_NptgLocalityRef),
+           proj4string = CRS(bng)))
 
   # Cast as latlon coordinates
   coord.latlon <- spTransform(coord.bng, CRS(latlon))
@@ -43,9 +44,10 @@ modify_StopPoints <- function(df){
 # ---- modify_VehicleJourneys
 modify_VehicleJourneys <- function(df){
   within(df, {
-    DepartureTime %<>% as.POSIXct(format="%T")
+    DepartureTime %<>% as.POSIXct(format = "%T")
     # Extract number of minutes since midnight from DepartureTime
-    DepartureMins <- DepartureTime %>% {lubridate::minute(.) + 60 * lubridate::hour(.)}
+    DepartureMins <- DepartureTime %>%
+      {lubridate::minute(.) + 60 * lubridate::hour(.)}
   })
 }
 
@@ -83,7 +85,9 @@ modify_Services <- function(df){
 #' Convenience dispatch function
 # ---- modify
 modify_df <- function(tablename, df){
-  if(tablename %in% c("StopPoints", "VehicleJourneys", "JourneyPatternTimingLinks", "RouteLinks", "Services")) {
+  tables_to_modify <- c("StopPoints", "VehicleJourneys",
+                        "JourneyPatternTimingLinks", "RouteLinks", "Services")
+  if (tablename %in% tables_to_modify) {
     df %<>% list %>% do.call(what = paste0("modify_", tablename))
   }
   df

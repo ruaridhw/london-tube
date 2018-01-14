@@ -62,7 +62,6 @@ library(dplyr)
 retrieve_additional_fields <- function(tfl, doc){
   RouteSectionsNodeset <-
     xml2::xml_find_all(doc, "/TransXChange/RouteSections/RouteSection")
-  
   AdditionalRouteLinksData <-
     purrr::map(RouteSectionsNodeset, function(Section) {
       RouteLinks <- xml2::xml_find_all(Section, "RouteLink")
@@ -73,7 +72,6 @@ retrieve_additional_fields <- function(tfl, doc){
     }) %>%
     rbindlist %>%
     as_tibble
-  
   tfl$RouteLinks <- AdditionalRouteLinksData %>%
     bind_cols(tfl$RouteLinks) %>%
     rename(FromStopPointRef = StopPointRef,
@@ -81,7 +79,6 @@ retrieve_additional_fields <- function(tfl, doc){
   
   JourneyPatternSectionsNodeset <-
     xml2::xml_find_all(doc, "/TransXChange/JourneyPatternSections/JourneyPatternSection")
-  
   AdditionalTimingLinksData <-
     purrr::map(JourneyPatternSectionsNodeset, function(Section) {
       TimingLinks <- xml2::xml_find_all(Section, "JourneyPatternTimingLink")

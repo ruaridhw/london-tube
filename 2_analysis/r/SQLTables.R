@@ -44,9 +44,11 @@ dbDisconnect(con)
 
 #' Create connection function for later use
 # ---- get_con
-get_con <- function() dbConnect(drv = dbDriver("PostgreSQL"), host = "localhost",
-                                dbname = "londontube",
-                                user = "postgres", password = "mysecretpassword")
+get_con <- function() {
+  dbConnect(drv,
+            host = host, user = user, password = password,
+            dbname = "londontube")
+}
 # ---- 
 
 #' Setup "CREATE TABLE ... INSERT INTO" template"
@@ -69,6 +71,8 @@ create_tables <- function(tablename, tabledata, primary_key_cols, con){
 
 # Build database with the same tablenames as input data
 con <- get_con()
-table_creation <- purrr::pmap(list(tolower(names(tfl)), tfl, primarykeys), create_tables, con)
+tablenames <- tolower(names(tfl))
+table_creation <- purrr::pmap(list(tablenames, tfl, primarykeys),
+                              create_tables, con)
 dbDisconnect(con)
 # ---- 
