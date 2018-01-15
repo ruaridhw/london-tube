@@ -71,7 +71,7 @@ To run the container ensure Docker is installed and call the following from a
 Terminal with this repository as the current working directory:
 
 ```{bash, eval = FALSE}
-docker run -v "$(pwd)":/home/london-tube -p 8888:8888 -it london-tube:latest
+docker run -v "$(pwd)":/home/london-tube -p 8888:8888 -it ruaridhw/london-tube:latest
 ```
 
 To access the data files simply switch Git branches

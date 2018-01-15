@@ -18,22 +18,22 @@ RUN echo "deb http://apt.postgresql.org/pub/repos/apt/ jessie-pgdg main" >> /etc
     libpq-dev postgresql-server-dev-9.6 \
 
 # Install additional Python packages
-  && pip install psycopg2 mplleaflet feather-format \
+  && pip install psycopg2 mplleaflet feather-format
 
 # Install R and packages
   # Conda provided binaries
-  && conda install -y r-base r-tidyverse \
-  && conda install -y r-feather r-data.table r-xml r-devtools r-dbi \
+RUN conda install -y r-base r-tidyverse \
+  && conda install -y r-feather r-data.table r-xml r-devtools r-dbi
 
   # CRAN packages built from conda-forge
   # NB: This causes numerous **downgrades**
-  && conda install -y -c conda-forge r-rgdal r-rpostgresql \
+RUN conda install -y -c conda-forge r-rgdal r-rpostgresql \
 
   # GitHub-only packages
   && Rscript -e "devtools::install_git('git://github.com/dantonnoriega/xmltools', dependencies = FALSE)"
 
 # Install JupyterLab and R Kernel
-RUN conda install -c conda-forge jupyterlab \
+RUN conda install -y -c conda-forge jupyterlab \
   && conda install -y r-irkernel
 
 EXPOSE 8888
@@ -42,4 +42,5 @@ ENV getwd /home/london-tube
 RUN mkdir $getwd
 WORKDIR $getwd
 
-ENTRYPOINT ["jupyter", "lab", "--ip=0.0.0.0", "--port=8888", "--allow-root"]
+ENTRYPOINT ["tini", "--"]
+CMD ["jupyter", "lab", "--ip=0.0.0.0", "--port=8888", "--allow-root"]
