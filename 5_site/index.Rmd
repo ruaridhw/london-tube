@@ -58,6 +58,33 @@ As with any data science project, the vast majority
 of the time is spent performing tasks from Part One however equal weight
 has been given to each in the resulting notebooks in terms of content.
 
+# Reproducibility
+
+All of the analysis presented aims to be fully reproducible with the help of:
+
+1. [Published Docker container][7] providing all of the necessary R and Python packages
+pre-installed against an Anaconda3 image. The download is roughly 2GB due to the
+size of the full conda distribution.
+2. Snapshot of the data feed API as at the time of analysis
+
+To run the container ensure Docker is installed and call the following from a
+Terminal with this repository as the current working directory:
+
+```{bash, eval = FALSE}
+docker run -v "$(pwd)":/home/london-tube -p 8888:8888 -it london-tube:latest
+```
+
+To access the data files simply switch Git branches
+
+```{bash, eval = FALSE}
+git checkout data_and_mp4_files
+```
+
+or [download the branch zip file from GitHub][8].
+
+[7]: https://hub.docker.com/r/ruaridhw/london-tube/
+[8]: https://github.com/ruaridhw/london-tube/archive/data_and_mp4_files.zip
+
 ## Context
 
 This project was completed in partial fulfilment of a course for the MSc Analytics and

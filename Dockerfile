@@ -22,21 +22,24 @@ RUN echo "deb http://apt.postgresql.org/pub/repos/apt/ jessie-pgdg main" >> /etc
 
 # Install R and packages
   # Conda provided binaries
-RUN conda install -y r-base r-tidyverse \
+  && conda install -y r-base r-tidyverse \
   && conda install -y r-feather r-data.table r-xml r-devtools r-dbi \
 
   # CRAN packages built from conda-forge
   # NB: This causes numerous **downgrades**
-RUN conda install -y -c conda-forge r-rgdal r-rpostgresql \
+  && conda install -y -c conda-forge r-rgdal r-rpostgresql \
 
   # GitHub-only packages
   && Rscript -e "devtools::install_git('git://github.com/dantonnoriega/xmltools', dependencies = FALSE)"
 
-# Install JupyterLab
-RUN conda install -c conda-forge jupyterlab
+# Install JupyterLab and R Kernel
+RUN conda install -c conda-forge jupyterlab \
+  && conda install -y r-irkernel
 
 EXPOSE 8888
-WORKDIR $HOME
 
-ENTRYPOINT ["jupyter", "lab "]
-CMD ["--ip=0.0.0.0 --port=8888 --allow-root"]
+ENV getwd /home/london-tube
+RUN mkdir $getwd
+WORKDIR $getwd
+
+ENTRYPOINT ["jupyter", "lab", "--ip=0.0.0.0", "--port=8888", "--allow-root"]
