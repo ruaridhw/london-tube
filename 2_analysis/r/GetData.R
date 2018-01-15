@@ -37,4 +37,4 @@ unzip(list.files(file.path(data.dir, "timetables"),
 # ---- show_xml_files
 data.files <- list.files(file.path(data.dir, "/timetables/data"),
                          pattern = "tfl_1-[^.]+\\.xml", full.names = TRUE)
-print(head(basename(data.files)))
+head(basename(data.files))

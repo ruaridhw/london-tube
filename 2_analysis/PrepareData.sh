@@ -6,10 +6,12 @@
 #' This script performs all the necessary actions to download a directory
 #' of XML timetables from the http://data.tfl.gov.uk API
 #' and pushes all of the tables to a PostgreSQL instance.
+#'
+#' In order to run you will need to edit the following:
+#' 1. `app_id` and `app_key` TfL API credentials in `r/tfl-developer-passwords.R`
+#' 2. PostgreSQL connection settings in `r/FeatherUpload.R`
 
-#' The download script relies on the local file `tfl-developer-passwords.R`
-#' having valid `app_id` and `app_key` TfL API credentials.
-#' It downloads the necessary zip file and unpacks the Underground timetables
+#' This script downloads the necessary zip file and unpacks the Underground timetables
 #' to a local directory `../1_data/1_1_raw_data/timetables/data`
 Rscript r/GetData.R
 
