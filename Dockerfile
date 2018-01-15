@@ -1,4 +1,4 @@
-FROM continuumio/anaconda3:latest
+FROM continuumio/miniconda3:latest
 LABEL org.label-schema.license="GPL-2.0" \
       org.label-schema.vcs-url="https://github.com/ruaridhw/london-tube" \
       org.label-schema.vendor="" \
@@ -12,29 +12,26 @@ RUN echo "deb http://apt.postgresql.org/pub/repos/apt/ jessie-pgdg main" >> /etc
   && apt-get install -y --no-install-recommends \
     # Required for mplleaflet
     libgl1-mesa-glx \
-    # Required for rgdal
-    libgdal1-dev libproj-dev \
     # Required for RPostgreSQL
-    libpq-dev postgresql-server-dev-9.6 \
+    libpq-dev postgresql-server-dev-9.6
 
-# Install additional Python packages
-  && pip install psycopg2 mplleaflet feather-format
-
-# Install R and packages
-  # Conda provided binaries
-RUN conda install -y r-base r-tidyverse \
-  && conda install -y r-feather r-data.table r-xml r-devtools r-dbi
-
+# Conda provided binaries
+RUN conda install -y -c conda-forge \
+  # Install Python packages
+  numpy pandas matplotlib lxml networkx requests \
+  psycopg2 mplleaflet feather-format \
+  click \
+  # Install R and common packages
+  r-base=3.4 r-tidyverse \
+  r-feather r-data.table r-xml r-devtools r-dbi r-rprojroot \
   # CRAN packages built from conda-forge
-  # NB: This causes numerous **downgrades**
-RUN conda install -y -c conda-forge r-rgdal r-rpostgresql \
+  r-rgdal libgdal=2.1 r-rpostgresql \
+  # JupyterLab and R Kernel
+  jupyterlab r-irkernel
 
-  # GitHub-only packages
-  && Rscript -e "devtools::install_git('git://github.com/dantonnoriega/xmltools', dependencies = FALSE)"
-
-# Install JupyterLab and R Kernel
-RUN conda install -y -c conda-forge jupyterlab \
-  && conda install -y r-irkernel
+# Install GitHub- and pip-only packages
+RUN Rscript -e "devtools::install_git('git://github.com/dantonnoriega/xmltools', dependencies = FALSE)" \
+  && pip install smopy
 
 EXPOSE 8888
 
