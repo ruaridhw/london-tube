@@ -9,8 +9,9 @@ output: github_document
 knitr::opts_chunk$set(cache = FALSE)
 knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
 # read_chunk() now supports SQL chunks in external files
-if(packageVersion("knitr") < "1.17.18")
-  stop("Require development version of knitr from GitHub for latest Rmd functionality")
+# https://github.com/yihui/knitr/commit/4d71624d8ab9cac51a2245dc97d7c54b5c29eb68
+if(packageVersion("knitr") < "1.18.6")
+  stop("Require latest development version of knitr from GitHub for latest Rmd functionality")
 ```
 
 # Introduction
@@ -18,17 +19,17 @@ if(packageVersion("knitr") < "1.17.18")
 This notebook forms the first of two outputs in the analysis of
 the TfL London Tube network. It is primarily concerned with the
 transformation and manipulation of the required datasets in
-comparison to Part Two which focuses on visualisation.
+comparison to Part Two which focuses on visualisation and algorithms.
 
 Due to the complexity of the dataset being investigated, there
-are numerous links to external analysis files provided which go
+are a few external references to analysis files in this repository which go
 into greater detail regarding the transformations and data extraction
 performed which do not form part of the notebook.
 Further, the data manipulation code shown here is
 wholly R however when it came to extracting the data
 in practice this was re-written in Python for performance reasons.
-Therefore this code is to illustrate the initial extraction and data
-discovery thought-process moreso than the efficient extraction process.
+Therefore this code is to illustrate the initial extraction and data discovery
+thought-process more-so than the efficient (or recommended) extraction process.
 
 # APIs and Internet Data
 
@@ -48,8 +49,10 @@ To access it, download the zip file at the link below
 ```{r download_zip, eval=FALSE}
 ```
 
-*Note: You may need to [register](https://api-portal.tfl.gov.uk/) for an API key to
-access the zip file. In the event that you cannot gain access there is a small demo sample [here](https://tfl.gov.uk/cdn/static/cms/documents/journey-planner-timetables.zip)*
+*Note: You may need to [register](https://api-portal.tfl.gov.uk/) for an API key
+and update the file `tfl-developer-passwords.R` to access the zip file.
+In the event that you cannot gain access there is a small demo sample [here](https://tfl.gov.uk/cdn/static/cms/documents/journey-planner-timetables.zip)
+or you can use the full extract provided with this repository*
 
 Unpack the download once to split out the train/ferry timetables
 from the bus timetables and again to unpack the tube/DLR timetables.
@@ -77,10 +80,9 @@ any other timetable.
 
 Begin by reading in the first XML file.
 
-*NB: I have specifically refrained from loading the `xml2`, `XML` and
-`xmltools` namespaces via `library` throughout in order to illustrate
-which functions belong to which packages more clearly by using `::` for
-each function call.*
+*NB: The `xml2`, `XML` and `xmltools` package namespaces are not loaded via
+`library` in order to illustrate which functions belong to each package more
+clearly by using `::` for each function call.*
 
 ```{r}
 library(magrittr)
@@ -95,13 +97,13 @@ This metadata contains two important pieces of information:
 which appear to be completely disparate datasets all relating to this
 particular file:
 
-  - The [*StopPoints*][1] provide the stop locations which
+    - The [*StopPoints*][1] provide the stop locations which
 group up to a given stop "locality" in [*NptgLocalities*][2].
-  - The *Routes* are broken down into *RouteSections* and *JourneyPatternSections*
-  - The *Operator* is not useful for the Tube data as there is only one; "LUL"
-  - Each *Service* is how the file derives its name so there's one in each
+    - The *Routes* are broken down into *RouteSections* and *JourneyPatternSections*
+    - The *Operator* is not useful for the Tube data as there is only one; "LUL"
+    - Each *Service* is how the file derives its name so there's one in each
 XML file
-  - The *VehicleJourney* is the most granular level of information
+    - The *VehicleJourney* is the most granular level of information
 as it provides the exact trip link of a vehicle moving from one station
 to the next in a given *JourneyPatternSection*
 
@@ -391,9 +393,11 @@ tfl_all <- purrr::map(data.files, extract_file)
 Unfortunately, the bad news is this line of code takes a **very** long time
 to run so don't execute it unless you plan on waiting all night. Literally...
 
-Despite a few good libraries, R is pretty shocking at XML scraping
-when compared to the `lxml` Python library. The versatility of `lxml`
-is also significantly better when it comes to traversing XML trees
+To make this code more efficient it may benefit from a performance improvement
+by parsing the nested list structure using syntax such as
+`doc[[c("TransXChange", "StopPoints", "StopPoint")]]` however in its current form
+it is much slower when compared to the `lxml` Python library.
+The versatility of `lxml` is also better when it comes to traversing XML trees
 efficiently and extracting data in nested nodes, parent nodes and attributes
 as we require.
 
@@ -517,10 +521,9 @@ Test that the server is running and the connection works by setting up a develop
 database for the project:
 
 ```{r load_rpostgresql, warning=FALSE, message=FALSE, echo=FALSE}
-library(RPostgreSQL)
 ```
 
-```{r create_db, eval=FALSE}
+```{r create_db}
 ```
 
 ```{r get_con}
@@ -530,6 +533,13 @@ library(RPostgreSQL)
 
 We can write a function that loops over all eight tables sequentially
 adding them to the database whilst dropping any existing tables.
+
+First define the primary keys of the tables:
+
+```{r sql_keys}
+```
+
+and upload the data:
 
 ```{r create_tables}
 ```
@@ -579,21 +589,21 @@ The table-valued function `departureboard` is as follows:
 
 As you can imagine, when pushing every timetable to the database
 this table blows out to 6.63M rows.
-In fact, as discussed earlier, the vast majority of it is redundant information.
+As discussed earlier, the vast majority of it is redundant information.
 Entire XML files are duplicated for special calendar days such as
 Bank Holidays, New Years, Christmas etc. hence the need to sample the data.
 
-If using the Python methodology of scraping the dataset for all files, the
+If using the Python methodology of scraping the dataset for all files, this
 sampling process discussed earlier now occurs as part of the Departures Board query
 `WHERE` clause.
 
 Essentially we just filter on the Operating Profile of the Services and Vehicle
 Journeys to be one day of the week and filter the Operating Periods to be
 those that contain a given date.
-Now, by passing in the date "Wednesday 20th Dec 2017" for examplex the table size has reduced
+Now, by passing in the date "Wednesday 20th Dec 2017" for example the table size has reduced
 to 244K rows.
 
-As we now have the dataset in a cleaned and useable format, this completes the
+As we now have the dataset in a cleaned and use-able format, this completes the
 Managing Data notebook.
 We will now go on to visualise this newly created Departure Board table
 in [Part Two](VisualisingData.html)

@@ -28,17 +28,16 @@ primarykeys <- list(
   VehicleJourneys = '"VehicleJourneyCode"'
 )
 
-# ---- create_db
+# ---- load_rpostgresql
 library(RPostgreSQL)
-
 drv <- dbDriver("PostgreSQL")
 host <- "localhost"
 user <- "postgres"
 password <- "mysecretpassword"
-
+# ---- create_db
 con <- dbConnect(drv, host = host, user = user, password = password,
                  dbname = "postgres")
-dbSendQuery(con, "CREATE DATABASE londontube;")
+dbSendQuery(con, "CREATE DATABASE londontube_r;")
 dbDisconnect(con)
 # ---- 
 
@@ -47,7 +46,7 @@ dbDisconnect(con)
 get_con <- function() {
   dbConnect(drv,
             host = host, user = user, password = password,
-            dbname = "londontube")
+            dbname = "londontube_r")
 }
 # ---- 
 
