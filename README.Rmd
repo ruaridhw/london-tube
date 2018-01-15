@@ -6,3 +6,7 @@ output: github_document
 
 ```{r child = '5_site/index.Rmd'}
 ```
+
+Powered by TfL Open Data
+
+Contains OS data © Crown copyright and database rights 2016
