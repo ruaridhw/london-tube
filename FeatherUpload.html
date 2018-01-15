@@ -48,38 +48,38 @@ pre.numberSource div.sourceLine::before, .numberSource a.sourceLine::before
     -ms-user-select: none; user-select: none;
     padding: 0 4px; width: 4em; }
 pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; color: #aaaaaa;  padding-left: 4px; }
+pre, code { background-color: #f8f8f8; }
 @media screen {
 a.sourceLine::before { text-decoration: underline; color: initial; }
 }
-code span.kw { color: #007020; font-weight: bold; } /* Keyword */
-code span.dt { color: #902000; } /* DataType */
-code span.dv { color: #40a070; } /* DecVal */
-code span.bn { color: #40a070; } /* BaseN */
-code span.fl { color: #40a070; } /* Float */
-code span.ch { color: #4070a0; } /* Char */
-code span.st { color: #4070a0; } /* String */
-code span.co { color: #60a0b0; font-style: italic; } /* Comment */
-code span.ot { color: #007020; } /* Other */
-code span.al { color: #ff0000; font-weight: bold; } /* Alert */
-code span.fu { color: #06287e; } /* Function */
-code span.er { color: #ff0000; font-weight: bold; } /* Error */
-code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
-code span.cn { color: #880000; } /* Constant */
-code span.sc { color: #4070a0; } /* SpecialChar */
-code span.vs { color: #4070a0; } /* VerbatimString */
-code span.ss { color: #bb6688; } /* SpecialString */
+code span.kw { color: #204a87; font-weight: bold; } /* Keyword */
+code span.dt { color: #204a87; } /* DataType */
+code span.dv { color: #0000cf; } /* DecVal */
+code span.bn { color: #0000cf; } /* BaseN */
+code span.fl { color: #0000cf; } /* Float */
+code span.ch { color: #4e9a06; } /* Char */
+code span.st { color: #4e9a06; } /* String */
+code span.co { color: #8f5902; font-style: italic; } /* Comment */
+code span.ot { color: #8f5902; } /* Other */
+code span.al { color: #ef2929; } /* Alert */
+code span.fu { color: #000000; } /* Function */
+code span.er { color: #a40000; font-weight: bold; } /* Error */
+code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warning */
+code span.cn { color: #000000; } /* Constant */
+code span.sc { color: #000000; } /* SpecialChar */
+code span.vs { color: #4e9a06; } /* VerbatimString */
+code span.ss { color: #4e9a06; } /* SpecialString */
 code span.im { } /* Import */
-code span.va { color: #19177c; } /* Variable */
-code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-code span.op { color: #666666; } /* Operator */
-code span.bu { } /* BuiltIn */
+code span.va { color: #000000; } /* Variable */
+code span.cf { color: #204a87; font-weight: bold; } /* ControlFlow */
+code span.op { color: #ce5c00; font-weight: bold; } /* Operator */
+code span.pp { color: #8f5902; font-style: italic; } /* Preprocessor */
 code span.ex { } /* Extension */
-code span.pp { color: #bc7a00; } /* Preprocessor */
-code span.at { color: #7d9029; } /* Attribute */
-code span.do { color: #ba2121; font-style: italic; } /* Documentation */
-code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.at { color: #c4a000; } /* Attribute */
+code span.do { color: #8f5902; font-weight: bold; font-style: italic; } /* Documentation */
+code span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
+code span.cv { color: #8f5902; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Information */
 </style>
 <style type="text/css">
   pre:not([class]) {
@@ -340,6 +340,9 @@ div.tocify {
   <ul class="dropdown-menu" role="menu">
     <li class="dropdown-header">R</li>
     <li>
+      <a href="GetData.html">Download Data</a>
+    </li>
+    <li>
       <a href="GetTablesFromXPaths.html">Scraping</a>
     </li>
     <li>
@@ -373,6 +376,11 @@ div.tocify {
     <li>
       <a href="DaysOfWeekGroups.html">Days of Week Groups</a>
     </li>
+    <li class="divider"></li>
+    <li class="dropdown-header">Workflow</li>
+    <li>
+      <a href="PrepareData.html">Prepare Data</a>
+    </li>
   </ul>
 </li>
       </ul>
@@ -401,37 +409,42 @@ div.tocify {
 <p>This script reads a directory of Feather files as output from XMLParsing.py and pushes the dataframes to a PostgreSQL database.</p>
 <p>Note: Since the <code>dbWriteTable</code> statement uses <code>append = TRUE</code> to upload successive dataframes to the same table, if recalling this upload procedure all tables will need to be manually truncated first.</p>
 <p><a href="https://github.com/ruaridhw/london-tube/blob/master/2_analysis/r/FeatherUpload.R">Source code</a></p>
-<pre class="sourceCode r" id="cb1"><code class="sourceCode r"><div class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw">library</span>(RPostgreSQL)</div>
-<div class="sourceLine" id="cb1-2" data-line-number="2">drv &lt;-<span class="st"> </span><span class="kw">dbDriver</span>(<span class="st">&quot;PostgreSQL&quot;</span>)</div>
-<div class="sourceLine" id="cb1-3" data-line-number="3">host &lt;-<span class="st"> &quot;localhost&quot;</span></div>
-<div class="sourceLine" id="cb1-4" data-line-number="4">user &lt;-<span class="st"> &quot;postgres&quot;</span></div>
-<div class="sourceLine" id="cb1-5" data-line-number="5">password &lt;-<span class="st"> &quot;mysecretpassword&quot;</span></div></code></pre>
+<pre class="sourceCode bash" id="cb1"><code class="sourceCode bash"><div class="sourceLine" id="cb1-1" data-line-number="1"><span class="co"># docker run --name postgres_london_tube -p 5432:5432 -d -e POSTGRES_PASSWORD=mysecretpassword postgres:alpine</span></div>
+<div class="sourceLine" id="cb1-2" data-line-number="2"></div>
+<div class="sourceLine" id="cb1-3" data-line-number="3"><span class="ex">library</span>(RPostgreSQL)</div>
+<div class="sourceLine" id="cb1-4" data-line-number="4"><span class="ex">drv</span> <span class="op">&lt;</span>- dbDriver(<span class="st">&quot;PostgreSQL&quot;</span>)</div>
+<div class="sourceLine" id="cb1-5" data-line-number="5"><span class="ex">host</span> <span class="op">&lt;</span>- <span class="st">&quot;localhost&quot;</span></div>
+<div class="sourceLine" id="cb1-6" data-line-number="6"><span class="ex">user</span> <span class="op">&lt;</span>- <span class="st">&quot;postgres&quot;</span></div>
+<div class="sourceLine" id="cb1-7" data-line-number="7"><span class="ex">password</span> <span class="op">&lt;</span>- <span class="st">&quot;mysecretpassword&quot;</span></div></code></pre>
 <p>Create database if it doesn’t already exist</p>
 <pre class="sourceCode r" id="cb2"><code class="sourceCode r"><div class="sourceLine" id="cb2-1" data-line-number="1"><span class="co"># con &lt;- dbConnect(drv, host = host, user = user, password = password,</span></div>
 <div class="sourceLine" id="cb2-2" data-line-number="2"><span class="co">#                  dbname = &quot;postgres&quot;)</span></div>
 <div class="sourceLine" id="cb2-3" data-line-number="3"><span class="co"># dbSendQuery(con, &quot;CREATE DATABASE londontubepython;&quot;)</span></div>
 <div class="sourceLine" id="cb2-4" data-line-number="4"><span class="co"># dbDisconnect(con)</span></div>
 <div class="sourceLine" id="cb2-5" data-line-number="5"></div>
-<div class="sourceLine" id="cb2-6" data-line-number="6">get_con &lt;-<span class="st"> </span><span class="cf">function</span>() <span class="kw">dbConnect</span>(drv, <span class="dt">host =</span> host, <span class="dt">user =</span> user, <span class="dt">password =</span> password,</div>
-<div class="sourceLine" id="cb2-7" data-line-number="7">                                <span class="dt">dbname =</span> <span class="st">&quot;londontubepython&quot;</span>)</div>
-<div class="sourceLine" id="cb2-8" data-line-number="8"></div>
-<div class="sourceLine" id="cb2-9" data-line-number="9"><span class="kw">source</span>(<span class="st">&quot;r/VariableCreation.R&quot;</span>) <span class="co"># Load required Variable Creation functions</span></div>
-<div class="sourceLine" id="cb2-10" data-line-number="10"></div>
-<div class="sourceLine" id="cb2-11" data-line-number="11"><span class="kw">library</span>(feather)</div>
-<div class="sourceLine" id="cb2-12" data-line-number="12">con &lt;-<span class="st"> </span><span class="kw">get_con</span>()</div>
-<div class="sourceLine" id="cb2-13" data-line-number="13">files &lt;-<span class="st"> </span><span class="kw">list.files</span>(<span class="st">&quot;../1_data/1_2_processed_data&quot;</span>, <span class="dt">full.names =</span> <span class="ot">TRUE</span>) <span class="co"># relative to london-tube.Rproj</span></div>
-<div class="sourceLine" id="cb2-14" data-line-number="14">then &lt;-<span class="st"> </span><span class="kw">Sys.time</span>()</div>
-<div class="sourceLine" id="cb2-15" data-line-number="15"><span class="kw">lapply</span>(files, <span class="cf">function</span>(file){</div>
-<div class="sourceLine" id="cb2-16" data-line-number="16">  df &lt;-<span class="st"> </span>feather<span class="op">::</span><span class="kw">read_feather</span>(file)</div>
-<div class="sourceLine" id="cb2-17" data-line-number="17">  tablename &lt;-<span class="st"> </span><span class="kw">substring</span>(<span class="kw">basename</span>(tools<span class="op">::</span><span class="kw">file_path_sans_ext</span>(file)), <span class="dv">5</span>)</div>
-<div class="sourceLine" id="cb2-18" data-line-number="18"></div>
-<div class="sourceLine" id="cb2-19" data-line-number="19">  <span class="co"># Dispatch appropriate modification procedure depending on the tablename</span></div>
-<div class="sourceLine" id="cb2-20" data-line-number="20">  df &lt;-<span class="st"> </span><span class="kw">modify_df</span>(tablename, df)</div>
-<div class="sourceLine" id="cb2-21" data-line-number="21"></div>
-<div class="sourceLine" id="cb2-22" data-line-number="22">  <span class="kw">dbWriteTable</span>(con, tablename, df, <span class="dt">append =</span> <span class="ot">TRUE</span>, <span class="dt">row.names =</span> <span class="ot">FALSE</span>)</div>
-<div class="sourceLine" id="cb2-23" data-line-number="23">})</div></code></pre>
-<p>RPostgreSQL does not support “time” db data type. <span class="math display">\[Uploads POSIXct as
-“timestamp with time zone”\]</span><span class="math display">\[1\]</span> so we need to strip date and timezone <span class="math display">\[1\]</span>: <a href="https://github.com/tomoakin/RPostgreSQL/blob/f93cb17cf584d57ced5045a46d16d2bfe05a2769/RPostgreSQL/R/PostgreSQLSupport.R#L717" class="uri">https://github.com/tomoakin/RPostgreSQL/blob/f93cb17cf584d57ced5045a46d16d2bfe05a2769/RPostgreSQL/R/PostgreSQLSupport.R#L717</a></p>
+<div class="sourceLine" id="cb2-6" data-line-number="6">get_con &lt;-<span class="st"> </span><span class="cf">function</span>() {</div>
+<div class="sourceLine" id="cb2-7" data-line-number="7">  <span class="kw">dbConnect</span>(drv,</div>
+<div class="sourceLine" id="cb2-8" data-line-number="8">            <span class="dt">host =</span> host, <span class="dt">user =</span> user, <span class="dt">password =</span> password,</div>
+<div class="sourceLine" id="cb2-9" data-line-number="9">            <span class="dt">dbname =</span> <span class="st">&quot;londontubepython&quot;</span>)</div>
+<div class="sourceLine" id="cb2-10" data-line-number="10">}</div>
+<div class="sourceLine" id="cb2-11" data-line-number="11"></div>
+<div class="sourceLine" id="cb2-12" data-line-number="12"><span class="kw">source</span>(<span class="st">&quot;r/VariableCreation.R&quot;</span>) <span class="co"># Load required Variable Creation functions</span></div>
+<div class="sourceLine" id="cb2-13" data-line-number="13"></div>
+<div class="sourceLine" id="cb2-14" data-line-number="14"><span class="kw">library</span>(feather)</div>
+<div class="sourceLine" id="cb2-15" data-line-number="15">con &lt;-<span class="st"> </span><span class="kw">get_con</span>()</div>
+<div class="sourceLine" id="cb2-16" data-line-number="16">files &lt;-<span class="st"> </span><span class="kw">list.files</span>(<span class="kw">file.path</span>(root.dir, <span class="st">&quot;1_data/1_2_processed_data&quot;</span>),</div>
+<div class="sourceLine" id="cb2-17" data-line-number="17">                    <span class="dt">full.names =</span> <span class="ot">TRUE</span>)</div>
+<div class="sourceLine" id="cb2-18" data-line-number="18">then &lt;-<span class="st"> </span><span class="kw">Sys.time</span>()</div>
+<div class="sourceLine" id="cb2-19" data-line-number="19"><span class="kw">lapply</span>(files, <span class="cf">function</span>(file){</div>
+<div class="sourceLine" id="cb2-20" data-line-number="20">  df &lt;-<span class="st"> </span>feather<span class="op">::</span><span class="kw">read_feather</span>(file)</div>
+<div class="sourceLine" id="cb2-21" data-line-number="21">  tablename &lt;-<span class="st"> </span><span class="kw">substring</span>(<span class="kw">basename</span>(tools<span class="op">::</span><span class="kw">file_path_sans_ext</span>(file)), <span class="dv">5</span>)</div>
+<div class="sourceLine" id="cb2-22" data-line-number="22"></div>
+<div class="sourceLine" id="cb2-23" data-line-number="23">  <span class="co"># Dispatch appropriate modification procedure depending on the tablename</span></div>
+<div class="sourceLine" id="cb2-24" data-line-number="24">  df &lt;-<span class="st"> </span><span class="kw">modify_df</span>(tablename, df)</div>
+<div class="sourceLine" id="cb2-25" data-line-number="25"></div>
+<div class="sourceLine" id="cb2-26" data-line-number="26">  <span class="kw">dbWriteTable</span>(con, tablename, df, <span class="dt">append =</span> <span class="ot">TRUE</span>, <span class="dt">row.names =</span> <span class="ot">FALSE</span>)</div>
+<div class="sourceLine" id="cb2-27" data-line-number="27">})</div></code></pre>
+<p>RPostgreSQL does not support “time” db data type. <a href="https://github.com/tomoakin/RPostgreSQL/blob/f93cb17cf584d57ced5045a46d16d2bfe05a2769/RPostgreSQL/R/PostgreSQLSupport.R#L717">Uploads POSIXct as “timestamp with time zone”</a> so we need to strip date and timezone</p>
 <pre class="sourceCode r" id="cb3"><code class="sourceCode r"><div class="sourceLine" id="cb3-1" data-line-number="1"><span class="kw">dbSendQuery</span>(con, <span class="kw">paste</span>(<span class="st">&#39;ALTER TABLE &quot;VehicleJourneys&quot;&#39;</span>,</div>
 <div class="sourceLine" id="cb3-2" data-line-number="2">                       <span class="st">&#39;ALTER COLUMN &quot;DepartureTime&quot; TYPE time(6) USING &quot;DepartureTime&quot;::time(6);&#39;</span></div>
 <div class="sourceLine" id="cb3-3" data-line-number="3">                       ))</div>

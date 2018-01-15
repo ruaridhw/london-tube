@@ -48,38 +48,38 @@ pre.numberSource div.sourceLine::before, .numberSource a.sourceLine::before
     -ms-user-select: none; user-select: none;
     padding: 0 4px; width: 4em; }
 pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; color: #aaaaaa;  padding-left: 4px; }
+pre, code { background-color: #f8f8f8; }
 @media screen {
 a.sourceLine::before { text-decoration: underline; color: initial; }
 }
-code span.kw { color: #007020; font-weight: bold; } /* Keyword */
-code span.dt { color: #902000; } /* DataType */
-code span.dv { color: #40a070; } /* DecVal */
-code span.bn { color: #40a070; } /* BaseN */
-code span.fl { color: #40a070; } /* Float */
-code span.ch { color: #4070a0; } /* Char */
-code span.st { color: #4070a0; } /* String */
-code span.co { color: #60a0b0; font-style: italic; } /* Comment */
-code span.ot { color: #007020; } /* Other */
-code span.al { color: #ff0000; font-weight: bold; } /* Alert */
-code span.fu { color: #06287e; } /* Function */
-code span.er { color: #ff0000; font-weight: bold; } /* Error */
-code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
-code span.cn { color: #880000; } /* Constant */
-code span.sc { color: #4070a0; } /* SpecialChar */
-code span.vs { color: #4070a0; } /* VerbatimString */
-code span.ss { color: #bb6688; } /* SpecialString */
+code span.kw { color: #204a87; font-weight: bold; } /* Keyword */
+code span.dt { color: #204a87; } /* DataType */
+code span.dv { color: #0000cf; } /* DecVal */
+code span.bn { color: #0000cf; } /* BaseN */
+code span.fl { color: #0000cf; } /* Float */
+code span.ch { color: #4e9a06; } /* Char */
+code span.st { color: #4e9a06; } /* String */
+code span.co { color: #8f5902; font-style: italic; } /* Comment */
+code span.ot { color: #8f5902; } /* Other */
+code span.al { color: #ef2929; } /* Alert */
+code span.fu { color: #000000; } /* Function */
+code span.er { color: #a40000; font-weight: bold; } /* Error */
+code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warning */
+code span.cn { color: #000000; } /* Constant */
+code span.sc { color: #000000; } /* SpecialChar */
+code span.vs { color: #4e9a06; } /* VerbatimString */
+code span.ss { color: #4e9a06; } /* SpecialString */
 code span.im { } /* Import */
-code span.va { color: #19177c; } /* Variable */
-code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-code span.op { color: #666666; } /* Operator */
-code span.bu { } /* BuiltIn */
+code span.va { color: #000000; } /* Variable */
+code span.cf { color: #204a87; font-weight: bold; } /* ControlFlow */
+code span.op { color: #ce5c00; font-weight: bold; } /* Operator */
+code span.pp { color: #8f5902; font-style: italic; } /* Preprocessor */
 code span.ex { } /* Extension */
-code span.pp { color: #bc7a00; } /* Preprocessor */
-code span.at { color: #7d9029; } /* Attribute */
-code span.do { color: #ba2121; font-style: italic; } /* Documentation */
-code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.at { color: #c4a000; } /* Attribute */
+code span.do { color: #8f5902; font-weight: bold; font-style: italic; } /* Documentation */
+code span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
+code span.cv { color: #8f5902; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Information */
 </style>
 <style type="text/css">
   pre:not([class]) {
@@ -340,6 +340,9 @@ div.tocify {
   <ul class="dropdown-menu" role="menu">
     <li class="dropdown-header">R</li>
     <li>
+      <a href="GetData.html">Download Data</a>
+    </li>
+    <li>
       <a href="GetTablesFromXPaths.html">Scraping</a>
     </li>
     <li>
@@ -372,6 +375,11 @@ div.tocify {
     </li>
     <li>
       <a href="DaysOfWeekGroups.html">Days of Week Groups</a>
+    </li>
+    <li class="divider"></li>
+    <li class="dropdown-header">Workflow</li>
+    <li>
+      <a href="PrepareData.html">Prepare Data</a>
     </li>
   </ul>
 </li>
@@ -408,34 +416,36 @@ div.tocify {
 <pre class="sourceCode r" id="cb2"><code class="sourceCode r"><div class="sourceLine" id="cb2-1" data-line-number="1"><span class="kw">library</span>(rgdal)</div>
 <div class="sourceLine" id="cb2-2" data-line-number="2">modify_StopPoints &lt;-<span class="st"> </span><span class="cf">function</span>(df){</div>
 <div class="sourceLine" id="cb2-3" data-line-number="3">  <span class="co"># Define proj4 coordinate systems</span></div>
-<div class="sourceLine" id="cb2-4" data-line-number="4">  bng =<span class="st"> &quot;+init=epsg:27700&quot;</span></div>
-<div class="sourceLine" id="cb2-5" data-line-number="5">  latlon =<span class="st"> &quot;+proj=longlat +datum=WGS84&quot;</span></div>
+<div class="sourceLine" id="cb2-4" data-line-number="4">  bng &lt;-<span class="st"> &quot;+init=epsg:27700&quot;</span></div>
+<div class="sourceLine" id="cb2-5" data-line-number="5">  latlon &lt;-<span class="st"> &quot;+proj=longlat +datum=WGS84&quot;</span></div>
 <div class="sourceLine" id="cb2-6" data-line-number="6"></div>
 <div class="sourceLine" id="cb2-7" data-line-number="7">  <span class="co"># Create spatial object using BNG coordinates</span></div>
 <div class="sourceLine" id="cb2-8" data-line-number="8">  coord.bng &lt;-</div>
 <div class="sourceLine" id="cb2-9" data-line-number="9"><span class="st">    </span><span class="kw">with</span>(df,</div>
-<div class="sourceLine" id="cb2-10" data-line-number="10">         <span class="kw">SpatialPointsDataFrame</span>(<span class="kw">cbind</span>(Place_Location_Easting, Place_Location_Northing) <span class="op">%&gt;%</span></div>
-<div class="sourceLine" id="cb2-11" data-line-number="11"><span class="st">                                  </span><span class="kw">as.integer</span>() <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">matrix</span>(<span class="dt">ncol =</span> <span class="dv">2</span>),</div>
-<div class="sourceLine" id="cb2-12" data-line-number="12">                                <span class="dt">data =</span> <span class="kw">tibble</span>(AtcoCode,</div>
-<div class="sourceLine" id="cb2-13" data-line-number="13">                                              Descriptor_CommonName,</div>
-<div class="sourceLine" id="cb2-14" data-line-number="14">                                              Place_NptgLocalityRef),</div>
-<div class="sourceLine" id="cb2-15" data-line-number="15">                                <span class="dt">proj4string =</span> <span class="kw">CRS</span>(bng)))</div>
-<div class="sourceLine" id="cb2-16" data-line-number="16"></div>
-<div class="sourceLine" id="cb2-17" data-line-number="17">  <span class="co"># Cast as latlon coordinates</span></div>
-<div class="sourceLine" id="cb2-18" data-line-number="18">  coord.latlon &lt;-<span class="st"> </span><span class="kw">spTransform</span>(coord.bng, <span class="kw">CRS</span>(latlon))</div>
-<div class="sourceLine" id="cb2-19" data-line-number="19"></div>
-<div class="sourceLine" id="cb2-20" data-line-number="20">  <span class="co"># Replace dataframe</span></div>
-<div class="sourceLine" id="cb2-21" data-line-number="21">  df &lt;-<span class="st"> </span><span class="kw">as_tibble</span>(coord.latlon)</div>
-<div class="sourceLine" id="cb2-22" data-line-number="22">  <span class="kw">names</span>(df) &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;AtcoCode&quot;</span>,<span class="st">&quot;CommonName&quot;</span>,<span class="st">&quot;NptgLocalityRef&quot;</span>,<span class="st">&quot;Longitude&quot;</span>,<span class="st">&quot;Latitude&quot;</span>)</div>
-<div class="sourceLine" id="cb2-23" data-line-number="23">  df</div>
-<div class="sourceLine" id="cb2-24" data-line-number="24">}</div></code></pre>
+<div class="sourceLine" id="cb2-10" data-line-number="10">         <span class="kw">SpatialPointsDataFrame</span>(</div>
+<div class="sourceLine" id="cb2-11" data-line-number="11">           <span class="kw">cbind</span>(Place_Location_Easting, Place_Location_Northing) <span class="op">%&gt;%</span></div>
+<div class="sourceLine" id="cb2-12" data-line-number="12"><span class="st">             </span><span class="kw">as.integer</span>() <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">matrix</span>(<span class="dt">ncol =</span> <span class="dv">2</span>),</div>
+<div class="sourceLine" id="cb2-13" data-line-number="13">           <span class="dt">data =</span> <span class="kw">tibble</span>(AtcoCode,</div>
+<div class="sourceLine" id="cb2-14" data-line-number="14">                         Descriptor_CommonName,</div>
+<div class="sourceLine" id="cb2-15" data-line-number="15">                         Place_NptgLocalityRef),</div>
+<div class="sourceLine" id="cb2-16" data-line-number="16">           <span class="dt">proj4string =</span> <span class="kw">CRS</span>(bng)))</div>
+<div class="sourceLine" id="cb2-17" data-line-number="17"></div>
+<div class="sourceLine" id="cb2-18" data-line-number="18">  <span class="co"># Cast as latlon coordinates</span></div>
+<div class="sourceLine" id="cb2-19" data-line-number="19">  coord.latlon &lt;-<span class="st"> </span><span class="kw">spTransform</span>(coord.bng, <span class="kw">CRS</span>(latlon))</div>
+<div class="sourceLine" id="cb2-20" data-line-number="20"></div>
+<div class="sourceLine" id="cb2-21" data-line-number="21">  <span class="co"># Replace dataframe</span></div>
+<div class="sourceLine" id="cb2-22" data-line-number="22">  df &lt;-<span class="st"> </span><span class="kw">as_tibble</span>(coord.latlon)</div>
+<div class="sourceLine" id="cb2-23" data-line-number="23">  <span class="kw">names</span>(df) &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;AtcoCode&quot;</span>,<span class="st">&quot;CommonName&quot;</span>,<span class="st">&quot;NptgLocalityRef&quot;</span>,<span class="st">&quot;Longitude&quot;</span>,<span class="st">&quot;Latitude&quot;</span>)</div>
+<div class="sourceLine" id="cb2-24" data-line-number="24">  df</div>
+<div class="sourceLine" id="cb2-25" data-line-number="25">}</div></code></pre>
 <pre class="sourceCode r" id="cb3"><code class="sourceCode r"><div class="sourceLine" id="cb3-1" data-line-number="1">modify_VehicleJourneys &lt;-<span class="st"> </span><span class="cf">function</span>(df){</div>
 <div class="sourceLine" id="cb3-2" data-line-number="2">  <span class="kw">within</span>(df, {</div>
-<div class="sourceLine" id="cb3-3" data-line-number="3">    DepartureTime <span class="op">%&lt;&gt;%</span><span class="st"> </span><span class="kw">as.POSIXct</span>(<span class="dt">format=</span><span class="st">&quot;%T&quot;</span>)</div>
+<div class="sourceLine" id="cb3-3" data-line-number="3">    DepartureTime <span class="op">%&lt;&gt;%</span><span class="st"> </span><span class="kw">as.POSIXct</span>(<span class="dt">format =</span> <span class="st">&quot;%T&quot;</span>)</div>
 <div class="sourceLine" id="cb3-4" data-line-number="4">    <span class="co"># Extract number of minutes since midnight from DepartureTime</span></div>
-<div class="sourceLine" id="cb3-5" data-line-number="5">    DepartureMins &lt;-<span class="st"> </span>DepartureTime <span class="op">%&gt;%</span><span class="st"> </span>{lubridate<span class="op">::</span><span class="kw">minute</span>(.) <span class="op">+</span><span class="st"> </span><span class="dv">60</span> <span class="op">*</span><span class="st"> </span>lubridate<span class="op">::</span><span class="kw">hour</span>(.)}</div>
-<div class="sourceLine" id="cb3-6" data-line-number="6">  })</div>
-<div class="sourceLine" id="cb3-7" data-line-number="7">}</div></code></pre>
+<div class="sourceLine" id="cb3-5" data-line-number="5">    DepartureMins &lt;-<span class="st"> </span>DepartureTime <span class="op">%&gt;%</span></div>
+<div class="sourceLine" id="cb3-6" data-line-number="6"><span class="st">      </span>{lubridate<span class="op">::</span><span class="kw">minute</span>(.) <span class="op">+</span><span class="st"> </span><span class="dv">60</span> <span class="op">*</span><span class="st"> </span>lubridate<span class="op">::</span><span class="kw">hour</span>(.)}</div>
+<div class="sourceLine" id="cb3-7" data-line-number="7">  })</div>
+<div class="sourceLine" id="cb3-8" data-line-number="8">}</div></code></pre>
 <pre class="sourceCode r" id="cb4"><code class="sourceCode r"><div class="sourceLine" id="cb4-1" data-line-number="1">modify_JourneyPatternTimingLinks &lt;-<span class="st"> </span><span class="cf">function</span>(df){</div>
 <div class="sourceLine" id="cb4-2" data-line-number="2">  <span class="kw">within</span>(df, {</div>
 <div class="sourceLine" id="cb4-3" data-line-number="3">    From_SequenceNumber <span class="op">%&lt;&gt;%</span><span class="st"> </span>as.integer</div>
@@ -459,11 +469,13 @@ div.tocify {
 <div class="sourceLine" id="cb6-6" data-line-number="6">}</div></code></pre>
 <p>Convenience dispatch function</p>
 <pre class="sourceCode r" id="cb7"><code class="sourceCode r"><div class="sourceLine" id="cb7-1" data-line-number="1">modify_df &lt;-<span class="st"> </span><span class="cf">function</span>(tablename, df){</div>
-<div class="sourceLine" id="cb7-2" data-line-number="2">  <span class="cf">if</span>(tablename <span class="op">%in%</span><span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;StopPoints&quot;</span>, <span class="st">&quot;VehicleJourneys&quot;</span>, <span class="st">&quot;JourneyPatternTimingLinks&quot;</span>, <span class="st">&quot;RouteLinks&quot;</span>, <span class="st">&quot;Services&quot;</span>)) {</div>
-<div class="sourceLine" id="cb7-3" data-line-number="3">    df <span class="op">%&lt;&gt;%</span><span class="st"> </span>list <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">do.call</span>(<span class="dt">what =</span> <span class="kw">paste0</span>(<span class="st">&quot;modify_&quot;</span>, tablename))</div>
-<div class="sourceLine" id="cb7-4" data-line-number="4">  }</div>
-<div class="sourceLine" id="cb7-5" data-line-number="5">  df</div>
-<div class="sourceLine" id="cb7-6" data-line-number="6">}</div></code></pre>
+<div class="sourceLine" id="cb7-2" data-line-number="2">  tables_to_modify &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;StopPoints&quot;</span>, <span class="st">&quot;VehicleJourneys&quot;</span>,</div>
+<div class="sourceLine" id="cb7-3" data-line-number="3">                        <span class="st">&quot;JourneyPatternTimingLinks&quot;</span>, <span class="st">&quot;RouteLinks&quot;</span>, <span class="st">&quot;Services&quot;</span>)</div>
+<div class="sourceLine" id="cb7-4" data-line-number="4">  <span class="cf">if</span> (tablename <span class="op">%in%</span><span class="st"> </span>tables_to_modify) {</div>
+<div class="sourceLine" id="cb7-5" data-line-number="5">    df <span class="op">%&lt;&gt;%</span><span class="st"> </span>list <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">do.call</span>(<span class="dt">what =</span> <span class="kw">paste0</span>(<span class="st">&quot;modify_&quot;</span>, tablename))</div>
+<div class="sourceLine" id="cb7-6" data-line-number="6">  }</div>
+<div class="sourceLine" id="cb7-7" data-line-number="7">  df</div>
+<div class="sourceLine" id="cb7-8" data-line-number="8">}</div></code></pre>
 </div>
 
 <p>Copyright &copy; Ruaridh Williamson 2017</p>

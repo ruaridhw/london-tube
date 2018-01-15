@@ -29,6 +29,65 @@
 <link href="site_libs/font-awesome-4.5.0/css/font-awesome.min.css" rel="stylesheet" />
 
 
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+div.sourceLine, a.sourceLine { display: inline-block; min-height: 1.25em; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; }
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+div.sourceLine, a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource div.sourceLine, .numberSource a.sourceLine
+  { position: relative; }
+pre.numberSource div.sourceLine::before, .numberSource a.sourceLine::before
+  { content: attr(data-line-number);
+    position: absolute; left: -5em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em; }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; color: #aaaaaa;  padding-left: 4px; }
+pre, code { background-color: #f8f8f8; }
+@media screen {
+a.sourceLine::before { text-decoration: underline; color: initial; }
+}
+code span.kw { color: #204a87; font-weight: bold; } /* Keyword */
+code span.dt { color: #204a87; } /* DataType */
+code span.dv { color: #0000cf; } /* DecVal */
+code span.bn { color: #0000cf; } /* BaseN */
+code span.fl { color: #0000cf; } /* Float */
+code span.ch { color: #4e9a06; } /* Char */
+code span.st { color: #4e9a06; } /* String */
+code span.co { color: #8f5902; font-style: italic; } /* Comment */
+code span.ot { color: #8f5902; } /* Other */
+code span.al { color: #ef2929; } /* Alert */
+code span.fu { color: #000000; } /* Function */
+code span.er { color: #a40000; font-weight: bold; } /* Error */
+code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warning */
+code span.cn { color: #000000; } /* Constant */
+code span.sc { color: #000000; } /* SpecialChar */
+code span.vs { color: #4e9a06; } /* VerbatimString */
+code span.ss { color: #4e9a06; } /* SpecialString */
+code span.im { } /* Import */
+code span.va { color: #000000; } /* Variable */
+code span.cf { color: #204a87; font-weight: bold; } /* ControlFlow */
+code span.op { color: #ce5c00; font-weight: bold; } /* Operator */
+code span.pp { color: #8f5902; font-style: italic; } /* Preprocessor */
+code span.ex { } /* Extension */
+code span.at { color: #c4a000; } /* Attribute */
+code span.do { color: #8f5902; font-weight: bold; font-style: italic; } /* Documentation */
+code span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
+code span.cv { color: #8f5902; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Information */
+</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
 
 
 <style type="text/css">
@@ -283,6 +342,9 @@ div.tocify {
   <ul class="dropdown-menu" role="menu">
     <li class="dropdown-header">R</li>
     <li>
+      <a href="GetData.html">Download Data</a>
+    </li>
+    <li>
       <a href="GetTablesFromXPaths.html">Scraping</a>
     </li>
     <li>
@@ -316,6 +378,11 @@ div.tocify {
     <li>
       <a href="DaysOfWeekGroups.html">Days of Week Groups</a>
     </li>
+    <li class="divider"></li>
+    <li class="dropdown-header">Workflow</li>
+    <li>
+      <a href="PrepareData.html">Prepare Data</a>
+    </li>
   </ul>
 </li>
       </ul>
@@ -341,29 +408,44 @@ div.tocify {
 </div>
 
 
-<div id="welcome" class="section level1">
-<h1>Welcome</h1>
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
 <p>Transport for London’s Open Data repository was recently valued by Deloitte as providing up to <a href="https://tfl.gov.uk/info-for/media/press-releases/2017/october/tfl-s-free-open-data-boosts-london-s-economy">£130mil of economic benefits</a> for the City of London by allowing 600 third-party transport apps access to real-time transit information via a common Application Programming Interface.</p>
-<p>This project is split into two parts which tackle various analytical methods and visualisations applied to a segment of this API; network timetabling data.</p>
+<p>This project is split into two parts which tackle various analytical methods and visualisations applied to a segment of this API; network timetable data.</p>
 <p>The dataset being explored is a live feed of the Transport for London network timetables. As described on the TfL website:</p>
 <blockquote>
 <p>The Journey Planner timetable feed contains up-to-date standard timetables for London Underground, bus, DLR, TfL Rail and river services. The timetables are updated every seven days.</p>
 </blockquote>
 <p>The dataset is freely available and is bound by the <a href="https://tfl.gov.uk/corporate/terms-and-conditions/transport-data-service">TfL Open Data License</a>.</p>
-<div id="part-one" class="section level2">
-<h2>Part One</h2>
-<p>Prior to any form of analysis, we need a structured, rectangular dataset. The first part of the project involves building a reproducible workflow for refreshing the timetable API feed which is updated on a weekly basis. It starts with examining the structure of the data source before extracting all of the relevant data into a “tidy” and normalised format ready for pushing to a PostgreSQL database for further analysis. This notebook is written in R for the data manipulation and PostgreSQL for in-database transformation.</p>
-<p>For illustration purposes, only London Underground timetables are extracted and processed however the methods presented here extend to any tube, train, bus, ferry or tram timetable across Great Britain as the extraction process is built around a generic XML schema used by the Department of Transport.</p>
 </div>
-<div id="part-two" class="section level2">
-<h2>Part Two</h2>
+<div id="part-one-managing-data" class="section level1">
+<h1>Part One: Managing Data</h1>
+<p>For the simplest means of analysis we need a structured, rectangular dataset. The first part of the project involves building a reproducible workflow for refreshing the timetable API feed which is updated on a weekly basis. It starts with examining the structure of the data source before extracting all of the relevant data into a “tidy” and normalised format, adding any additional variables and typecasting extracted information ready for pushing to a PostgreSQL database for further analysis. This notebook is written in R for the data manipulation and PostgreSQL for in-database transformation.</p>
+<p>For the purposes of this project, only London Underground timetables are extracted and processed however the methods presented here extend to any <a href="https://data.gov.uk/dataset/national-coach-services">coach</a>, <a href="https://data.gov.uk/dataset/traveline-national-dataset">bus, light rail, ferry or tram timetable</a> across Great Britain as the extraction process is generalised for the <a href="https://www.gov.uk/government/collections/transxchange">generic TransXChange XML schema</a> used by the UK Department for Transport.</p>
+</div>
+<div id="part-two-visualising-data" class="section level1">
+<h1>Part Two: Visualising Data</h1>
 <p>Once the data has been extracted, cleaned and normalised, the second part looks at different ways to visualise network timetable data and apply journey planner algorithms to calculate the fastest routes to get across London. Specifically, the notebook compares the depiction of the famous London Underground map with a visualisation of the tube lines and stations in reality and uses this plot to illustrate the movement of train vehicles over time through spatiotemporal animation.</p>
-<p>As with any data science project, the vast majority of the time is spent performing tasks from Part One however equal weight has been given to each in the resulting notebooks in terms of content.</p>
+<p>As with any data science project, the vast majority of time is spent performing tasks from Part One however roughly equal weight has been given to each of the resulting notebooks in terms of content.</p>
 </div>
-<div id="context" class="section level2">
-<h2>Context</h2>
+<div id="reproducibility" class="section level1">
+<h1>Reproducibility</h1>
+<p>All of the analysis presented aims to be fully reproducible with the help of:</p>
+<ol style="list-style-type: decimal">
+<li><a href="https://hub.docker.com/r/ruaridhw/london-tube/">Published Docker container</a> providing all of the necessary R and Python packages pre-installed against an Anaconda3 image. The download is roughly 2GB due to the size of the full conda distribution.</li>
+<li>Snapshot of the data feed API as at the time of analysis</li>
+</ol>
+<p>To run the container ensure Docker is installed and call the following from a Terminal with this repository as the current working directory.</p>
+<pre class="sourceCode bash" id="cb1"><code class="sourceCode bash"><div class="sourceLine" id="cb1-1" data-line-number="1"><span class="ex">docker</span> run -v <span class="st">&quot;</span><span class="va">$(</span><span class="bu">pwd</span><span class="va">)</span><span class="st">&quot;</span>:/home/london-tube -p 8888:8888 -it ruaridhw/london-tube:latest</div></code></pre>
+<p>The container will automatically download from Docker Hub and mount in the current directory. To access JupyterLab go to <a href="http://localhost:8888" class="uri">http://localhost:8888</a> and login with the token shown by the container and choose “Clear Workspace”.</p>
+<p>For an extract of the API feed as at 12th December 2017 used in this project simply switch Git branches to <a href="https://github.com/ruaridhw/london-tube/tree/data_and_mp4_files/1_data">data_and_mp4_files</a></p>
+<pre class="sourceCode bash" id="cb2"><code class="sourceCode bash"><div class="sourceLine" id="cb2-1" data-line-number="1"><span class="fu">git</span> checkout data_and_mp4_files</div></code></pre>
+<p>or <a href="https://github.com/ruaridhw/london-tube/archive/data_and_mp4_files.zip">download the branch zip file from GitHub</a>.</p>
+</div>
+<div id="context" class="section level1">
+<h1>Context</h1>
 <p>This project was completed in partial fulfilment of a course for the MSc Analytics and Operations Research at the London School of Economics. Any analysis presented here was designed foremost to align to the course principles and methodologies covered.</p>
-<p>The requirements of the course are to provide the analysis in the form of exploratory notebooks (Part One and Two respectively) however in the interests of full reproducibility of the project all additional analysis files are included with a script outlining the overall workflow.</p>
+<p>The requirements of the capstone are to summarise the analysis in the form of exploratory notebooks (Part One and Two) however in the interests of full reproducibility of the project all additional analysis files are included with a shell script outlining a reproducible workflow.</p>
 <p>The course content covered in Part One is</p>
 <ul>
 <li>Using data from the Internet, parsing XML web data (Week 4)</li>
@@ -373,7 +455,7 @@ div.tocify {
 </ul>
 <p>Part Two looks at</p>
 <ul>
-<li>Exploratory data visualisation using Matplotlib (Weeks 7 and 8)</li>
+<li>Data visualisation using Matplotlib (Weeks 7 and 8)</li>
 <li>Graph algorithms and visualisation (Week 11)</li>
 <li>Querying RESTful APIs and parsing JSON data (Weeks 4 and 5)</li>
 </ul>
@@ -382,7 +464,6 @@ div.tocify {
 <li>Version control, website publishing and GitHub pages</li>
 </ul>
 <p>is inherent in the publication of this website.</p>
-</div>
 </div>
 
 <p>Copyright &copy; Ruaridh Williamson 2017</p>

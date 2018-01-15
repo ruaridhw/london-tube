@@ -11,7 +11,7 @@
 
 
 
-<title>SQLTables.utf8</title>
+<title>GetData.utf8</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -404,61 +404,31 @@ div.tocify {
 </div>
 
 
-<div id="sql-tables" class="section level1">
-<h1>SQL Tables</h1>
-<p>This script is part of the R extraction process and follows on from <a href="GetTablesFromXPaths.html">GetTablesFromXPaths.R</a> and <a href="VariableCreation.html">VariableCreation.R</a> by providing the functions to push the resulting <code>tfl</code> object to a PostgreSQL database.</p>
-<p>This is in contrast to the (significantly more efficient) Python extraction script <a href="FeatherUpload.html">FeatherUpload.R</a> which follows on from <a href="XMLParsing.html">XMLParsing.py</a> and is used in <a href="PrepareData.html">PrepareData.sh</a>.</p>
-<p><a href="https://github.com/ruaridhw/london-tube/blob/master/2_analysis/r/SQLTables.R">Source code</a></p>
-<pre class="sourceCode bash" id="cb1"><code class="sourceCode bash"><div class="sourceLine" id="cb1-1" data-line-number="1"><span class="co"># docker run --name postgres_london_tube -p 5432:5432 -d -e POSTGRES_PASSWORD=mysecretpassword postgres:alpine</span></div></code></pre>
-<p>Define row uniqueness</p>
-<pre class="sourceCode r" id="cb2"><code class="sourceCode r"><div class="sourceLine" id="cb2-1" data-line-number="1">primarykeys &lt;-<span class="st"> </span><span class="kw">list</span>(</div>
-<div class="sourceLine" id="cb2-2" data-line-number="2">  <span class="dt">NptgLocalities =</span> <span class="st">&#39;&quot;NptgLocalityRef&quot;&#39;</span>,</div>
-<div class="sourceLine" id="cb2-3" data-line-number="3">  <span class="dt">StopPoints =</span> <span class="st">&#39;&quot;AtcoCode&quot;&#39;</span>,</div>
-<div class="sourceLine" id="cb2-4" data-line-number="4">  <span class="dt">RouteLinks =</span> <span class="st">&#39;&quot;RouteLinkID&quot;&#39;</span>,</div>
-<div class="sourceLine" id="cb2-5" data-line-number="5">  <span class="dt">Routes =</span> <span class="st">&#39;&quot;PrivateCode&quot;&#39;</span>,</div>
-<div class="sourceLine" id="cb2-6" data-line-number="6">  <span class="dt">JourneyPatternTimingLinks =</span> <span class="st">&#39;&quot;JourneyPatternTimingLinkID&quot;&#39;</span>,</div>
-<div class="sourceLine" id="cb2-7" data-line-number="7">  <span class="dt">Services =</span> <span class="st">&#39;&quot;ServiceCode&quot;&#39;</span>,</div>
-<div class="sourceLine" id="cb2-8" data-line-number="8">  <span class="dt">JourneyPatterns =</span> <span class="st">&#39;&quot;JourneyPatternID&quot;&#39;</span>,</div>
-<div class="sourceLine" id="cb2-9" data-line-number="9">  <span class="dt">VehicleJourneys =</span> <span class="st">&#39;&quot;VehicleJourneyCode&quot;&#39;</span></div>
-<div class="sourceLine" id="cb2-10" data-line-number="10">)</div></code></pre>
-<pre class="sourceCode r" id="cb3"><code class="sourceCode r"><div class="sourceLine" id="cb3-1" data-line-number="1"><span class="kw">library</span>(RPostgreSQL)</div>
-<div class="sourceLine" id="cb3-2" data-line-number="2">drv &lt;-<span class="st"> </span><span class="kw">dbDriver</span>(<span class="st">&quot;PostgreSQL&quot;</span>)</div>
-<div class="sourceLine" id="cb3-3" data-line-number="3">host &lt;-<span class="st"> &quot;localhost&quot;</span></div>
-<div class="sourceLine" id="cb3-4" data-line-number="4">user &lt;-<span class="st"> &quot;postgres&quot;</span></div>
-<div class="sourceLine" id="cb3-5" data-line-number="5">password &lt;-<span class="st"> &quot;mysecretpassword&quot;</span></div></code></pre>
-<pre class="sourceCode r" id="cb4"><code class="sourceCode r"><div class="sourceLine" id="cb4-1" data-line-number="1">con &lt;-<span class="st"> </span><span class="kw">dbConnect</span>(drv, <span class="dt">host =</span> host, <span class="dt">user =</span> user, <span class="dt">password =</span> password,</div>
-<div class="sourceLine" id="cb4-2" data-line-number="2">                 <span class="dt">dbname =</span> <span class="st">&quot;postgres&quot;</span>)</div>
-<div class="sourceLine" id="cb4-3" data-line-number="3"><span class="kw">dbSendQuery</span>(con, <span class="st">&quot;CREATE DATABASE londontube_r;&quot;</span>)</div>
-<div class="sourceLine" id="cb4-4" data-line-number="4"><span class="kw">dbDisconnect</span>(con)</div></code></pre>
-<p>Create connection function for later use</p>
-<pre class="sourceCode r" id="cb5"><code class="sourceCode r"><div class="sourceLine" id="cb5-1" data-line-number="1">get_con &lt;-<span class="st"> </span><span class="cf">function</span>() {</div>
-<div class="sourceLine" id="cb5-2" data-line-number="2">  <span class="kw">dbConnect</span>(drv,</div>
-<div class="sourceLine" id="cb5-3" data-line-number="3">            <span class="dt">host =</span> host, <span class="dt">user =</span> user, <span class="dt">password =</span> password,</div>
-<div class="sourceLine" id="cb5-4" data-line-number="4">            <span class="dt">dbname =</span> <span class="st">&quot;londontube_r&quot;</span>)</div>
-<div class="sourceLine" id="cb5-5" data-line-number="5">}</div></code></pre>
-<p>Setup “CREATE TABLE … INSERT INTO” template&quot;</p>
-<pre class="sourceCode r" id="cb6"><code class="sourceCode r"><div class="sourceLine" id="cb6-1" data-line-number="1">create_tables &lt;-<span class="st"> </span><span class="cf">function</span>(tablename, tabledata, primary_key_cols, con){</div>
-<div class="sourceLine" id="cb6-2" data-line-number="2">  <span class="co"># Insert data</span></div>
-<div class="sourceLine" id="cb6-3" data-line-number="3">  <span class="kw">dbWriteTable</span>(con, tablename, tabledata, <span class="dt">overwrite =</span> <span class="ot">TRUE</span>, <span class="dt">row.names =</span> <span class="ot">FALSE</span>)</div>
-<div class="sourceLine" id="cb6-4" data-line-number="4">  </div>
-<div class="sourceLine" id="cb6-5" data-line-number="5">  <span class="co"># Add Primary Keys</span></div>
-<div class="sourceLine" id="cb6-6" data-line-number="6">  query &lt;-<span class="st"> </span><span class="kw">sprintf</span>(</div>
-<div class="sourceLine" id="cb6-7" data-line-number="7">    <span class="st">&quot;ALTER TABLE %1$s</span></div>
-<div class="sourceLine" id="cb6-8" data-line-number="8"><span class="st">    ADD PRIMARY KEY (%2$s);&quot;</span>,</div>
-<div class="sourceLine" id="cb6-9" data-line-number="9">    tablename, <span class="co"># Current table name</span></div>
-<div class="sourceLine" id="cb6-10" data-line-number="10">    <span class="kw">paste</span>(primary_key_cols, <span class="dt">collapse =</span> <span class="st">&quot;, &quot;</span>) <span class="co"># PK columns</span></div>
-<div class="sourceLine" id="cb6-11" data-line-number="11">  )</div>
-<div class="sourceLine" id="cb6-12" data-line-number="12">  </div>
-<div class="sourceLine" id="cb6-13" data-line-number="13">  <span class="co"># Run queries</span></div>
-<div class="sourceLine" id="cb6-14" data-line-number="14">  <span class="kw">dbExecute</span>(con, query)</div>
-<div class="sourceLine" id="cb6-15" data-line-number="15">}</div>
-<div class="sourceLine" id="cb6-16" data-line-number="16"></div>
-<div class="sourceLine" id="cb6-17" data-line-number="17"><span class="co"># Build database with the same tablenames as input data</span></div>
-<div class="sourceLine" id="cb6-18" data-line-number="18">con &lt;-<span class="st"> </span><span class="kw">get_con</span>()</div>
-<div class="sourceLine" id="cb6-19" data-line-number="19">tablenames &lt;-<span class="st"> </span><span class="kw">tolower</span>(<span class="kw">names</span>(tfl))</div>
-<div class="sourceLine" id="cb6-20" data-line-number="20">table_creation &lt;-<span class="st"> </span>purrr<span class="op">::</span><span class="kw">pmap</span>(<span class="kw">list</span>(tablenames, tfl, primarykeys),</div>
-<div class="sourceLine" id="cb6-21" data-line-number="21">                              create_tables, con)</div>
-<div class="sourceLine" id="cb6-22" data-line-number="22"><span class="kw">dbDisconnect</span>(con)</div></code></pre>
+<div id="get-data" class="section level1">
+<h1>Get Data</h1>
+<p>Downloads the necessary data files from the TfL API.</p>
+<p>Relies on the local file <code>tfl-developer-passwords.R</code> having valid <code>app_id</code> and <code>app_key</code> TfL API credentials.</p>
+<p>Source code used in <a href="ManagingData.html">ManagingData.Rmd</a>. For full documentation and commentary see that report instead.</p>
+<p><a href="https://github.com/ruaridhw/london-tube/blob/master/2_analysis/r/GetData.R">Source code</a></p>
+<pre class="sourceCode r" id="cb1"><code class="sourceCode r"><div class="sourceLine" id="cb1-1" data-line-number="1"><span class="co"># Use paths relative to RStudio Project</span></div>
+<div class="sourceLine" id="cb1-2" data-line-number="2">root.dir &lt;-<span class="st"> </span>rprojroot<span class="op">::</span><span class="kw">find_rstudio_root_file</span>()</div>
+<div class="sourceLine" id="cb1-3" data-line-number="3"><span class="co"># Set where we want the extracted files to end up</span></div>
+<div class="sourceLine" id="cb1-4" data-line-number="4">data.dir &lt;-<span class="st"> </span><span class="kw">file.path</span>(root.dir, <span class="st">&quot;1_data/1_1_raw_data&quot;</span>)</div>
+<div class="sourceLine" id="cb1-5" data-line-number="5"><span class="kw">dir.create</span>(data.dir, <span class="dt">showWarnings =</span> <span class="ot">FALSE</span>)</div></code></pre>
+<pre class="sourceCode r" id="cb2"><code class="sourceCode r"><div class="sourceLine" id="cb2-1" data-line-number="1"><span class="co"># Load app_id and app_key variables from a local passwords file</span></div>
+<div class="sourceLine" id="cb2-2" data-line-number="2"><span class="kw">source</span>(<span class="kw">file.path</span>(root.dir, <span class="st">&quot;2_analysis/r/tfl-developer-passwords.R&quot;</span>))</div>
+<div class="sourceLine" id="cb2-3" data-line-number="3"><span class="kw">stopifnot</span>(<span class="kw">exists</span>(<span class="st">&quot;app_id&quot;</span>), <span class="kw">exists</span>(<span class="st">&quot;app_key&quot;</span>))</div>
+<div class="sourceLine" id="cb2-4" data-line-number="4">dataset_url &lt;-<span class="st"> &quot;http://data.tfl.gov.uk/tfl/syndication/feeds/journey-planner-timetables.zip&quot;</span></div>
+<div class="sourceLine" id="cb2-5" data-line-number="5">dataset_url &lt;-<span class="st"> </span><span class="kw">paste0</span>(dataset_url, <span class="st">&quot;?app_id=&quot;</span>, app_id, <span class="st">&quot;&amp;app_key=&quot;</span>, app_key)</div>
+<div class="sourceLine" id="cb2-6" data-line-number="6"><span class="kw">download.file</span>(dataset_url, <span class="kw">file.path</span>(data.dir, <span class="st">&quot;timetables.zip&quot;</span>))</div></code></pre>
+<pre class="sourceCode r" id="cb3"><code class="sourceCode r"><div class="sourceLine" id="cb3-1" data-line-number="1"><span class="kw">unzip</span>(<span class="kw">file.path</span>(data.dir, <span class="st">&quot;timetables.zip&quot;</span>),</div>
+<div class="sourceLine" id="cb3-2" data-line-number="2">      <span class="dt">exdir =</span> <span class="kw">file.path</span>(data.dir, <span class="st">&quot;timetables&quot;</span>))</div>
+<div class="sourceLine" id="cb3-3" data-line-number="3"><span class="kw">unzip</span>(<span class="kw">list.files</span>(<span class="kw">file.path</span>(data.dir, <span class="st">&quot;timetables&quot;</span>),</div>
+<div class="sourceLine" id="cb3-4" data-line-number="4">                 <span class="dt">pattern =</span> <span class="st">&quot;LULDLR&quot;</span>, <span class="dt">full.names =</span> <span class="ot">TRUE</span>),</div>
+<div class="sourceLine" id="cb3-5" data-line-number="5">      <span class="dt">exdir =</span> <span class="kw">file.path</span>(data.dir, <span class="st">&quot;/timetables/data&quot;</span>))</div></code></pre>
+<pre class="sourceCode r" id="cb4"><code class="sourceCode r"><div class="sourceLine" id="cb4-1" data-line-number="1">data.files &lt;-<span class="st"> </span><span class="kw">list.files</span>(<span class="kw">file.path</span>(data.dir, <span class="st">&quot;/timetables/data&quot;</span>),</div>
+<div class="sourceLine" id="cb4-2" data-line-number="2">                         <span class="dt">pattern =</span> <span class="st">&quot;tfl_1-[^.]+</span><span class="ch">\\</span><span class="st">.xml&quot;</span>, <span class="dt">full.names =</span> <span class="ot">TRUE</span>)</div>
+<div class="sourceLine" id="cb4-3" data-line-number="3"><span class="kw">head</span>(<span class="kw">basename</span>(data.files))</div></code></pre>
 </div>
 
 <p>Copyright &copy; Ruaridh Williamson 2017</p>

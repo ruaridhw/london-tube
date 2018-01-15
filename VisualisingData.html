@@ -14887,11 +14887,12 @@ YII=
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Journey-Planner-Algorithm">Journey Planner Algorithm<a class="anchor-link" href="#Journey-Planner-Algorithm">&#182;</a></h2><p>Eyeballing a geographically-accurate map of the network isn't <em>really</em> the best way to work out the fastest route from Paddington to Bond Street. The more accurate way would be to weight each edge of our network by the travel time between the two stations and then use a shortest path graph algorithm to find the sequence of edges from station A to station B with the smallest total weight (ie travel time).</p>
+<h2 id="Journey-Planner-Algorithm">Journey Planner Algorithm<a class="anchor-link" href="#Journey-Planner-Algorithm">&#182;</a></h2><p>This goal of this section is to compare a simple API call and parsing of JSON results (Week 5) to an example of sophisticated usage for the prepared timetable data from Part One with the help of the <a href="DeparturesBoard.html">Departures Board</a> query illustrating advanced SQL functionality.</p>
+<p>Eyeballing a geographically-accurate map of the network isn't <em>really</em> the best way to work out the fastest route from Paddington to Bond Street. The more accurate way would be to weight each edge of our network by the travel time between the two stations and then use a shortest path graph algorithm to find the sequence of edges from station A to station B with the smallest total weight (ie travel time).</p>
 <p>It's worth noting that despite the misleading name of "shortest path", since we don't really care how <em>far</em> we travel, we want to weight by time rather than distance to get to our destination the fastest way, not the shortest way.</p>
 <p>There is one more factor to consider though because modelling the shortest path this way assumes that there is a train ready and waiting to go the moment you want to leave and at every station at which you transfer. With the exception of the Central line in peak hour, this is almost never the case in any transportation network.</p>
 <p><strong>Formulation</strong></p>
-<p>Instead, we model the tube stations using a time-expanded graph network where each node represents a station-<em>event</em> rather than a station. In other words, there is a "Hyde Park Corner" node for every arrival and departure of every vehicle into and out of that station. When we lumped WaitTime in with RunTime to create JourneyTime, we simplified the problem to assume that the train's arrival and departure is instantaneous so there's no need to create <em>both</em> a departure <em>and</em> arrival node.</p>
+<p>We model the tube stations using a time-expanded graph network where each node represents a station-<em>event</em> rather than a station. In other words, there is a "Hyde Park Corner" node for every arrival and departure of every vehicle into and out of that station. When we lumped WaitTime in with RunTime to create JourneyTime, we simplified the problem to assume that the train's arrival and departure is instantaneous so there's no need to create <em>both</em> a departure <em>and</em> arrival node.</p>
 <p>We then we have two types of edges:</p>
 <ul>
 <li>Travel Edge: Represents the movement of a train from one station to the next</li>
@@ -15858,12 +15859,14 @@ and plot!</p>
 <div class="prompt input_prompt">In&nbsp;[31]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">convert_to_time</span><span class="p">(</span><span class="n">timedelta</span><span class="p">):</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">seconds_in_minute</span> <span class="o">=</span> <span class="mi">60</span>
+<span class="n">seconds_in_hour</span> <span class="o">=</span> <span class="mi">3600</span>
+<span class="k">def</span> <span class="nf">convert_to_time</span><span class="p">(</span><span class="n">timedelta</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Convert timedelta object to an (H,M,S) tuple</span>
+<span class="sd">        Convert timedelta &quot;seconds past midnight&quot; object to an (H,M,S) tuple</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">hours</span><span class="p">,</span> <span class="n">remainder</span> <span class="o">=</span> <span class="nb">divmod</span><span class="p">(</span><span class="n">timedelta</span><span class="o">.</span><span class="n">seconds</span><span class="p">,</span> <span class="mi">3600</span><span class="p">)</span>
-    <span class="n">minutes</span><span class="p">,</span> <span class="n">seconds</span> <span class="o">=</span> <span class="nb">divmod</span><span class="p">(</span><span class="n">remainder</span><span class="p">,</span> <span class="mi">60</span><span class="p">)</span>
+    <span class="n">hours</span><span class="p">,</span> <span class="n">remainder</span> <span class="o">=</span> <span class="nb">divmod</span><span class="p">(</span><span class="n">timedelta</span><span class="o">.</span><span class="n">seconds</span><span class="p">,</span> <span class="n">seconds_in_hour</span><span class="p">)</span>
+    <span class="n">minutes</span><span class="p">,</span> <span class="n">seconds</span> <span class="o">=</span> <span class="nb">divmod</span><span class="p">(</span><span class="n">remainder</span><span class="p">,</span> <span class="n">seconds_in_minute</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">hours</span><span class="p">,</span> <span class="n">minutes</span><span class="p">,</span> <span class="n">seconds</span>
 
 <span class="k">def</span> <span class="nf">create_train_timetable_animation</span><span class="p">(</span><span class="n">start_time</span><span class="p">,</span> <span class="n">end_time</span><span class="p">):</span>
@@ -15908,7 +15911,6 @@ and plot!</p>
         <span class="n">current_time</span><span class="o">.</span><span class="n">set_text</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">scat</span><span class="p">,</span><span class="n">current_time</span>
 
-    <span class="n">seconds_in_minute</span> <span class="o">=</span> <span class="mi">60</span>
     <span class="n">minutes_to_animate</span> <span class="o">=</span> <span class="n">end_time</span> <span class="o">-</span> <span class="n">start_time</span>
     <span class="k">def</span> <span class="nf">animate</span><span class="p">(</span><span class="n">i</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -16182,6 +16184,16 @@ anim_late.save(&#39;anim_late.mp4&#39;, writer=&#39;ffmpeg&#39;);
 </div>
 </div>
 
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>That concludes Part Two and this London Underground project!</p>
+<p>Although only a couple of uses for the data have been shown here, there are naturally infinitely more visualisations possible such as examining the network properties of the Underground; the betweeness centrality and page rank of each station, how vertex degree correlates with train arrival frequency or how the distribution of vehicles within the network at any one time varies throughout the course of the week.</p>
+
+</div>
+</div>
 </div>
     </div>
   </div>
