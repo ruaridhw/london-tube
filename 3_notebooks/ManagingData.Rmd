@@ -333,9 +333,6 @@ to which they each relate.
 
 ```{r required_xpaths}
 ```
-```{r print_required_xpaths}
-terminal_xpaths[unlist(required_xpaths)]
-```
 
 This way, when it comes to extracting the data, all of the information
 found under the 8th, 9th and 10th paths of `terminal_xpaths` will be

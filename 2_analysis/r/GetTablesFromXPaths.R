@@ -28,23 +28,30 @@ terminal_xpaths <- nodeset %>%
 #' Define subset of xpaths required.
 # ---- required_xpaths
 required_xpaths <- list(
-   NptgLocalities = 1
-  ,StopPoints = 2:5
-  ,RouteLinks = 8:10
-  ,Routes = 11
-  ,JourneyPatternTimingLinks = 12:14
-  ,Services = 16
-  ,JourneyPatterns = 24
-  ,VehicleJourneys = 26
+   NptgLocalities = "/TransXChange/NptgLocalities/AnnotatedNptgLocalityRef"
+  ,StopPoints = c("/TransXChange/StopPoints/StopPoint",
+                  "/TransXChange/StopPoints/StopPoint/Descriptor",
+                  "/TransXChange/StopPoints/StopPoint/Place",
+                  "/TransXChange/StopPoints/StopPoint/Place/Location")
+  ,RouteLinks = c("/TransXChange/RouteSections/RouteSection/RouteLink",
+                  "/TransXChange/RouteSections/RouteSection/RouteLink/From",
+                  "/TransXChange/RouteSections/RouteSection/RouteLink/To")
+  ,Routes = "/TransXChange/Routes/Route"
+  ,JourneyPatternTimingLinks = c("/TransXChange/JourneyPatternSections/JourneyPatternSection/JourneyPatternTimingLink",
+                                 "/TransXChange/JourneyPatternSections/JourneyPatternSection/JourneyPatternTimingLink/From",
+                                 "/TransXChange/JourneyPatternSections/JourneyPatternSection/JourneyPatternTimingLink/To")
+  ,Services = "/TransXChange/Services/Service"
+  ,JourneyPatterns = "/TransXChange/Services/Service/StandardService/JourneyPattern"
+  ,VehicleJourneys = "/TransXChange/VehicleJourneys/VehicleJourney"
 )
 # ---- 
 
 #' Extract the tables by grouping the results from the sets of xpaths
 # ---- build_tfl
 build_tfl <- function(doc, terminal_xpaths, required_terminal_xpaths) {
-  purrr::map(required_terminal_xpaths, function(xpath_idxs) {
-    # Subset the needed paths
-    terminal_xpaths[xpath_idxs] %>%
+  purrr::map(required_terminal_xpaths, function(xpaths) {
+    # Use the provided paths
+    xpaths %>%
       # Find all matches of each path
       lapply(xml2::xml_find_all, x = doc) %>%
       # Extract underlying data
