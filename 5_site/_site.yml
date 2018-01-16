@@ -5,9 +5,9 @@ navbar:
   left:
     - text: "Home"
       href: index.html
-    - text: "Managing Data"
+    - text: "Part One: Managing Data"
       href: ManagingData.html
-    - text: "Visualising Data"
+    - text: "Part Two: Visualising Data"
       href: VisualisingData.html
     - text: "Analysis"
       icon: fa-gear
@@ -15,17 +15,17 @@ navbar:
         - text: "R"
         - text: "Download Data"
           href: GetData.html
-        - text: "Scraping"
+        - text: "Extract Data"
           href: GetTablesFromXPaths.html
         - text: "Variable Creation"
           href: VariableCreation.html
-        - text: "SQL Upload"
+        - text: "Database Upload\n(R workflow)"
           href: SQLTables.html
-        - text: "Feather Upload"
+        - text: "Database Upload\n(Python workflow)"
           href: FeatherUpload.html
         - text: "---------"
         - text: "Python"
-        - text: "Scraping"
+        - text: "Extract Data"
           href: XMLParsing.html
         - text: "TfL Timetable Class"
           href: TfLTimetable.html
@@ -33,11 +33,11 @@ navbar:
           href: ShortestPath.html
         - text: "---------"
         - text: "SQL"
-        - text: "Inbound Graph"
+        - text: "Inbound Graph view"
           href: InboundGraph.html
-        - text: "Departure Board"
+        - text: "Departure Board function"
           href: DepartureBoard.html
-        - text: "Days of Week Groups"
+        - text: "Days of Week Groups table"
           href: DaysOfWeekGroups.html
         - text: "---------"
         - text: "Workflow"
@@ -51,6 +51,7 @@ output:
     theme: cerulean
     highlight: tango
     include:
+      in_header: header.html
       after_body: footer.html
     css: styles.css
     toc: true
