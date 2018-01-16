@@ -9,6 +9,16 @@
 <meta name="generator" content="pandoc" />
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-108468724-2"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-108468724-2');
+</script>
+
 <style type="text/css">
 @font-face {
 font-family: octicons-link;
@@ -629,9 +639,9 @@ body {
 <pre class="sourceCode r" id="cb4"><code class="sourceCode r"><div class="sourceLine" id="cb4-1" data-line-number="1">data.files &lt;-<span class="st"> </span><span class="kw">list.files</span>(<span class="kw">file.path</span>(data.dir, <span class="st">&quot;/timetables/data&quot;</span>),</div>
 <div class="sourceLine" id="cb4-2" data-line-number="2">                         <span class="dt">pattern =</span> <span class="st">&quot;tfl_1-[^.]+</span><span class="ch">\\</span><span class="st">.xml&quot;</span>, <span class="dt">full.names =</span> <span class="ot">TRUE</span>)</div>
 <div class="sourceLine" id="cb4-3" data-line-number="3"><span class="kw">head</span>(<span class="kw">basename</span>(data.files))</div></code></pre>
-<pre><code>## [1] &quot;tfl_1-BAK-_-y05-1462422.xml&quot; &quot;tfl_1-BAK-_-y05-1462611.xml&quot;
-## [3] &quot;tfl_1-BAK-_-y05-1462711.xml&quot; &quot;tfl_1-BAK-_-y05-1463122.xml&quot;
-## [5] &quot;tfl_1-BAK-_-y05-1463222.xml&quot; &quot;tfl_1-BAK-_-y05-1465129.xml&quot;
+<pre><code>## [1] &quot;tfl_1-BAK-_-y05-430200.xml&quot;  &quot;tfl_1-CEN-_-y05-1495234.xml&quot;
+## [3] &quot;tfl_1-CEN-_-y05-1495235.xml&quot; &quot;tfl_1-CEN-_-y05-1495236.xml&quot;
+## [5] &quot;tfl_1-CEN-_-y05-690544.xml&quot;  &quot;tfl_1-CIR-_-y05-465922.xml&quot;
 </code></pre>
 <p>The result is 600-800MB of XML files containing the most up-to-date timetable information for the London Underground and DLR services. The pattern of London Underground files we require are XML files that start with “tfl_1” as the files with other prefixes are ferry, DLR or TfL rail timetables.</p>
 <h1 id="data-exploration-and-transformation">Data Exploration and Transformation</h1>
@@ -644,14 +654,14 @@ body {
 <div class="sourceLine" id="cb6-3" data-line-number="3"><span class="st">  </span>xml2<span class="op">::</span><span class="kw">read_xml</span>()</div>
 <div class="sourceLine" id="cb6-4" data-line-number="4">doc</div></code></pre>
 <pre><code>## {xml_document}
-## &lt;TransXChange CreationDateTime=&quot;2017-12-11T16:29:29.2501241Z&quot; ModificationDateTime=&quot;2017-12-11T16:29:29.2501241Z&quot; Modification=&quot;new&quot; FileName=&quot;tfl_1-BAK-_-y05-1462422.xml&quot; RevisionNumber=&quot;3&quot; SchemaVersion=&quot;2.1&quot; lang=&quot;en&quot; schemaLocation=&quot;http://www.transxchange.org.uk/ http://www.transxchange.org.uk/schema/2.1/TransXChange_general.xsd&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xmlns=&quot;http://www.transxchange.org.uk/&quot;&gt;
+## &lt;TransXChange CreationDateTime=&quot;2018-01-09T11:32:22.9783722Z&quot; ModificationDateTime=&quot;2018-01-09T11:32:22.993972Z&quot; Modification=&quot;new&quot; FileName=&quot;tfl_1-BAK-_-y05-430200.xml&quot; RevisionNumber=&quot;3&quot; SchemaVersion=&quot;2.1&quot; lang=&quot;en&quot; schemaLocation=&quot;http://www.transxchange.org.uk/ http://www.transxchange.org.uk/schema/2.1/TransXChange_general.xsd&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xmlns=&quot;http://www.transxchange.org.uk/&quot;&gt;
 ## [1] &lt;NptgLocalities&gt;\n  &lt;AnnotatedNptgLocalityRef&gt;\n    &lt;NptgLocalityRef ...
 ## [2] &lt;StopPoints&gt;\n  &lt;StopPoint CreationDateTime=&quot;2013-08-29T00:00:00&quot;&gt;\n ...
-## [3] &lt;RouteSections&gt;\n  &lt;RouteSection id=&quot;RS_1-BAK-_-y05-1462422-O-1&quot;&gt;\n  ...
-## [4] &lt;Routes&gt;\n  &lt;Route id=&quot;R_1-BAK-_-y05-1462422-O-1&quot;&gt;\n    &lt;PrivateCode ...
+## [3] &lt;RouteSections&gt;\n  &lt;RouteSection id=&quot;RS_1-BAK-_-y05-430200-O-1&quot;&gt;\n   ...
+## [4] &lt;Routes&gt;\n  &lt;Route id=&quot;R_1-BAK-_-y05-430200-O-1&quot;&gt;\n    &lt;PrivateCode&gt; ...
 ## [5] &lt;JourneyPatternSections&gt;\n  &lt;JourneyPatternSection id=&quot;JPS_1-BAK-_-y ...
 ## [6] &lt;Operators&gt;\n  &lt;Operator id=&quot;OId_LUL&quot;&gt;\n    &lt;OperatorCode&gt;LUL&lt;/Opera ...
-## [7] &lt;Services&gt;\n  &lt;Service&gt;\n    &lt;ServiceCode&gt;1-BAK-_-y05-1462422&lt;/Servi ...
+## [7] &lt;Services&gt;\n  &lt;Service&gt;\n    &lt;ServiceCode&gt;1-BAK-_-y05-430200&lt;/Servic ...
 ## [8] &lt;VehicleJourneys&gt;\n  &lt;VehicleJourney&gt;\n    &lt;PrivateCode&gt;tfl-1-BAK-_- ...
 </code></pre>
 <p>This metadata contains two important pieces of information:</p>
@@ -722,17 +732,17 @@ body {
 ##   ..$ : chr &quot;852&quot;
 ##  $ Direction:List of 1
 ##   ..$ : chr &quot;outbound&quot;
-##  - attr(*, &quot;id&quot;)= chr &quot;RL_1-BAK-_-y05-1462422-O-1-1&quot;
+##  - attr(*, &quot;id&quot;)= chr &quot;RL_1-BAK-_-y05-430200-O-1-1&quot;
 </code></pre>
 <pre class="sourceCode r" id="cb16"><code class="sourceCode r"><div class="sourceLine" id="cb16-1" data-line-number="1"><span class="kw">str</span>(xml_list<span class="op">$</span>Routes<span class="op">$</span>Route)</div></code></pre>
 <pre><code>## List of 3
 ##  $ PrivateCode    :List of 1
-##   ..$ : chr &quot;R_1-BAK-_-y05-1462422-O-1&quot;
+##   ..$ : chr &quot;R_1-BAK-_-y05-430200-O-1&quot;
 ##  $ Description    :List of 1
 ##   ..$ : chr &quot;Elephant &amp; Castle Station - Queen's Park Station (London)&quot;
 ##  $ RouteSectionRef:List of 1
-##   ..$ : chr &quot;RS_1-BAK-_-y05-1462422-O-1&quot;
-##  - attr(*, &quot;id&quot;)= chr &quot;R_1-BAK-_-y05-1462422-O-1&quot;
+##   ..$ : chr &quot;RS_1-BAK-_-y05-430200-O-1&quot;
+##  - attr(*, &quot;id&quot;)= chr &quot;R_1-BAK-_-y05-430200-O-1&quot;
 </code></pre>
 <pre class="sourceCode r" id="cb18"><code class="sourceCode r"><div class="sourceLine" id="cb18-1" data-line-number="1"><span class="kw">str</span>(xml_list<span class="op">$</span>JourneyPatternSections<span class="op">$</span>JourneyPatternSection[[<span class="dv">1</span>]])</div></code></pre>
 <pre><code>## List of 4
@@ -755,10 +765,10 @@ body {
 ##   .. ..$ : chr &quot;PTP&quot;
 ##   ..- attr(*, &quot;SequenceNumber&quot;)= chr &quot;2&quot;
 ##  $ RouteLinkRef:List of 1
-##   ..$ : chr &quot;RL_1-BAK-_-y05-1462422-O-1-1&quot;
+##   ..$ : chr &quot;RL_1-BAK-_-y05-430200-O-1-1&quot;
 ##  $ RunTime     :List of 1
 ##   ..$ : chr &quot;PT1M&quot;
-##  - attr(*, &quot;id&quot;)= chr &quot;JPL_1-BAK-_-y05-1462422-1-O-1-2&quot;
+##  - attr(*, &quot;id&quot;)= chr &quot;JPL_1-BAK-_-y05-430200-1-O-1-2&quot;
 </code></pre>
 <pre class="sourceCode r" id="cb20"><code class="sourceCode r"><div class="sourceLine" id="cb20-1" data-line-number="1"><span class="kw">str</span>(xml_list<span class="op">$</span>Operators<span class="op">$</span>Operator)</div></code></pre>
 <pre><code>## List of 4
@@ -783,35 +793,38 @@ body {
 ##   .. ..$ Description    :List of 1
 ##   .. .. ..$ : chr &quot;Underground Train&quot;
 ##  $ RouteRef                 :List of 1
-##   ..$ : chr &quot;R_1-BAK-_-y05-1462422-O-1&quot;
+##   ..$ : chr &quot;R_1-BAK-_-y05-430200-O-1&quot;
 ##  $ JourneyPatternSectionRefs:List of 1
-##   ..$ : chr &quot;JPS_1-BAK-_-y05-1462422-1-1-O&quot;
-##  - attr(*, &quot;id&quot;)= chr &quot;JP_1-BAK-_-y05-1462422-1-O-1&quot;
+##   ..$ : chr &quot;JPS_1-BAK-_-y05-430200-1-1-O&quot;
+##  - attr(*, &quot;id&quot;)= chr &quot;JP_1-BAK-_-y05-430200-1-O-1&quot;
 </code></pre>
 <pre class="sourceCode r" id="cb24"><code class="sourceCode r"><div class="sourceLine" id="cb24-1" data-line-number="1"><span class="kw">str</span>(xml_list<span class="op">$</span>VehicleJourneys<span class="op">$</span>VehicleJourney)</div></code></pre>
 <pre><code>## List of 8
 ##  $ PrivateCode       :List of 1
-##   ..$ : chr &quot;tfl-1-BAK-_-y05-1462422-1-TA&quot;
+##   ..$ : chr &quot;tfl-1-BAK-_-y05-430200-1-UP&quot;
 ##  $ Operational       :List of 1
 ##   ..$ VehicleType:List of 2
 ##   .. ..$ VehicleTypeCode:List of 1
 ##   .. .. ..$ : chr &quot;UT&quot;
 ##   .. ..$ Description    :List of 1
 ##   .. .. ..$ : chr &quot;Underground Train&quot;
-##  $ OperatingProfile  :List of 1
-##   ..$ RegularDayType:List of 1
+##  $ OperatingProfile  :List of 2
+##   ..$ RegularDayType      :List of 1
 ##   .. ..$ DaysOfWeek:List of 1
 ##   .. .. ..$ Sunday: list()
+##   ..$ BankHolidayOperation:List of 1
+##   .. ..$ DaysOfNonOperation:List of 1
+##   .. .. ..$ AllBankHolidays: list()
 ##  $ VehicleJourneyCode:List of 1
-##   ..$ : chr &quot;VJ_1-BAK-_-y05-1462422-1-TA&quot;
+##   ..$ : chr &quot;VJ_1-BAK-_-y05-430200-1-UP&quot;
 ##  $ ServiceRef        :List of 1
-##   ..$ : chr &quot;1-BAK-_-y05-1462422&quot;
+##   ..$ : chr &quot;1-BAK-_-y05-430200&quot;
 ##  $ LineRef           :List of 1
-##   ..$ : chr &quot;1-BAK-_-y05-1462422&quot;
+##   ..$ : chr &quot;1-BAK-_-y05-430200&quot;
 ##  $ JourneyPatternRef :List of 1
-##   ..$ : chr &quot;JP_1-BAK-_-y05-1462422-1-O-1&quot;
+##   ..$ : chr &quot;JP_1-BAK-_-y05-430200-1-O-1&quot;
 ##  $ DepartureTime     :List of 1
-##   ..$ : chr &quot;11:29:00&quot;
+##   ..$ : chr &quot;21:29:00&quot;
 </code></pre>
 <pre class="sourceCode r" id="cb26"><code class="sourceCode r"><div class="sourceLine" id="cb26-1" data-line-number="1"><span class="co"># Show service data without the child node JourneyPatterns</span></div>
 <div class="sourceLine" id="cb26-2" data-line-number="2">service &lt;-<span class="st"> </span>xml_list<span class="op">$</span>Services<span class="op">$</span>Service</div>
@@ -819,26 +832,38 @@ body {
 <div class="sourceLine" id="cb26-4" data-line-number="4"><span class="kw">str</span>(service)</div></code></pre>
 <pre><code>## List of 9
 ##  $ ServiceCode          :List of 1
-##   ..$ : chr &quot;1-BAK-_-y05-1462422&quot;
+##   ..$ : chr &quot;1-BAK-_-y05-430200&quot;
 ##  $ PrivateCode          :List of 1
-##   ..$ : chr &quot;1-BAK-_-y05-1462422&quot;
+##   ..$ : chr &quot;1-BAK-_-y05-430200&quot;
 ##  $ Lines                :List of 1
 ##   ..$ Line:List of 1
 ##   .. ..$ LineName:List of 1
 ##   .. .. ..$ : chr &quot;Bakerloo&quot;
-##   .. ..- attr(*, &quot;id&quot;)= chr &quot;1-BAK-_-y05-1462422&quot;
+##   .. ..- attr(*, &quot;id&quot;)= chr &quot;1-BAK-_-y05-430200&quot;
 ##  $ OperatingPeriod      :List of 2
 ##   ..$ StartDate:List of 1
-##   .. ..$ : chr &quot;2017-12-24&quot;
+##   .. ..$ : chr &quot;2018-01-06&quot;
 ##   ..$ EndDate  :List of 1
-##   .. ..$ : chr &quot;2017-12-24&quot;
-##  $ OperatingProfile     :List of 2
+##   .. ..$ : chr &quot;2018-12-23&quot;
+##  $ OperatingProfile     :List of 3
 ##   ..$ RegularDayType      :List of 1
 ##   .. ..$ DaysOfWeek:List of 1
-##   .. .. ..$ Sunday: list()
+##   .. .. ..$ MondayToSunday: list()
+##   ..$ SpecialDaysOperation:List of 1
+##   .. ..$ DaysOfOperation:List of 1
+##   .. .. ..$ DateRange:List of 3
+##   .. .. .. ..$ StartDate:List of 1
+##   .. .. .. .. ..$ : chr &quot;2018-04-02&quot;
+##   .. .. .. ..$ EndDate  :List of 1
+##   .. .. .. .. ..$ : chr &quot;2018-04-02&quot;
+##   .. .. .. ..$ Note     :List of 1
+##   .. .. .. .. ..$ : chr &quot;East Monday&quot;
 ##   ..$ BankHolidayOperation:List of 2
-##   .. ..$ DaysOfOperation   :List of 1
-##   .. .. ..$ ChristmasDay: list()
+##   .. ..$ DaysOfOperation   :List of 4
+##   .. .. ..$ GoodFriday                      : list()
+##   .. .. ..$ LateSummerBankHolidayNotScotland: list()
+##   .. .. ..$ MayDay                          : list()
+##   .. .. ..$ SpringBank                      : list()
 ##   .. ..$ DaysOfNonOperation: list()
 ##  $ RegisteredOperatorRef:List of 1
 ##   ..$ : chr &quot;OId_LUL&quot;
@@ -847,7 +872,7 @@ body {
 ##  $ Mode                 :List of 1
 ##   ..$ : chr &quot;underground&quot;
 ##  $ Description          :List of 1
-##   ..$ : chr &quot;Elephant &amp; Castle - Waterloo - Harrow &amp; Wealdstone&quot;
+##   ..$ : chr &quot;Elephant &amp; Castle - Queen's Park - Harrow &amp; Wealdstone&quot;
 </code></pre>
 <p>Four of the tables contain particularly crucial information other than Reference fields and linking identifiers:</p>
 <p><strong>Stop Points</strong></p>
@@ -896,16 +921,16 @@ body {
 <div class="sourceLine" id="cb28-12" data-line-number="12">dates[[<span class="st">&quot;File&quot;</span>]] &lt;-<span class="st"> </span><span class="kw">basename</span>(dates[[<span class="st">&quot;File&quot;</span>]])</div>
 <div class="sourceLine" id="cb28-13" data-line-number="13"><span class="kw">head</span>(dates, <span class="dv">10</span>)</div></code></pre>
 <pre><code>##                            File  StartDate    EndDate
-##  1: tfl_1-BAK-_-y05-1462422.xml 2017-12-24 2017-12-24
-##  2: tfl_1-BAK-_-y05-1462611.xml 2017-12-26 2017-12-26
-##  3: tfl_1-BAK-_-y05-1462711.xml 2017-12-27 2017-12-27
-##  4: tfl_1-BAK-_-y05-1463122.xml 2017-12-31 2017-12-31
-##  5: tfl_1-BAK-_-y05-1463222.xml 2018-01-01 2018-01-01
-##  6: tfl_1-BAK-_-y05-1465129.xml 2017-12-29 2017-12-29
-##  7: tfl_1-BAK-_-y05-1465144.xml 2017-12-28 2017-12-28
-##  8:  tfl_1-BAK-_-y05-430200.xml 2017-12-10 2018-12-23
-##  9: tfl_1-CEN-_-y05-1315200.xml 2017-12-27 2017-12-28
-## 10: tfl_1-CEN-_-y05-1492600.xml 2017-12-26 2017-12-26
+##  1:  tfl_1-BAK-_-y05-430200.xml 2018-01-06 2018-12-23
+##  2: tfl_1-CEN-_-y05-1495234.xml 2018-04-02 2018-04-02
+##  3: tfl_1-CEN-_-y05-1495235.xml 2018-05-07 2018-05-07
+##  4: tfl_1-CEN-_-y05-1495236.xml 2018-05-28 2018-05-28
+##  5:  tfl_1-CEN-_-y05-690544.xml 2018-01-06 2018-12-23
+##  6:  tfl_1-CIR-_-y05-465922.xml 2018-01-06 2018-12-23
+##  7: tfl_1-CIR-_-y05-9176502.xml 2018-01-20 2018-01-21
+##  8: tfl_1-CIR-_-y05-9176503.xml 2018-02-17 2018-02-18
+##  9: tfl_1-CIR-_-y05-9176504.xml 2018-02-11 2018-02-11
+## 10: tfl_1-CIR-_-y05-9176505.xml 2018-03-10 2018-03-11
 </code></pre>
 <p>The next step is to filter this dataframe based on whether a date of interest falls within the time interval of a file:</p>
 <pre class="sourceCode r" id="cb30"><code class="sourceCode r"><div class="sourceLine" id="cb30-1" data-line-number="1"><span class="kw">library</span>(lubridate)</div>
@@ -918,16 +943,16 @@ body {
 <div class="sourceLine" id="cb30-8" data-line-number="8"><span class="st">  </span>dates[.]</div>
 <div class="sourceLine" id="cb30-9" data-line-number="9"><span class="kw">head</span>(relevant_dates, <span class="dv">10</span>)</div></code></pre>
 <pre><code>##                            File  StartDate    EndDate
-##  1:  tfl_1-BAK-_-y05-430200.xml 2017-12-10 2018-12-23
-##  2:  tfl_1-CEN-_-y05-690544.xml 2017-12-09 2018-12-23
-##  3:  tfl_1-CIR-_-y05-465922.xml 2018-01-04 2018-12-23
-##  4: tfl_1-DIS-_-y05-1490111.xml 2017-12-09 2018-12-23
-##  5:  tfl_1-HAM-_-y05-465922.xml 2018-01-04 2018-12-23
-##  6:  tfl_1-JUB-_-y05-520522.xml 2017-12-09 2018-12-23
-##  7: tfl_1-MET-_-y05-3400500.xml 2017-12-09 2018-12-23
-##  8:  tfl_1-NTN-_-y05-560800.xml 2017-12-09 2018-01-28
-##  9:  tfl_1-PIC-_-y05-580800.xml 2017-12-09 2018-12-23
-## 10:  tfl_1-VIC-_-y05-410833.xml 2017-12-09 2018-12-23
+##  1:  tfl_1-BAK-_-y05-430200.xml 2018-01-06 2018-12-23
+##  2:  tfl_1-CEN-_-y05-690544.xml 2018-01-06 2018-12-23
+##  3:  tfl_1-CIR-_-y05-465922.xml 2018-01-06 2018-12-23
+##  4: tfl_1-DIS-_-y05-1490111.xml 2018-01-06 2018-12-23
+##  5:  tfl_1-HAM-_-y05-465922.xml 2018-01-06 2018-12-23
+##  6:  tfl_1-JUB-_-y05-520522.xml 2018-01-06 2018-12-23
+##  7: tfl_1-MET-_-y05-3400500.xml 2018-01-06 2018-12-23
+##  8:  tfl_1-NTN-_-y05-560800.xml 2018-01-06 2018-01-28
+##  9: tfl_1-PIC-_-y05-1705800.xml 2018-01-06 2018-02-02
+## 10:  tfl_1-PIC-_-y05-580800.xml 2018-01-06 2018-12-23
 </code></pre>
 <p>Now we’ve cut down the 84 files to roughly a quarter depending on the chosen <code>timetable_date</code>.</p>
 <p>The other option (to filter based on the days of the week) is unfortunately even more convoluted. It should be as simply as filtering on the tags underneath Journey Operating Profile however here’s a list of the unique set of tags:</p>
@@ -940,8 +965,8 @@ body {
 <div class="sourceLine" id="cb32-7" data-line-number="7"><span class="st">  </span>unlist <span class="op">%&gt;%</span></div>
 <div class="sourceLine" id="cb32-8" data-line-number="8"><span class="st">  </span>unique</div>
 <div class="sourceLine" id="cb32-9" data-line-number="9">daysofweek</div></code></pre>
-<pre><code>## [1] &quot;Sunday&quot;         &quot;Wednesday&quot;      &quot;Friday&quot;         &quot;Thursday&quot;      
-## [5] &quot;Monday&quot;         &quot;Saturday&quot;       &quot;MondayToFriday&quot; &quot;Tuesday&quot;       
+<pre><code>## [1] &quot;Sunday&quot;         &quot;Monday&quot;         &quot;Saturday&quot;       &quot;MondayToFriday&quot;
+## [5] &quot;Wednesday&quot;      &quot;Thursday&quot;       &quot;Friday&quot;         &quot;Tuesday&quot;
 ## [9] &quot;Weekend&quot;
 </code></pre>
 <p>The “days of the week” also include values such as “MondayToFriday”, “Weekend” as well as “MondayToSaturday” and “MondayToSunday” under the Service Operating Profile. So we would need to create a mapping function between a given date and all of the possible “days of the week” it could fall under. As an example of how this can be accounted for, see <a href="DaysOfWeekGroups.html">this PostgreSQL table</a>.</p>
@@ -970,67 +995,57 @@ If you wish to execute the chunks interactively, run the corresponding
 <div class="sourceLine" id="cb34-13" data-line-number="13"><span class="st">  </span><span class="kw">unique</span>()</div></code></pre>
 <pre class="sourceCode r" id="cb35"><code class="sourceCode r"><div class="sourceLine" id="cb35-1" data-line-number="1"><span class="kw">head</span>(terminal_xpaths)</div></code></pre>
 <pre><code>## [1] &quot;/TransXChange/NptgLocalities/AnnotatedNptgLocalityRef&quot;
-## [2] &quot;/TransXChange/StopPoints/StopPoint&quot;                   
-## [3] &quot;/TransXChange/StopPoints/StopPoint/Descriptor&quot;        
-## [4] &quot;/TransXChange/StopPoints/StopPoint/Place&quot;             
-## [5] &quot;/TransXChange/StopPoints/StopPoint/Place/Location&quot;    
+## [2] &quot;/TransXChange/StopPoints/StopPoint&quot;
+## [3] &quot;/TransXChange/StopPoints/StopPoint/Descriptor&quot;
+## [4] &quot;/TransXChange/StopPoints/StopPoint/Place&quot;
+## [5] &quot;/TransXChange/StopPoints/StopPoint/Place/Location&quot;
 ## [6] &quot;/TransXChange/StopPoints/StopPoint/StopClassification&quot;
 </code></pre>
 <p>These are the XPaths to every possible terminal branch of the tree however a lot of the information isn’t particularly useful. For some of the tables, we’re only interested in specific sections. For example, the <em>Operational</em> tag isn’t interesting as it contains information about the vehicle which in this case will always be “Underground Train”. This is a similar story for the <em>Operator</em> which is always “London Underground”.</p>
 <p>Therefore we can define a subset of the <code>terminal_xpaths</code> grouped by the table to which they each relate.</p>
 <pre class="sourceCode r" id="cb37"><code class="sourceCode r"><div class="sourceLine" id="cb37-1" data-line-number="1">required_xpaths &lt;-<span class="st"> </span><span class="kw">list</span>(</div>
-<div class="sourceLine" id="cb37-2" data-line-number="2">   <span class="dt">NptgLocalities =</span> <span class="dv">1</span></div>
-<div class="sourceLine" id="cb37-3" data-line-number="3">  ,<span class="dt">StopPoints =</span> <span class="dv">2</span><span class="op">:</span><span class="dv">5</span></div>
-<div class="sourceLine" id="cb37-4" data-line-number="4">  ,<span class="dt">RouteLinks =</span> <span class="dv">8</span><span class="op">:</span><span class="dv">10</span></div>
-<div class="sourceLine" id="cb37-5" data-line-number="5">  ,<span class="dt">Routes =</span> <span class="dv">11</span></div>
-<div class="sourceLine" id="cb37-6" data-line-number="6">  ,<span class="dt">JourneyPatternTimingLinks =</span> <span class="dv">12</span><span class="op">:</span><span class="dv">14</span></div>
-<div class="sourceLine" id="cb37-7" data-line-number="7">  ,<span class="dt">Services =</span> <span class="dv">16</span></div>
-<div class="sourceLine" id="cb37-8" data-line-number="8">  ,<span class="dt">JourneyPatterns =</span> <span class="dv">24</span></div>
-<div class="sourceLine" id="cb37-9" data-line-number="9">  ,<span class="dt">VehicleJourneys =</span> <span class="dv">26</span></div>
-<div class="sourceLine" id="cb37-10" data-line-number="10">)</div></code></pre>
-<pre class="sourceCode r" id="cb38"><code class="sourceCode r"><div class="sourceLine" id="cb38-1" data-line-number="1">terminal_xpaths[<span class="kw">unlist</span>(required_xpaths)]</div></code></pre>
-<pre><code>##  [1] &quot;/TransXChange/NptgLocalities/AnnotatedNptgLocalityRef&quot;                                   
-##  [2] &quot;/TransXChange/StopPoints/StopPoint&quot;                                                      
-##  [3] &quot;/TransXChange/StopPoints/StopPoint/Descriptor&quot;                                           
-##  [4] &quot;/TransXChange/StopPoints/StopPoint/Place&quot;                                                
-##  [5] &quot;/TransXChange/StopPoints/StopPoint/Place/Location&quot;                                       
-##  [6] &quot;/TransXChange/RouteSections/RouteSection/RouteLink&quot;                                      
-##  [7] &quot;/TransXChange/RouteSections/RouteSection/RouteLink/From&quot;                                 
-##  [8] &quot;/TransXChange/RouteSections/RouteSection/RouteLink/To&quot;                                   
-##  [9] &quot;/TransXChange/Routes/Route&quot;                                                              
-## [10] &quot;/TransXChange/JourneyPatternSections/JourneyPatternSection/JourneyPatternTimingLink&quot;     
-## [11] &quot;/TransXChange/JourneyPatternSections/JourneyPatternSection/JourneyPatternTimingLink/From&quot;
-## [12] &quot;/TransXChange/JourneyPatternSections/JourneyPatternSection/JourneyPatternTimingLink/To&quot;  
-## [13] &quot;/TransXChange/Services/Service&quot;                                                          
-## [14] &quot;/TransXChange/Services/Service/StandardService/JourneyPattern&quot;                           
-## [15] &quot;/TransXChange/VehicleJourneys/VehicleJourney&quot;
-</code></pre>
+<div class="sourceLine" id="cb37-2" data-line-number="2">   <span class="dt">NptgLocalities =</span> <span class="st">&quot;/TransXChange/NptgLocalities/AnnotatedNptgLocalityRef&quot;</span></div>
+<div class="sourceLine" id="cb37-3" data-line-number="3">  ,<span class="dt">StopPoints =</span> <span class="kw">c</span>(<span class="st">&quot;/TransXChange/StopPoints/StopPoint&quot;</span>,</div>
+<div class="sourceLine" id="cb37-4" data-line-number="4">                  <span class="st">&quot;/TransXChange/StopPoints/StopPoint/Descriptor&quot;</span>,</div>
+<div class="sourceLine" id="cb37-5" data-line-number="5">                  <span class="st">&quot;/TransXChange/StopPoints/StopPoint/Place&quot;</span>,</div>
+<div class="sourceLine" id="cb37-6" data-line-number="6">                  <span class="st">&quot;/TransXChange/StopPoints/StopPoint/Place/Location&quot;</span>)</div>
+<div class="sourceLine" id="cb37-7" data-line-number="7">  ,<span class="dt">RouteLinks =</span> <span class="kw">c</span>(<span class="st">&quot;/TransXChange/RouteSections/RouteSection/RouteLink&quot;</span>,</div>
+<div class="sourceLine" id="cb37-8" data-line-number="8">                  <span class="st">&quot;/TransXChange/RouteSections/RouteSection/RouteLink/From&quot;</span>,</div>
+<div class="sourceLine" id="cb37-9" data-line-number="9">                  <span class="st">&quot;/TransXChange/RouteSections/RouteSection/RouteLink/To&quot;</span>)</div>
+<div class="sourceLine" id="cb37-10" data-line-number="10">  ,<span class="dt">Routes =</span> <span class="st">&quot;/TransXChange/Routes/Route&quot;</span></div>
+<div class="sourceLine" id="cb37-11" data-line-number="11">  ,<span class="dt">JourneyPatternTimingLinks =</span> <span class="kw">c</span>(<span class="st">&quot;/TransXChange/JourneyPatternSections/JourneyPatternSection/JourneyPatternTimingLink&quot;</span>,</div>
+<div class="sourceLine" id="cb37-12" data-line-number="12">                                 <span class="st">&quot;/TransXChange/JourneyPatternSections/JourneyPatternSection/JourneyPatternTimingLink/From&quot;</span>,</div>
+<div class="sourceLine" id="cb37-13" data-line-number="13">                                 <span class="st">&quot;/TransXChange/JourneyPatternSections/JourneyPatternSection/JourneyPatternTimingLink/To&quot;</span>)</div>
+<div class="sourceLine" id="cb37-14" data-line-number="14">  ,<span class="dt">Services =</span> <span class="st">&quot;/TransXChange/Services/Service&quot;</span></div>
+<div class="sourceLine" id="cb37-15" data-line-number="15">  ,<span class="dt">JourneyPatterns =</span> <span class="st">&quot;/TransXChange/Services/Service/StandardService/JourneyPattern&quot;</span></div>
+<div class="sourceLine" id="cb37-16" data-line-number="16">  ,<span class="dt">VehicleJourneys =</span> <span class="st">&quot;/TransXChange/VehicleJourneys/VehicleJourney&quot;</span></div>
+<div class="sourceLine" id="cb37-17" data-line-number="17">)</div></code></pre>
 <p>This way, when it comes to extracting the data, all of the information found under the 8th, 9th and 10th paths of <code>terminal_xpaths</code> will be combined together under the <em>RouteSections</em> table (see elements 6-8 above).</p>
 <p>Now it is just a matter of looping over this list, finding all of the matches for each path, extracting the underlying data and combining it into a single dataset for each of the tables.</p>
-<pre class="sourceCode r" id="cb40"><code class="sourceCode r"><div class="sourceLine" id="cb40-1" data-line-number="1">build_tfl &lt;-<span class="st"> </span><span class="cf">function</span>(doc, terminal_xpaths, required_terminal_xpaths) {</div>
-<div class="sourceLine" id="cb40-2" data-line-number="2">  purrr<span class="op">::</span><span class="kw">map</span>(required_terminal_xpaths, <span class="cf">function</span>(xpath_idxs) {</div>
-<div class="sourceLine" id="cb40-3" data-line-number="3">    <span class="co"># Subset the needed paths</span></div>
-<div class="sourceLine" id="cb40-4" data-line-number="4">    terminal_xpaths[xpath_idxs] <span class="op">%&gt;%</span></div>
-<div class="sourceLine" id="cb40-5" data-line-number="5"><span class="st">      </span><span class="co"># Find all matches of each path</span></div>
-<div class="sourceLine" id="cb40-6" data-line-number="6"><span class="st">      </span><span class="kw">lapply</span>(xml2<span class="op">::</span>xml_find_all, <span class="dt">x =</span> doc) <span class="op">%&gt;%</span></div>
-<div class="sourceLine" id="cb40-7" data-line-number="7"><span class="st">      </span><span class="co"># Extract underlying data</span></div>
-<div class="sourceLine" id="cb40-8" data-line-number="8"><span class="st">      </span>purrr<span class="op">::</span><span class="kw">map</span>(xmltools<span class="op">::</span>xml_dig_df) <span class="op">%&gt;%</span></div>
-<div class="sourceLine" id="cb40-9" data-line-number="9"><span class="st">      </span><span class="co"># Combine extracted data into one dataframe</span></div>
-<div class="sourceLine" id="cb40-10" data-line-number="10"><span class="st">      </span>purrr<span class="op">::</span><span class="kw">map</span>(dplyr<span class="op">::</span>bind_rows) <span class="op">%&gt;%</span></div>
-<div class="sourceLine" id="cb40-11" data-line-number="11"><span class="st">      </span>dplyr<span class="op">::</span><span class="kw">bind_cols</span>()</div>
-<div class="sourceLine" id="cb40-12" data-line-number="12">  })</div>
-<div class="sourceLine" id="cb40-13" data-line-number="13">}</div></code></pre>
-<pre class="sourceCode r" id="cb41"><code class="sourceCode r"><div class="sourceLine" id="cb41-1" data-line-number="1">tfl &lt;-<span class="st"> </span><span class="kw">build_tfl</span>(doc, terminal_xpaths, required_xpaths)</div>
-<div class="sourceLine" id="cb41-2" data-line-number="2"><span class="kw">str</span>(tfl, <span class="dv">1</span>)</div></code></pre>
+<pre class="sourceCode r" id="cb38"><code class="sourceCode r"><div class="sourceLine" id="cb38-1" data-line-number="1">build_tfl &lt;-<span class="st"> </span><span class="cf">function</span>(doc, terminal_xpaths, required_terminal_xpaths) {</div>
+<div class="sourceLine" id="cb38-2" data-line-number="2">  purrr<span class="op">::</span><span class="kw">map</span>(required_terminal_xpaths, <span class="cf">function</span>(xpaths) {</div>
+<div class="sourceLine" id="cb38-3" data-line-number="3">    <span class="co"># Use the provided paths</span></div>
+<div class="sourceLine" id="cb38-4" data-line-number="4">    xpaths <span class="op">%&gt;%</span></div>
+<div class="sourceLine" id="cb38-5" data-line-number="5"><span class="st">      </span><span class="co"># Find all matches of each path</span></div>
+<div class="sourceLine" id="cb38-6" data-line-number="6"><span class="st">      </span><span class="kw">lapply</span>(xml2<span class="op">::</span>xml_find_all, <span class="dt">x =</span> doc) <span class="op">%&gt;%</span></div>
+<div class="sourceLine" id="cb38-7" data-line-number="7"><span class="st">      </span><span class="co"># Extract underlying data</span></div>
+<div class="sourceLine" id="cb38-8" data-line-number="8"><span class="st">      </span>purrr<span class="op">::</span><span class="kw">map</span>(xmltools<span class="op">::</span>xml_dig_df) <span class="op">%&gt;%</span></div>
+<div class="sourceLine" id="cb38-9" data-line-number="9"><span class="st">      </span><span class="co"># Combine extracted data into one dataframe</span></div>
+<div class="sourceLine" id="cb38-10" data-line-number="10"><span class="st">      </span>purrr<span class="op">::</span><span class="kw">map</span>(dplyr<span class="op">::</span>bind_rows) <span class="op">%&gt;%</span></div>
+<div class="sourceLine" id="cb38-11" data-line-number="11"><span class="st">      </span>dplyr<span class="op">::</span><span class="kw">bind_cols</span>()</div>
+<div class="sourceLine" id="cb38-12" data-line-number="12">  })</div>
+<div class="sourceLine" id="cb38-13" data-line-number="13">}</div></code></pre>
+<pre class="sourceCode r" id="cb39"><code class="sourceCode r"><div class="sourceLine" id="cb39-1" data-line-number="1">tfl &lt;-<span class="st"> </span><span class="kw">build_tfl</span>(doc, terminal_xpaths, required_xpaths)</div>
+<div class="sourceLine" id="cb39-2" data-line-number="2"><span class="kw">str</span>(tfl, <span class="dv">1</span>)</div></code></pre>
 <pre><code>## List of 8
 ##  $ NptgLocalities           :Classes 'tbl_df', 'tbl' and 'data.frame':   25 obs. of  2 variables:
 ##  $ StopPoints               :Classes 'tbl_df', 'tbl' and 'data.frame':   43 obs. of  7 variables:
-##  $ RouteLinks               :Classes 'tbl_df', 'tbl' and 'data.frame':   195 obs. of  4 variables:
-##  $ Routes                   :Classes 'tbl_df', 'tbl' and 'data.frame':   13 obs. of  3 variables:
-##  $ JourneyPatternTimingLinks:Classes 'tbl_df', 'tbl' and 'data.frame':   794 obs. of  9 variables:
+##  $ RouteLinks               :Classes 'tbl_df', 'tbl' and 'data.frame':   248 obs. of  4 variables:
+##  $ Routes                   :Classes 'tbl_df', 'tbl' and 'data.frame':   16 obs. of  3 variables:
+##  $ JourneyPatternTimingLinks:Classes 'tbl_df', 'tbl' and 'data.frame':   4743 obs. of  9 variables:
 ##  $ Services                 :Classes 'tbl_df', 'tbl' and 'data.frame':   1 obs. of  5 variables:
-##  $ JourneyPatterns          :Classes 'tbl_df', 'tbl' and 'data.frame':   42 obs. of  3 variables:
-##  $ VehicleJourneys          :Classes 'tbl_df', 'tbl' and 'data.frame':   501 obs. of  6 variables:
+##  $ JourneyPatterns          :Classes 'tbl_df', 'tbl' and 'data.frame':   234 obs. of  3 variables:
+##  $ VehicleJourneys          :Classes 'tbl_df', 'tbl' and 'data.frame':   1947 obs. of  6 variables:
 </code></pre>
 <p>The result is the <code>tfl</code> list which contains the eight tables corresponding to the top-level nodes of this single XML file.</p>
 <p>Due to the flexibility of XML and the TransXChange schema however, there’s still a lot missing…</p>
@@ -1040,33 +1055,33 @@ If you wish to execute the chunks interactively, run the corresponding
 <li>Some tables have a parent which contains join information. For example, the JourneyPatterns table is defined at the level of each Journey Pattern Section however we are missing the foreign key Journey Pattern ID as this is the parent node of each Section and therefore unable to be parsed with the same XPath.</li>
 </ol>
 <p>We can define a function <code>retrieve_additional_fields</code> which solves these three cases and call it after <code>build_tfl</code> for each document. Due to its length and complexity it is not shown here but can be found in the <a href="GetTablesFromXPaths.html">complete analysis file</a>.</p>
-<pre class="sourceCode r" id="cb43"><code class="sourceCode r"><div class="sourceLine" id="cb43-1" data-line-number="1"><span class="kw">library</span>(magrittr)</div>
-<div class="sourceLine" id="cb43-2" data-line-number="2">tfl <span class="op">%&lt;&gt;%</span><span class="st"> </span><span class="kw">retrieve_additional_fields</span>(doc)</div></code></pre>
+<pre class="sourceCode r" id="cb41"><code class="sourceCode r"><div class="sourceLine" id="cb41-1" data-line-number="1"><span class="kw">library</span>(magrittr)</div>
+<div class="sourceLine" id="cb41-2" data-line-number="2">tfl <span class="op">%&lt;&gt;%</span><span class="st"> </span><span class="kw">retrieve_additional_fields</span>(doc)</div></code></pre>
 <p>We can put the whole extraction process together by calling <code>read_xml</code>, <code>build_tfl</code> and <code>retrieve_additional_fields</code> for each XML file:</p>
-<pre class="sourceCode r" id="cb44"><code class="sourceCode r"><div class="sourceLine" id="cb44-1" data-line-number="1">extract_file &lt;-<span class="st"> </span><span class="cf">function</span>(file){</div>
-<div class="sourceLine" id="cb44-2" data-line-number="2">  doc &lt;-<span class="st"> </span>xml2<span class="op">::</span><span class="kw">read_xml</span>(file) <span class="op">%&gt;%</span></div>
-<div class="sourceLine" id="cb44-3" data-line-number="3"><span class="st">    </span>xml2<span class="op">::</span><span class="kw">xml_ns_strip</span>()</div>
-<div class="sourceLine" id="cb44-4" data-line-number="4">  </div>
-<div class="sourceLine" id="cb44-5" data-line-number="5">  tfl &lt;-<span class="st"> </span><span class="kw">build_tfl</span>(doc, terminal_xpaths, required_xpaths)</div>
-<div class="sourceLine" id="cb44-6" data-line-number="6">  tfl <span class="op">%&lt;&gt;%</span><span class="st"> </span><span class="kw">retrieve_additional_fields</span>(doc)</div>
-<div class="sourceLine" id="cb44-7" data-line-number="7">  </div>
-<div class="sourceLine" id="cb44-8" data-line-number="8">  tfl</div>
-<div class="sourceLine" id="cb44-9" data-line-number="9">}</div>
-<div class="sourceLine" id="cb44-10" data-line-number="10"><span class="kw">str</span>(<span class="kw">extract_file</span>(data.files[<span class="dv">1</span>]), <span class="dv">1</span>)</div></code></pre>
+<pre class="sourceCode r" id="cb42"><code class="sourceCode r"><div class="sourceLine" id="cb42-1" data-line-number="1">extract_file &lt;-<span class="st"> </span><span class="cf">function</span>(file){</div>
+<div class="sourceLine" id="cb42-2" data-line-number="2">  doc &lt;-<span class="st"> </span>xml2<span class="op">::</span><span class="kw">read_xml</span>(file) <span class="op">%&gt;%</span></div>
+<div class="sourceLine" id="cb42-3" data-line-number="3"><span class="st">    </span>xml2<span class="op">::</span><span class="kw">xml_ns_strip</span>()</div>
+<div class="sourceLine" id="cb42-4" data-line-number="4">  </div>
+<div class="sourceLine" id="cb42-5" data-line-number="5">  tfl &lt;-<span class="st"> </span><span class="kw">build_tfl</span>(doc, terminal_xpaths, required_xpaths)</div>
+<div class="sourceLine" id="cb42-6" data-line-number="6">  tfl <span class="op">%&lt;&gt;%</span><span class="st"> </span><span class="kw">retrieve_additional_fields</span>(doc)</div>
+<div class="sourceLine" id="cb42-7" data-line-number="7">  </div>
+<div class="sourceLine" id="cb42-8" data-line-number="8">  tfl</div>
+<div class="sourceLine" id="cb42-9" data-line-number="9">}</div>
+<div class="sourceLine" id="cb42-10" data-line-number="10"><span class="kw">str</span>(<span class="kw">extract_file</span>(data.files[<span class="dv">1</span>]), <span class="dv">1</span>)</div></code></pre>
 <pre><code>## List of 8
 ##  $ NptgLocalities           :Classes 'tbl_df', 'tbl' and 'data.frame':   25 obs. of  2 variables:
 ##  $ StopPoints               :Classes 'tbl_df', 'tbl' and 'data.frame':   43 obs. of  7 variables:
-##  $ RouteLinks               :Classes 'tbl_df', 'tbl' and 'data.frame':   195 obs. of  6 variables:
-##   ..- attr(*, &quot;.internal.selfref&quot;)=&lt;externalptr&gt; 
-##  $ Routes                   :Classes 'tbl_df', 'tbl' and 'data.frame':   13 obs. of  3 variables:
-##  $ JourneyPatternTimingLinks:Classes 'tbl_df', 'tbl' and 'data.frame':   794 obs. of  13 variables:
-##   ..- attr(*, &quot;.internal.selfref&quot;)=&lt;externalptr&gt; 
+##  $ RouteLinks               :Classes 'tbl_df', 'tbl' and 'data.frame':   248 obs. of  6 variables:
+##   ..- attr(*, &quot;.internal.selfref&quot;)=&lt;externalptr&gt;
+##  $ Routes                   :Classes 'tbl_df', 'tbl' and 'data.frame':   16 obs. of  3 variables:
+##  $ JourneyPatternTimingLinks:Classes 'tbl_df', 'tbl' and 'data.frame':   4743 obs. of  13 variables:
+##   ..- attr(*, &quot;.internal.selfref&quot;)=&lt;externalptr&gt;
 ##  $ Services                 :Classes 'tbl_df', 'tbl' and 'data.frame':   1 obs. of  5 variables:
-##  $ JourneyPatterns          :Classes 'tbl_df', 'tbl' and 'data.frame':   42 obs. of  4 variables:
-##  $ VehicleJourneys          :Classes 'tbl_df', 'tbl' and 'data.frame':   501 obs. of  6 variables:
+##  $ JourneyPatterns          :Classes 'tbl_df', 'tbl' and 'data.frame':   234 obs. of  4 variables:
+##  $ VehicleJourneys          :Classes 'tbl_df', 'tbl' and 'data.frame':   1947 obs. of  6 variables:
 </code></pre>
 <p>and then loop this function over the entire directory of files:</p>
-<pre class="sourceCode r" id="cb46"><code class="sourceCode r"><div class="sourceLine" id="cb46-1" data-line-number="1">tfl_all &lt;-<span class="st"> </span>purrr<span class="op">::</span><span class="kw">map</span>(data.files, extract_file)</div></code></pre>
+<pre class="sourceCode r" id="cb44"><code class="sourceCode r"><div class="sourceLine" id="cb44-1" data-line-number="1">tfl_all &lt;-<span class="st"> </span>purrr<span class="op">::</span><span class="kw">map</span>(data.files, extract_file)</div></code></pre>
 <p>Unfortunately, the bad news is this line of code takes a <strong>very</strong> long time to run so don’t execute it unless you plan on waiting all night. Literally…</p>
 <p>To make this code more efficient it may benefit from a performance improvement by parsing the nested list structure using syntax such as <code>doc[[c(&quot;TransXChange&quot;, &quot;StopPoints&quot;, &quot;StopPoint&quot;)]]</code> however in its current form it is much slower when compared to the <code>lxml</code> Python library. The versatility of <code>lxml</code> is also better when it comes to traversing XML trees efficiently and extracting data in nested nodes, parent nodes and attributes as we require.</p>
 <p>To cope with this problem, the dataset was instead scraped (with even more fields in more hard-to-reach places and about 500x faster) with <a href="XMLParsing.html">this file</a> which calls a custom-built <a href="TfLTimetable.html">TfL Class</a>.</p>
@@ -1076,151 +1091,134 @@ If you wish to execute the chunks interactively, run the corresponding
 <p>To make any use of the station locations, it’s necessary to convert the provided data to a more renowned coordinate system.</p>
 <p>The <a href="http://naptan.dft.gov.uk/transxchange/technicalFaq.htm#PubCoords">TransXChange website</a> confirms that the “Easting” and “Northing” fields in the StopPoints dataset are British National Grid (BNG) coordinates whereas we require the more popular latitude and longitude.</p>
 <p>This can be achieved with the R Geospatial Data Abstraction Library which is able to convert between the two coordinate projections via the <a href="http://proj4.org/">PROJ.4</a> library:</p>
-<pre class="sourceCode r" id="cb47"><code class="sourceCode r"><div class="sourceLine" id="cb47-1" data-line-number="1"><span class="kw">library</span>(rgdal)</div></code></pre>
-<pre><code>## Warning: package 'rgdal' was built under R version 3.4.2
-
-## Loading required package: sp
-
-## rgdal: version: 1.2-15, (SVN revision 691)
-##  Geospatial Data Abstraction Library extensions to R successfully loaded
-##  Loaded GDAL runtime: GDAL 2.1.3, released 2017/20/01
-##  Path to GDAL shared files: /Library/Frameworks/R.framework/Versions/3.4/Resources/library/rgdal/gdal
-##  GDAL binary built with GEOS: FALSE 
-##  Loaded PROJ.4 runtime: Rel. 4.9.3, 15 August 2016, [PJ_VERSION: 493]
-##  Path to PROJ.4 shared files: /Library/Frameworks/R.framework/Versions/3.4/Resources/library/rgdal/proj
-##  Linking to sp version: 1.2-5
-</code></pre>
-<pre class="sourceCode r" id="cb49"><code class="sourceCode r"><div class="sourceLine" id="cb49-1" data-line-number="1">modify_StopPoints &lt;-<span class="st"> </span><span class="cf">function</span>(df){</div>
-<div class="sourceLine" id="cb49-2" data-line-number="2">  <span class="co"># Define proj4 coordinate systems</span></div>
-<div class="sourceLine" id="cb49-3" data-line-number="3">  bng &lt;-<span class="st"> &quot;+init=epsg:27700&quot;</span></div>
-<div class="sourceLine" id="cb49-4" data-line-number="4">  latlon &lt;-<span class="st"> &quot;+proj=longlat +datum=WGS84&quot;</span></div>
-<div class="sourceLine" id="cb49-5" data-line-number="5"></div>
-<div class="sourceLine" id="cb49-6" data-line-number="6">  <span class="co"># Create spatial object using BNG coordinates</span></div>
-<div class="sourceLine" id="cb49-7" data-line-number="7">  coord.bng &lt;-</div>
-<div class="sourceLine" id="cb49-8" data-line-number="8"><span class="st">    </span><span class="kw">with</span>(df,</div>
-<div class="sourceLine" id="cb49-9" data-line-number="9">         <span class="kw">SpatialPointsDataFrame</span>(</div>
-<div class="sourceLine" id="cb49-10" data-line-number="10">           <span class="kw">cbind</span>(Place_Location_Easting, Place_Location_Northing) <span class="op">%&gt;%</span></div>
-<div class="sourceLine" id="cb49-11" data-line-number="11"><span class="st">             </span><span class="kw">as.integer</span>() <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">matrix</span>(<span class="dt">ncol =</span> <span class="dv">2</span>),</div>
-<div class="sourceLine" id="cb49-12" data-line-number="12">           <span class="dt">data =</span> <span class="kw">tibble</span>(AtcoCode,</div>
-<div class="sourceLine" id="cb49-13" data-line-number="13">                         Descriptor_CommonName,</div>
-<div class="sourceLine" id="cb49-14" data-line-number="14">                         Place_NptgLocalityRef),</div>
-<div class="sourceLine" id="cb49-15" data-line-number="15">           <span class="dt">proj4string =</span> <span class="kw">CRS</span>(bng)))</div>
-<div class="sourceLine" id="cb49-16" data-line-number="16"></div>
-<div class="sourceLine" id="cb49-17" data-line-number="17">  <span class="co"># Cast as latlon coordinates</span></div>
-<div class="sourceLine" id="cb49-18" data-line-number="18">  coord.latlon &lt;-<span class="st"> </span><span class="kw">spTransform</span>(coord.bng, <span class="kw">CRS</span>(latlon))</div>
-<div class="sourceLine" id="cb49-19" data-line-number="19"></div>
-<div class="sourceLine" id="cb49-20" data-line-number="20">  <span class="co"># Replace dataframe</span></div>
-<div class="sourceLine" id="cb49-21" data-line-number="21">  df &lt;-<span class="st"> </span><span class="kw">as_tibble</span>(coord.latlon)</div>
-<div class="sourceLine" id="cb49-22" data-line-number="22">  <span class="kw">names</span>(df) &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;AtcoCode&quot;</span>,<span class="st">&quot;CommonName&quot;</span>,<span class="st">&quot;NptgLocalityRef&quot;</span>,<span class="st">&quot;Longitude&quot;</span>,<span class="st">&quot;Latitude&quot;</span>)</div>
-<div class="sourceLine" id="cb49-23" data-line-number="23">  df</div>
-<div class="sourceLine" id="cb49-24" data-line-number="24">}</div></code></pre>
+<pre class="sourceCode r" id="cb45"><code class="sourceCode r"><div class="sourceLine" id="cb45-1" data-line-number="1"><span class="kw">library</span>(rgdal)</div>
+<div class="sourceLine" id="cb45-2" data-line-number="2">modify_StopPoints &lt;-<span class="st"> </span><span class="cf">function</span>(df){</div>
+<div class="sourceLine" id="cb45-3" data-line-number="3">  <span class="co"># Define proj4 coordinate systems</span></div>
+<div class="sourceLine" id="cb45-4" data-line-number="4">  bng &lt;-<span class="st"> &quot;+init=epsg:27700&quot;</span></div>
+<div class="sourceLine" id="cb45-5" data-line-number="5">  latlon &lt;-<span class="st"> &quot;+proj=longlat +datum=WGS84&quot;</span></div>
+<div class="sourceLine" id="cb45-6" data-line-number="6"></div>
+<div class="sourceLine" id="cb45-7" data-line-number="7">  <span class="co"># Create spatial object using BNG coordinates</span></div>
+<div class="sourceLine" id="cb45-8" data-line-number="8">  coord.bng &lt;-</div>
+<div class="sourceLine" id="cb45-9" data-line-number="9"><span class="st">    </span><span class="kw">with</span>(df,</div>
+<div class="sourceLine" id="cb45-10" data-line-number="10">         <span class="kw">SpatialPointsDataFrame</span>(</div>
+<div class="sourceLine" id="cb45-11" data-line-number="11">           <span class="kw">cbind</span>(Place_Location_Easting, Place_Location_Northing) <span class="op">%&gt;%</span></div>
+<div class="sourceLine" id="cb45-12" data-line-number="12"><span class="st">             </span><span class="kw">as.integer</span>() <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">matrix</span>(<span class="dt">ncol =</span> <span class="dv">2</span>),</div>
+<div class="sourceLine" id="cb45-13" data-line-number="13">           <span class="dt">data =</span> <span class="kw">tibble</span>(AtcoCode,</div>
+<div class="sourceLine" id="cb45-14" data-line-number="14">                         Descriptor_CommonName,</div>
+<div class="sourceLine" id="cb45-15" data-line-number="15">                         Place_NptgLocalityRef),</div>
+<div class="sourceLine" id="cb45-16" data-line-number="16">           <span class="dt">proj4string =</span> <span class="kw">CRS</span>(bng)))</div>
+<div class="sourceLine" id="cb45-17" data-line-number="17"></div>
+<div class="sourceLine" id="cb45-18" data-line-number="18">  <span class="co"># Cast as latlon coordinates</span></div>
+<div class="sourceLine" id="cb45-19" data-line-number="19">  coord.latlon &lt;-<span class="st"> </span><span class="kw">spTransform</span>(coord.bng, <span class="kw">CRS</span>(latlon))</div>
+<div class="sourceLine" id="cb45-20" data-line-number="20"></div>
+<div class="sourceLine" id="cb45-21" data-line-number="21">  <span class="co"># Replace dataframe</span></div>
+<div class="sourceLine" id="cb45-22" data-line-number="22">  df &lt;-<span class="st"> </span><span class="kw">as_tibble</span>(coord.latlon)</div>
+<div class="sourceLine" id="cb45-23" data-line-number="23">  <span class="kw">names</span>(df) &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;AtcoCode&quot;</span>,<span class="st">&quot;CommonName&quot;</span>,<span class="st">&quot;NptgLocalityRef&quot;</span>,<span class="st">&quot;Longitude&quot;</span>,<span class="st">&quot;Latitude&quot;</span>)</div>
+<div class="sourceLine" id="cb45-24" data-line-number="24">  df</div>
+<div class="sourceLine" id="cb45-25" data-line-number="25">}</div></code></pre>
 <h3 id="journeytime-and-departuremins">JourneyTime and DepartureMins</h3>
 <p>Perhaps the most significant variable is the RunTime of each journey section as it supposedly tells us the travel time between two StopPoints.</p>
-<pre class="sourceCode r" id="cb50"><code class="sourceCode r"><div class="sourceLine" id="cb50-1" data-line-number="1"><span class="kw">table</span>(tfl<span class="op">$</span>JourneyPatternTimingLinks<span class="op">$</span>RunTime)</div></code></pre>
-<pre><code>## 
-## PT0S PT1M PT2M PT3M PT4M PT7M 
-##   24  397  330   41    1    1
+<pre class="sourceCode r" id="cb46"><code class="sourceCode r"><div class="sourceLine" id="cb46-1" data-line-number="1"><span class="kw">table</span>(tfl<span class="op">$</span>JourneyPatternTimingLinks<span class="op">$</span>RunTime)</div></code></pre>
+<pre><code>##
+## PT0S PT1M PT2M PT3M PT4M PT5M PT6M PT7M
+##  263 2315 1856  269   30    6    1    3
 </code></pre>
 <p>Unfortunately this frequency table shows that the duration is presented as a text field where it’s assumed the “M” indicates the RunTime is rounded to the nearest minute. Judging by the “0S” field, this would also suggest that a number of links take zero seconds! Clearly the duration has been rounded to the nearest minute however it also turns out that every instance of zero RunTime has at least 1 minute of WaitTime at the next station.</p>
-<pre class="sourceCode r" id="cb52"><code class="sourceCode r"><div class="sourceLine" id="cb52-1" data-line-number="1"><span class="co"># Check that there aren't records with both no WaitTime and zero RunTime</span></div>
-<div class="sourceLine" id="cb52-2" data-line-number="2">tfl<span class="op">$</span>JourneyPatternTimingLinks <span class="op">%&gt;%</span></div>
-<div class="sourceLine" id="cb52-3" data-line-number="3"><span class="st">  </span><span class="kw">filter</span>(<span class="kw">is.na</span>(WaitTime) <span class="op">&amp;&amp;</span><span class="st"> </span>RunTime <span class="op">==</span><span class="st"> &quot;PT0S&quot;</span>) <span class="op">%&gt;%</span></div>
-<div class="sourceLine" id="cb52-4" data-line-number="4"><span class="st">  </span>nrow <span class="op">==</span><span class="st"> </span><span class="dv">0</span></div></code></pre>
+<pre class="sourceCode r" id="cb48"><code class="sourceCode r"><div class="sourceLine" id="cb48-1" data-line-number="1"><span class="co"># Check that there aren't records with both no WaitTime and zero RunTime</span></div>
+<div class="sourceLine" id="cb48-2" data-line-number="2">tfl<span class="op">$</span>JourneyPatternTimingLinks <span class="op">%&gt;%</span></div>
+<div class="sourceLine" id="cb48-3" data-line-number="3"><span class="st">  </span><span class="kw">filter</span>(<span class="kw">is.na</span>(WaitTime) <span class="op">&amp;&amp;</span><span class="st"> </span>RunTime <span class="op">==</span><span class="st"> &quot;PT0S&quot;</span>) <span class="op">%&gt;%</span></div>
+<div class="sourceLine" id="cb48-4" data-line-number="4"><span class="st">  </span>nrow <span class="op">==</span><span class="st"> </span><span class="dv">0</span></div></code></pre>
 <pre><code>## [1] TRUE
 </code></pre>
 <p>Therefore, we can convert the RunTime and WaitTime to integer variables by extracting the third character from every observation and build a new variable “JourneyTime” which takes into account the total RunTime and WaitTime which we now know will always be at least 1 minute:</p>
-<pre class="sourceCode r" id="cb54"><code class="sourceCode r"><div class="sourceLine" id="cb54-1" data-line-number="1">modify_JourneyPatternTimingLinks &lt;-<span class="st"> </span><span class="cf">function</span>(df){</div>
-<div class="sourceLine" id="cb54-2" data-line-number="2">  <span class="kw">within</span>(df, {</div>
-<div class="sourceLine" id="cb54-3" data-line-number="3">    From_SequenceNumber <span class="op">%&lt;&gt;%</span><span class="st"> </span>as.integer</div>
-<div class="sourceLine" id="cb54-4" data-line-number="4">    To_SequenceNumber <span class="op">%&lt;&gt;%</span><span class="st"> </span>as.integer</div>
-<div class="sourceLine" id="cb54-5" data-line-number="5">    <span class="co"># Extract timings from RunTime and WaitTime to create JourneyTime</span></div>
-<div class="sourceLine" id="cb54-6" data-line-number="6">    RunTime <span class="op">%&lt;&gt;%</span><span class="st"> </span><span class="kw">substr</span>(<span class="dv">3</span>, <span class="dv">3</span>) <span class="op">%&gt;%</span><span class="st"> </span>as.integer</div>
-<div class="sourceLine" id="cb54-7" data-line-number="7">    WaitTime <span class="op">%&lt;&gt;%</span><span class="st"> </span><span class="kw">substr</span>(<span class="dv">3</span>, <span class="dv">3</span>) <span class="op">%&gt;%</span><span class="st"> </span>as.integer</div>
-<div class="sourceLine" id="cb54-8" data-line-number="8">    JourneyTime &lt;-<span class="st"> </span>RunTime <span class="op">+</span><span class="st"> </span><span class="kw">ifelse</span>(<span class="kw">is.na</span>(WaitTime), <span class="dv">0</span>, WaitTime)</div>
-<div class="sourceLine" id="cb54-9" data-line-number="9">  })</div>
-<div class="sourceLine" id="cb54-10" data-line-number="10">}</div></code></pre>
+<pre class="sourceCode r" id="cb50"><code class="sourceCode r"><div class="sourceLine" id="cb50-1" data-line-number="1">modify_JourneyPatternTimingLinks &lt;-<span class="st"> </span><span class="cf">function</span>(df){</div>
+<div class="sourceLine" id="cb50-2" data-line-number="2">  <span class="kw">within</span>(df, {</div>
+<div class="sourceLine" id="cb50-3" data-line-number="3">    From_SequenceNumber <span class="op">%&lt;&gt;%</span><span class="st"> </span>as.integer</div>
+<div class="sourceLine" id="cb50-4" data-line-number="4">    To_SequenceNumber <span class="op">%&lt;&gt;%</span><span class="st"> </span>as.integer</div>
+<div class="sourceLine" id="cb50-5" data-line-number="5">    <span class="co"># Extract timings from RunTime and WaitTime to create JourneyTime</span></div>
+<div class="sourceLine" id="cb50-6" data-line-number="6">    RunTime <span class="op">%&lt;&gt;%</span><span class="st"> </span><span class="kw">substr</span>(<span class="dv">3</span>, <span class="dv">3</span>) <span class="op">%&gt;%</span><span class="st"> </span>as.integer</div>
+<div class="sourceLine" id="cb50-7" data-line-number="7">    WaitTime <span class="op">%&lt;&gt;%</span><span class="st"> </span><span class="kw">substr</span>(<span class="dv">3</span>, <span class="dv">3</span>) <span class="op">%&gt;%</span><span class="st"> </span>as.integer</div>
+<div class="sourceLine" id="cb50-8" data-line-number="8">    JourneyTime &lt;-<span class="st"> </span>RunTime <span class="op">+</span><span class="st"> </span><span class="kw">ifelse</span>(<span class="kw">is.na</span>(WaitTime), <span class="dv">0</span>, WaitTime)</div>
+<div class="sourceLine" id="cb50-9" data-line-number="9">  })</div>
+<div class="sourceLine" id="cb50-10" data-line-number="10">}</div></code></pre>
 <p>The other most important field is the departure times of every train from their origin station, DepartureTime, which is currently stored as text.</p>
-<pre class="sourceCode r" id="cb55"><code class="sourceCode r"><div class="sourceLine" id="cb55-1" data-line-number="1"><span class="kw">head</span>(tfl<span class="op">$</span>VehicleJourneys<span class="op">$</span>DepartureTime)</div></code></pre>
-<pre><code>## [1] &quot;11:29:00&quot; &quot;12:39:00&quot; &quot;19:16:00&quot; &quot;20:28:00&quot; &quot;09:57:00&quot; &quot;12:56:00&quot;
+<pre class="sourceCode r" id="cb51"><code class="sourceCode r"><div class="sourceLine" id="cb51-1" data-line-number="1"><span class="kw">head</span>(tfl<span class="op">$</span>VehicleJourneys<span class="op">$</span>DepartureTime)</div></code></pre>
+<pre><code>## [1] &quot;21:29:00&quot; &quot;12:36:00&quot; &quot;13:49:00&quot; &quot;14:59:00&quot; &quot;21:37:00&quot; &quot;16:36:00&quot;
 </code></pre>
 <p>So it looks like this variable is a time stamp which is also rounded to the nearest minute.</p>
 <p>Since we are now dealing solely in minutes on a day-by-day basis, it would make the most sense to cast this DepartureTime field as “the number of minutes since midnight”. This makes it less human-readable however addition of DepartureTime with JourneyTime is now very straightforward and doesn’t rely on date-time typecasting or datediff functions. That said, in the event that we’re using a database that handles date-times well, it doesn’t hurt to correctly cast DepartureTime and keep it in the data frame separately.</p>
-<pre class="sourceCode r" id="cb57"><code class="sourceCode r"><div class="sourceLine" id="cb57-1" data-line-number="1">modify_VehicleJourneys &lt;-<span class="st"> </span><span class="cf">function</span>(df){</div>
-<div class="sourceLine" id="cb57-2" data-line-number="2">  <span class="kw">within</span>(df, {</div>
-<div class="sourceLine" id="cb57-3" data-line-number="3">    DepartureTime <span class="op">%&lt;&gt;%</span><span class="st"> </span><span class="kw">as.POSIXct</span>(<span class="dt">format =</span> <span class="st">&quot;%T&quot;</span>)</div>
-<div class="sourceLine" id="cb57-4" data-line-number="4">    <span class="co"># Extract number of minutes since midnight from DepartureTime</span></div>
-<div class="sourceLine" id="cb57-5" data-line-number="5">    DepartureMins &lt;-<span class="st"> </span>DepartureTime <span class="op">%&gt;%</span></div>
-<div class="sourceLine" id="cb57-6" data-line-number="6"><span class="st">      </span>{lubridate<span class="op">::</span><span class="kw">minute</span>(.) <span class="op">+</span><span class="st"> </span><span class="dv">60</span> <span class="op">*</span><span class="st"> </span>lubridate<span class="op">::</span><span class="kw">hour</span>(.)}</div>
-<div class="sourceLine" id="cb57-7" data-line-number="7">  })</div>
-<div class="sourceLine" id="cb57-8" data-line-number="8">}</div></code></pre>
+<pre class="sourceCode r" id="cb53"><code class="sourceCode r"><div class="sourceLine" id="cb53-1" data-line-number="1">modify_VehicleJourneys &lt;-<span class="st"> </span><span class="cf">function</span>(df){</div>
+<div class="sourceLine" id="cb53-2" data-line-number="2">  <span class="kw">within</span>(df, {</div>
+<div class="sourceLine" id="cb53-3" data-line-number="3">    DepartureTime <span class="op">%&lt;&gt;%</span><span class="st"> </span><span class="kw">as.POSIXct</span>(<span class="dt">format =</span> <span class="st">&quot;%T&quot;</span>)</div>
+<div class="sourceLine" id="cb53-4" data-line-number="4">    <span class="co"># Extract number of minutes since midnight from DepartureTime</span></div>
+<div class="sourceLine" id="cb53-5" data-line-number="5">    DepartureMins &lt;-<span class="st"> </span>DepartureTime <span class="op">%&gt;%</span></div>
+<div class="sourceLine" id="cb53-6" data-line-number="6"><span class="st">      </span>{lubridate<span class="op">::</span><span class="kw">minute</span>(.) <span class="op">+</span><span class="st"> </span><span class="dv">60</span> <span class="op">*</span><span class="st"> </span>lubridate<span class="op">::</span><span class="kw">hour</span>(.)}</div>
+<div class="sourceLine" id="cb53-7" data-line-number="7">  })</div>
+<div class="sourceLine" id="cb53-8" data-line-number="8">}</div></code></pre>
 <h1 id="normalisation-and-relational-databases">Normalisation and Relational Databases</h1>
 <p>As found in the previous section, the dataset is provided in 3rd normal form already making it very easy to simply push the tables as-is to a database.</p>
 <h2 id="dbms-setup">DBMS Setup</h2>
 <p>Due to the information given to us, the queries to be computed in-database are quite advanced and require running cumulative calculations and row offsets by group which are only available in an advanced DBMS and not SQLite or MySQL.</p>
 <p>For this reason, we’ll use an open-source database PostgreSQL for its <a href="http://www.postgresqltutorial.com/postgresql-window-function/">windowing functions</a> though other proprietary databases such as Oracle or Microsoft also provide this functionality. Thanks to <a href="https://www.docker.com/what-docker">Docker</a> containers, provisioning a clean lightweight Postgres database on your local machine is one line of code without any additional setup other than downloading Docker itself.</p>
-<pre class="sourceCode bash" id="cb58"><code class="sourceCode bash"><div class="sourceLine" id="cb58-1" data-line-number="1"><span class="ex">docker</span> run --name postgres_london_tube -p 5432:5432 -d -e POSTGRES_PASSWORD=mysecretpassword postgres:alpine</div></code></pre>
+<pre class="sourceCode bash" id="cb54"><code class="sourceCode bash"><div class="sourceLine" id="cb54-1" data-line-number="1"><span class="ex">docker</span> run --name postgres_london_tube -p 5432:5432 -d -e POSTGRES_PASSWORD=mysecretpassword postgres:alpine</div></code></pre>
 <p><em>The alpine image is about 1/10th the size of the official postgres container as it uses a significantly smaller distribution of Linux with fewer of PostgreSQL’s auxilliary features.</em></p>
 <p>Test that the server is running and the connection works by setting up a development database for the project:</p>
-<pre class="sourceCode r" id="cb59"><code class="sourceCode r"><div class="sourceLine" id="cb59-1" data-line-number="1">con &lt;-<span class="st"> </span><span class="kw">dbConnect</span>(drv, <span class="dt">host =</span> host, <span class="dt">user =</span> user, <span class="dt">password =</span> password,</div>
-<div class="sourceLine" id="cb59-2" data-line-number="2">                 <span class="dt">dbname =</span> <span class="st">&quot;postgres&quot;</span>)</div>
-<div class="sourceLine" id="cb59-3" data-line-number="3"><span class="kw">dbSendQuery</span>(con, <span class="st">&quot;CREATE DATABASE londontube_r;&quot;</span>)</div></code></pre>
-<pre><code>## &lt;PostgreSQLResult&gt;
-</code></pre>
-<pre class="sourceCode r" id="cb61"><code class="sourceCode r"><div class="sourceLine" id="cb61-1" data-line-number="1"><span class="kw">dbDisconnect</span>(con)</div></code></pre>
-<pre><code>## [1] TRUE
-</code></pre>
-<pre class="sourceCode r" id="cb63"><code class="sourceCode r"><div class="sourceLine" id="cb63-1" data-line-number="1">get_con &lt;-<span class="st"> </span><span class="cf">function</span>() {</div>
-<div class="sourceLine" id="cb63-2" data-line-number="2">  <span class="kw">dbConnect</span>(drv,</div>
-<div class="sourceLine" id="cb63-3" data-line-number="3">            <span class="dt">host =</span> host, <span class="dt">user =</span> user, <span class="dt">password =</span> password,</div>
-<div class="sourceLine" id="cb63-4" data-line-number="4">            <span class="dt">dbname =</span> <span class="st">&quot;londontube_r&quot;</span>)</div>
-<div class="sourceLine" id="cb63-5" data-line-number="5">}</div></code></pre>
+<pre class="sourceCode r" id="cb55"><code class="sourceCode r"><div class="sourceLine" id="cb55-1" data-line-number="1">con &lt;-<span class="st"> </span><span class="kw">dbConnect</span>(drv, <span class="dt">host =</span> host, <span class="dt">user =</span> user, <span class="dt">password =</span> password,</div>
+<div class="sourceLine" id="cb55-2" data-line-number="2">                 <span class="dt">dbname =</span> <span class="st">&quot;postgres&quot;</span>)</div>
+<div class="sourceLine" id="cb55-3" data-line-number="3"><span class="kw">dbSendQuery</span>(con, <span class="st">&quot;CREATE DATABASE londontube_r;&quot;</span>)</div>
+<div class="sourceLine" id="cb55-4" data-line-number="4"><span class="kw">dbDisconnect</span>(con)</div></code></pre>
+<pre class="sourceCode r" id="cb56"><code class="sourceCode r"><div class="sourceLine" id="cb56-1" data-line-number="1">get_con &lt;-<span class="st"> </span><span class="cf">function</span>() {</div>
+<div class="sourceLine" id="cb56-2" data-line-number="2">  <span class="kw">dbConnect</span>(drv,</div>
+<div class="sourceLine" id="cb56-3" data-line-number="3">            <span class="dt">host =</span> host, <span class="dt">user =</span> user, <span class="dt">password =</span> password,</div>
+<div class="sourceLine" id="cb56-4" data-line-number="4">            <span class="dt">dbname =</span> <span class="st">&quot;londontube_r&quot;</span>)</div>
+<div class="sourceLine" id="cb56-5" data-line-number="5">}</div></code></pre>
 <h2 id="build-database">Build database</h2>
 <p>We can write a function that loops over all eight tables sequentially adding them to the database whilst dropping any existing tables.</p>
 <p>First define the primary keys of the tables:</p>
-<pre class="sourceCode r" id="cb64"><code class="sourceCode r"><div class="sourceLine" id="cb64-1" data-line-number="1">primarykeys &lt;-<span class="st"> </span><span class="kw">list</span>(</div>
-<div class="sourceLine" id="cb64-2" data-line-number="2">  <span class="dt">NptgLocalities =</span> <span class="st">'&quot;NptgLocalityRef&quot;'</span>,</div>
-<div class="sourceLine" id="cb64-3" data-line-number="3">  <span class="dt">StopPoints =</span> <span class="st">'&quot;AtcoCode&quot;'</span>,</div>
-<div class="sourceLine" id="cb64-4" data-line-number="4">  <span class="dt">RouteLinks =</span> <span class="st">'&quot;RouteLinkID&quot;'</span>,</div>
-<div class="sourceLine" id="cb64-5" data-line-number="5">  <span class="dt">Routes =</span> <span class="st">'&quot;PrivateCode&quot;'</span>,</div>
-<div class="sourceLine" id="cb64-6" data-line-number="6">  <span class="dt">JourneyPatternTimingLinks =</span> <span class="st">'&quot;JourneyPatternTimingLinkID&quot;'</span>,</div>
-<div class="sourceLine" id="cb64-7" data-line-number="7">  <span class="dt">Services =</span> <span class="st">'&quot;ServiceCode&quot;'</span>,</div>
-<div class="sourceLine" id="cb64-8" data-line-number="8">  <span class="dt">JourneyPatterns =</span> <span class="st">'&quot;JourneyPatternID&quot;'</span>,</div>
-<div class="sourceLine" id="cb64-9" data-line-number="9">  <span class="dt">VehicleJourneys =</span> <span class="st">'&quot;VehicleJourneyCode&quot;'</span></div>
-<div class="sourceLine" id="cb64-10" data-line-number="10">)</div></code></pre>
+<pre class="sourceCode r" id="cb57"><code class="sourceCode r"><div class="sourceLine" id="cb57-1" data-line-number="1">primarykeys &lt;-<span class="st"> </span><span class="kw">list</span>(</div>
+<div class="sourceLine" id="cb57-2" data-line-number="2">  <span class="dt">NptgLocalities =</span> <span class="st">'&quot;NptgLocalityRef&quot;'</span>,</div>
+<div class="sourceLine" id="cb57-3" data-line-number="3">  <span class="dt">StopPoints =</span> <span class="st">'&quot;AtcoCode&quot;'</span>,</div>
+<div class="sourceLine" id="cb57-4" data-line-number="4">  <span class="dt">RouteLinks =</span> <span class="st">'&quot;RouteLinkID&quot;'</span>,</div>
+<div class="sourceLine" id="cb57-5" data-line-number="5">  <span class="dt">Routes =</span> <span class="st">'&quot;PrivateCode&quot;'</span>,</div>
+<div class="sourceLine" id="cb57-6" data-line-number="6">  <span class="dt">JourneyPatternTimingLinks =</span> <span class="st">'&quot;JourneyPatternTimingLinkID&quot;'</span>,</div>
+<div class="sourceLine" id="cb57-7" data-line-number="7">  <span class="dt">Services =</span> <span class="st">'&quot;ServiceCode&quot;'</span>,</div>
+<div class="sourceLine" id="cb57-8" data-line-number="8">  <span class="dt">JourneyPatterns =</span> <span class="st">'&quot;JourneyPatternID&quot;'</span>,</div>
+<div class="sourceLine" id="cb57-9" data-line-number="9">  <span class="dt">VehicleJourneys =</span> <span class="st">'&quot;VehicleJourneyCode&quot;'</span></div>
+<div class="sourceLine" id="cb57-10" data-line-number="10">)</div></code></pre>
 <p>and upload the data:</p>
-<pre class="sourceCode r" id="cb65"><code class="sourceCode r"><div class="sourceLine" id="cb65-1" data-line-number="1">create_tables &lt;-<span class="st"> </span><span class="cf">function</span>(tablename, tabledata, primary_key_cols, con){</div>
-<div class="sourceLine" id="cb65-2" data-line-number="2">  <span class="co"># Insert data</span></div>
-<div class="sourceLine" id="cb65-3" data-line-number="3">  <span class="kw">dbWriteTable</span>(con, tablename, tabledata, <span class="dt">overwrite =</span> <span class="ot">TRUE</span>, <span class="dt">row.names =</span> <span class="ot">FALSE</span>)</div>
-<div class="sourceLine" id="cb65-4" data-line-number="4">  </div>
-<div class="sourceLine" id="cb65-5" data-line-number="5">  <span class="co"># Add Primary Keys</span></div>
-<div class="sourceLine" id="cb65-6" data-line-number="6">  query &lt;-<span class="st"> </span><span class="kw">sprintf</span>(</div>
-<div class="sourceLine" id="cb65-7" data-line-number="7">    <span class="st">&quot;ALTER TABLE %1$s</span></div>
-<div class="sourceLine" id="cb65-8" data-line-number="8"><span class="st">    ADD PRIMARY KEY (%2$s);&quot;</span>,</div>
-<div class="sourceLine" id="cb65-9" data-line-number="9">    tablename, <span class="co"># Current table name</span></div>
-<div class="sourceLine" id="cb65-10" data-line-number="10">    <span class="kw">paste</span>(primary_key_cols, <span class="dt">collapse =</span> <span class="st">&quot;, &quot;</span>) <span class="co"># PK columns</span></div>
-<div class="sourceLine" id="cb65-11" data-line-number="11">  )</div>
-<div class="sourceLine" id="cb65-12" data-line-number="12">  </div>
-<div class="sourceLine" id="cb65-13" data-line-number="13">  <span class="co"># Run queries</span></div>
-<div class="sourceLine" id="cb65-14" data-line-number="14">  <span class="kw">dbExecute</span>(con, query)</div>
-<div class="sourceLine" id="cb65-15" data-line-number="15">}</div>
-<div class="sourceLine" id="cb65-16" data-line-number="16"></div>
-<div class="sourceLine" id="cb65-17" data-line-number="17"><span class="co"># Build database with the same tablenames as input data</span></div>
-<div class="sourceLine" id="cb65-18" data-line-number="18">con &lt;-<span class="st"> </span><span class="kw">get_con</span>()</div>
-<div class="sourceLine" id="cb65-19" data-line-number="19">tablenames &lt;-<span class="st"> </span><span class="kw">tolower</span>(<span class="kw">names</span>(tfl))</div>
-<div class="sourceLine" id="cb65-20" data-line-number="20">table_creation &lt;-<span class="st"> </span>purrr<span class="op">::</span><span class="kw">pmap</span>(<span class="kw">list</span>(tablenames, tfl, primarykeys),</div>
-<div class="sourceLine" id="cb65-21" data-line-number="21">                              create_tables, con)</div>
-<div class="sourceLine" id="cb65-22" data-line-number="22"><span class="kw">dbDisconnect</span>(con)</div></code></pre>
+<pre class="sourceCode r" id="cb58"><code class="sourceCode r"><div class="sourceLine" id="cb58-1" data-line-number="1">create_tables &lt;-<span class="st"> </span><span class="cf">function</span>(tablename, tabledata, primary_key_cols, con){</div>
+<div class="sourceLine" id="cb58-2" data-line-number="2">  <span class="co"># Insert data</span></div>
+<div class="sourceLine" id="cb58-3" data-line-number="3">  <span class="kw">dbWriteTable</span>(con, tablename, tabledata, <span class="dt">overwrite =</span> <span class="ot">TRUE</span>, <span class="dt">row.names =</span> <span class="ot">FALSE</span>)</div>
+<div class="sourceLine" id="cb58-4" data-line-number="4">  </div>
+<div class="sourceLine" id="cb58-5" data-line-number="5">  <span class="co"># Add Primary Keys</span></div>
+<div class="sourceLine" id="cb58-6" data-line-number="6">  query &lt;-<span class="st"> </span><span class="kw">sprintf</span>(</div>
+<div class="sourceLine" id="cb58-7" data-line-number="7">    <span class="st">&quot;ALTER TABLE %1$s</span></div>
+<div class="sourceLine" id="cb58-8" data-line-number="8"><span class="st">    ADD PRIMARY KEY (%2$s);&quot;</span>,</div>
+<div class="sourceLine" id="cb58-9" data-line-number="9">    tablename, <span class="co"># Current table name</span></div>
+<div class="sourceLine" id="cb58-10" data-line-number="10">    <span class="kw">paste</span>(primary_key_cols, <span class="dt">collapse =</span> <span class="st">&quot;, &quot;</span>) <span class="co"># PK columns</span></div>
+<div class="sourceLine" id="cb58-11" data-line-number="11">  )</div>
+<div class="sourceLine" id="cb58-12" data-line-number="12">  </div>
+<div class="sourceLine" id="cb58-13" data-line-number="13">  <span class="co"># Run queries</span></div>
+<div class="sourceLine" id="cb58-14" data-line-number="14">  <span class="kw">dbExecute</span>(con, query)</div>
+<div class="sourceLine" id="cb58-15" data-line-number="15">}</div>
+<div class="sourceLine" id="cb58-16" data-line-number="16"></div>
+<div class="sourceLine" id="cb58-17" data-line-number="17"><span class="co"># Build database with the same tablenames as input data</span></div>
+<div class="sourceLine" id="cb58-18" data-line-number="18">con &lt;-<span class="st"> </span><span class="kw">get_con</span>()</div>
+<div class="sourceLine" id="cb58-19" data-line-number="19">tablenames &lt;-<span class="st"> </span><span class="kw">tolower</span>(<span class="kw">names</span>(tfl))</div>
+<div class="sourceLine" id="cb58-20" data-line-number="20">table_creation &lt;-<span class="st"> </span>purrr<span class="op">::</span><span class="kw">pmap</span>(<span class="kw">list</span>(tablenames, tfl, primarykeys),</div>
+<div class="sourceLine" id="cb58-21" data-line-number="21">                              create_tables, con)</div>
+<div class="sourceLine" id="cb58-22" data-line-number="22"><span class="kw">dbDisconnect</span>(con)</div></code></pre>
 <pre><code>## [1] TRUE
 </code></pre>
 <p>Finally we can check that the tables were loaded successfully:</p>
-<pre class="sourceCode r" id="cb67"><code class="sourceCode r"><div class="sourceLine" id="cb67-1" data-line-number="1">con &lt;-<span class="st"> </span><span class="kw">get_con</span>()</div>
-<div class="sourceLine" id="cb67-2" data-line-number="2"><span class="kw">dbListTables</span>(con)</div></code></pre>
-<pre><code>## [1] &quot;nptglocalities&quot;            &quot;stoppoints&quot;               
-## [3] &quot;routelinks&quot;                &quot;routes&quot;                   
-## [5] &quot;journeypatterntiminglinks&quot; &quot;services&quot;                 
+<pre class="sourceCode r" id="cb60"><code class="sourceCode r"><div class="sourceLine" id="cb60-1" data-line-number="1">con &lt;-<span class="st"> </span><span class="kw">get_con</span>()</div>
+<div class="sourceLine" id="cb60-2" data-line-number="2"><span class="kw">dbListTables</span>(con)</div></code></pre>
+<pre><code>## [1] &quot;nptglocalities&quot;            &quot;stoppoints&quot;
+## [3] &quot;routelinks&quot;                &quot;routes&quot;
+## [5] &quot;journeypatterntiminglinks&quot; &quot;services&quot;
 ## [7] &quot;journeypatterns&quot;           &quot;vehiclejourneys&quot;
 </code></pre>
-<pre class="sourceCode r" id="cb69"><code class="sourceCode r"><div class="sourceLine" id="cb69-1" data-line-number="1"><span class="kw">dbDisconnect</span>(con)</div></code></pre>
+<pre class="sourceCode r" id="cb62"><code class="sourceCode r"><div class="sourceLine" id="cb62-1" data-line-number="1"><span class="kw">dbDisconnect</span>(con)</div></code></pre>
 <pre><code>## [1] TRUE
 </code></pre>
 <h2 id="joining-tables">Joining Tables</h2>
@@ -1238,123 +1236,123 @@ If you wish to execute the chunks interactively, run the corresponding
 </ol>
 <p>For analysis later on, we also want to flag whether the link is the last trip in the vehicle’s journey. This just involves checking whether the link sequence is the largest value for that vehicle.</p>
 <p>The table-valued function <code>departureboard</code> is as follows:</p>
-<pre class="sourceCode sql" id="cb71"><code class="sourceCode sql"><div class="sourceLine" id="cb71-1" data-line-number="1"><span class="kw">CREATE</span> <span class="kw">OR</span> <span class="kw">REPLACE</span> <span class="kw">FUNCTION</span> departureboard(<span class="kw">IN</span> _timetable_date text)</div>
-<div class="sourceLine" id="cb71-2" data-line-number="2">  RETURNS <span class="kw">TABLE</span> (</div>
-<div class="sourceLine" id="cb71-3" data-line-number="3">    <span class="ot">&quot;VehicleJourneyCode&quot;</span> text,</div>
-<div class="sourceLine" id="cb71-4" data-line-number="4">    <span class="ot">&quot;Line&quot;</span> text,</div>
-<div class="sourceLine" id="cb71-5" data-line-number="5">    <span class="ot">&quot;From_VehicleSequenceNumber&quot;</span> <span class="dt">integer</span>,</div>
-<div class="sourceLine" id="cb71-6" data-line-number="6">    <span class="ot">&quot;From_StopPointRef&quot;</span> text,</div>
-<div class="sourceLine" id="cb71-7" data-line-number="7">    <span class="ot">&quot;From_StopPointName&quot;</span> text,</div>
-<div class="sourceLine" id="cb71-8" data-line-number="8">    <span class="ot">&quot;From_Longitude&quot;</span> <span class="dt">double</span> <span class="dt">precision</span>,</div>
-<div class="sourceLine" id="cb71-9" data-line-number="9">    <span class="ot">&quot;From_Latitude&quot;</span> <span class="dt">double</span> <span class="dt">precision</span>,</div>
-<div class="sourceLine" id="cb71-10" data-line-number="10">    <span class="ot">&quot;To_VehicleSequenceNumber&quot;</span> <span class="dt">integer</span>,</div>
-<div class="sourceLine" id="cb71-11" data-line-number="11">    <span class="ot">&quot;To_StopPointRef&quot;</span> text,</div>
-<div class="sourceLine" id="cb71-12" data-line-number="12">    <span class="ot">&quot;To_StopPointName&quot;</span> text,</div>
-<div class="sourceLine" id="cb71-13" data-line-number="13">    <span class="ot">&quot;To_Longitude&quot;</span> <span class="dt">double</span> <span class="dt">precision</span>,</div>
-<div class="sourceLine" id="cb71-14" data-line-number="14">    <span class="ot">&quot;To_Latitude&quot;</span> <span class="dt">double</span> <span class="dt">precision</span>,</div>
-<div class="sourceLine" id="cb71-15" data-line-number="15">    <span class="ot">&quot;JourneyTime&quot;</span>   <span class="dt">double</span> <span class="dt">precision</span>,</div>
-<div class="sourceLine" id="cb71-16" data-line-number="16">    <span class="ot">&quot;DepartureMins_Link&quot;</span> <span class="dt">double</span> <span class="dt">precision</span>,</div>
-<div class="sourceLine" id="cb71-17" data-line-number="17">    <span class="ot">&quot;ArrivalMins_Link&quot;</span> <span class="dt">double</span> <span class="dt">precision</span>,</div>
-<div class="sourceLine" id="cb71-18" data-line-number="18">    <span class="ot">&quot;Flag_LastStop&quot;</span> <span class="dt">boolean</span></div>
-<div class="sourceLine" id="cb71-19" data-line-number="19">  )</div>
-<div class="sourceLine" id="cb71-20" data-line-number="20"></div>
-<div class="sourceLine" id="cb71-21" data-line-number="21">  <span class="kw">AS</span></div>
-<div class="sourceLine" id="cb71-22" data-line-number="22"></div>
-<div class="sourceLine" id="cb71-23" data-line-number="23">  $BODY$</div>
-<div class="sourceLine" id="cb71-24" data-line-number="24"></div>
-<div class="sourceLine" id="cb71-25" data-line-number="25">  <span class="kw">SELECT</span></div>
-<div class="sourceLine" id="cb71-26" data-line-number="26"></div>
-<div class="sourceLine" id="cb71-27" data-line-number="27">     <span class="ot">&quot;VehicleJourneyCode&quot;</span></div>
-<div class="sourceLine" id="cb71-28" data-line-number="28">     <span class="co">-- Extract three-letter line abbreviation</span></div>
-<div class="sourceLine" id="cb71-29" data-line-number="29">    ,SUBSTRING(<span class="ot">&quot;LineRef&quot;</span> <span class="kw">FROM</span> <span class="dv">3</span> <span class="kw">FOR</span> <span class="dv">3</span>) <span class="ot">&quot;Line&quot;</span></div>
-<div class="sourceLine" id="cb71-30" data-line-number="30">    ,<span class="fu">CAST</span>(<span class="ot">&quot;From_VehicleSequenceNumber&quot;</span> <span class="kw">as</span> <span class="dt">int</span>) <span class="ot">&quot;From_VehicleSequenceNumber&quot;</span></div>
-<div class="sourceLine" id="cb71-31" data-line-number="31">    ,<span class="ot">&quot;From_StopPointRef&quot;</span></div>
-<div class="sourceLine" id="cb71-32" data-line-number="32">    ,<span class="ot">&quot;From_StopPointName&quot;</span></div>
-<div class="sourceLine" id="cb71-33" data-line-number="33">    ,<span class="ot">&quot;From_Longitude&quot;</span></div>
-<div class="sourceLine" id="cb71-34" data-line-number="34">    ,<span class="ot">&quot;From_Latitude&quot;</span></div>
-<div class="sourceLine" id="cb71-35" data-line-number="35">    <span class="co">-- Re-create SequenceNumber for each vehicle</span></div>
-<div class="sourceLine" id="cb71-36" data-line-number="36">    ,<span class="fu">CAST</span>(<span class="ot">&quot;From_VehicleSequenceNumber&quot;</span> + <span class="dv">1</span> <span class="kw">as</span> <span class="dt">int</span>) <span class="ot">&quot;To_VehicleSequenceNumber&quot;</span></div>
-<div class="sourceLine" id="cb71-37" data-line-number="37">    ,<span class="ot">&quot;To_StopPointRef&quot;</span></div>
-<div class="sourceLine" id="cb71-38" data-line-number="38">    ,<span class="ot">&quot;To_StopPointName&quot;</span></div>
-<div class="sourceLine" id="cb71-39" data-line-number="39">    ,<span class="ot">&quot;To_Longitude&quot;</span></div>
-<div class="sourceLine" id="cb71-40" data-line-number="40">    ,<span class="ot">&quot;To_Latitude&quot;</span></div>
-<div class="sourceLine" id="cb71-41" data-line-number="41">    ,<span class="ot">&quot;JourneyTime&quot;</span></div>
-<div class="sourceLine" id="cb71-42" data-line-number="42">    <span class="co">-- DepartureMins_Link is the ArrivalMins_Link of the previous row</span></div>
-<div class="sourceLine" id="cb71-43" data-line-number="43">    <span class="co">-- partitioned by vehicle and ordered by stop sequence</span></div>
-<div class="sourceLine" id="cb71-44" data-line-number="44">    ,<span class="fu">LAG</span>(<span class="ot">&quot;ArrivalMins_Link&quot;</span>, <span class="dv">1</span>, <span class="ot">&quot;DepartureMins&quot;</span>) <span class="kw">OVER</span></div>
-<div class="sourceLine" id="cb71-45" data-line-number="45">      (<span class="kw">PARTITION</span> <span class="kw">BY</span> <span class="ot">&quot;VehicleJourneyCode&quot;</span> <span class="kw">ORDER</span> <span class="kw">BY</span> <span class="ot">&quot;From_SequenceNumber&quot;</span>)</div>
-<div class="sourceLine" id="cb71-46" data-line-number="46">      <span class="kw">AS</span> <span class="ot">&quot;DepartureMins_Link&quot;</span></div>
-<div class="sourceLine" id="cb71-47" data-line-number="47">    ,<span class="ot">&quot;ArrivalMins_Link&quot;</span></div>
-<div class="sourceLine" id="cb71-48" data-line-number="48">    ,<span class="ot">&quot;Flag_LastStop&quot;</span></div>
-<div class="sourceLine" id="cb71-49" data-line-number="49"></div>
-<div class="sourceLine" id="cb71-50" data-line-number="50">  <span class="kw">FROM</span> (</div>
-<div class="sourceLine" id="cb71-51" data-line-number="51"></div>
-<div class="sourceLine" id="cb71-52" data-line-number="52">    <span class="kw">SELECT</span></div>
-<div class="sourceLine" id="cb71-53" data-line-number="53"></div>
-<div class="sourceLine" id="cb71-54" data-line-number="54">       v.<span class="ot">&quot;VehicleJourneyCode&quot;</span></div>
-<div class="sourceLine" id="cb71-55" data-line-number="55">      ,v.<span class="ot">&quot;LineRef&quot;</span></div>
-<div class="sourceLine" id="cb71-56" data-line-number="56">      ,v.<span class="ot">&quot;DepartureMins&quot;</span></div>
-<div class="sourceLine" id="cb71-57" data-line-number="57"></div>
-<div class="sourceLine" id="cb71-58" data-line-number="58">      ,j.<span class="ot">&quot;From_SequenceNumber&quot;</span></div>
-<div class="sourceLine" id="cb71-59" data-line-number="59">      <span class="co">-- Re-create SequenceNumber for each vehicle by ranking the current SequenceNumber</span></div>
-<div class="sourceLine" id="cb71-60" data-line-number="60">      <span class="co">-- within a vehicle partition</span></div>
-<div class="sourceLine" id="cb71-61" data-line-number="61">      ,<span class="fu">RANK</span>() <span class="kw">OVER</span> (<span class="kw">PARTITION</span> <span class="kw">BY</span> v.<span class="ot">&quot;VehicleJourneyCode&quot;</span> <span class="kw">ORDER</span> <span class="kw">BY</span> j.<span class="ot">&quot;From_SequenceNumber&quot;</span>)</div>
-<div class="sourceLine" id="cb71-62" data-line-number="62">        <span class="ot">&quot;From_VehicleSequenceNumber&quot;</span></div>
-<div class="sourceLine" id="cb71-63" data-line-number="63">      ,j.<span class="ot">&quot;From_StopPointRef&quot;</span></div>
-<div class="sourceLine" id="cb71-64" data-line-number="64">      ,p1.<span class="ot">&quot;CommonName&quot;</span> <span class="ot">&quot;From_StopPointName&quot;</span></div>
-<div class="sourceLine" id="cb71-65" data-line-number="65">      ,p1.<span class="ot">&quot;Longitude&quot;</span> <span class="ot">&quot;From_Longitude&quot;</span></div>
-<div class="sourceLine" id="cb71-66" data-line-number="66">      ,p1.<span class="ot">&quot;Latitude&quot;</span> <span class="ot">&quot;From_Latitude&quot;</span></div>
-<div class="sourceLine" id="cb71-67" data-line-number="67">      ,j.<span class="ot">&quot;To_StopPointRef&quot;</span></div>
-<div class="sourceLine" id="cb71-68" data-line-number="68">      ,p2.<span class="ot">&quot;CommonName&quot;</span> <span class="ot">&quot;To_StopPointName&quot;</span></div>
-<div class="sourceLine" id="cb71-69" data-line-number="69">      ,p2.<span class="ot">&quot;Longitude&quot;</span> <span class="ot">&quot;To_Longitude&quot;</span></div>
-<div class="sourceLine" id="cb71-70" data-line-number="70">      ,p2.<span class="ot">&quot;Latitude&quot;</span> <span class="ot">&quot;To_Latitude&quot;</span></div>
-<div class="sourceLine" id="cb71-71" data-line-number="71"></div>
-<div class="sourceLine" id="cb71-72" data-line-number="72">      ,j.<span class="ot">&quot;JourneyTime&quot;</span></div>
-<div class="sourceLine" id="cb71-73" data-line-number="73">      <span class="co">-- Create ArrivalMins_Link as DepartureMins plus the cumulative JourneyTime</span></div>
-<div class="sourceLine" id="cb71-74" data-line-number="74">      ,v.<span class="ot">&quot;DepartureMins&quot;</span> + <span class="fu">SUM</span>(j.<span class="ot">&quot;JourneyTime&quot;</span>) <span class="kw">OVER</span></div>
-<div class="sourceLine" id="cb71-75" data-line-number="75">        (<span class="kw">PARTITION</span> <span class="kw">BY</span> v.<span class="ot">&quot;VehicleJourneyCode&quot;</span> <span class="kw">ORDER</span> <span class="kw">BY</span> j.<span class="ot">&quot;From_SequenceNumber&quot;</span>)</div>
-<div class="sourceLine" id="cb71-76" data-line-number="76">        <span class="kw">AS</span> <span class="ot">&quot;ArrivalMins_Link&quot;</span></div>
-<div class="sourceLine" id="cb71-77" data-line-number="77">      <span class="co">-- Flag whether the current To_SequenceNumber is the greatest within a</span></div>
-<div class="sourceLine" id="cb71-78" data-line-number="78">      <span class="co">-- Vehicle partition</span></div>
-<div class="sourceLine" id="cb71-79" data-line-number="79">      ,j.<span class="ot">&quot;To_SequenceNumber&quot;</span> = <span class="fu">MAX</span>(j.<span class="ot">&quot;To_SequenceNumber&quot;</span>) <span class="kw">OVER</span></div>
-<div class="sourceLine" id="cb71-80" data-line-number="80">        (<span class="kw">PARTITION</span> <span class="kw">BY</span> v.<span class="ot">&quot;VehicleJourneyCode&quot;</span>) <span class="kw">AS</span> <span class="ot">&quot;Flag_LastStop&quot;</span></div>
-<div class="sourceLine" id="cb71-81" data-line-number="81"></div>
-<div class="sourceLine" id="cb71-82" data-line-number="82">    <span class="co">/* Journey and Timing Link Tables */</span></div>
-<div class="sourceLine" id="cb71-83" data-line-number="83">    <span class="kw">FROM</span> <span class="ot">&quot;VehicleJourneys&quot;</span> v</div>
-<div class="sourceLine" id="cb71-84" data-line-number="84">    <span class="kw">LEFT</span> <span class="kw">JOIN</span> <span class="ot">&quot;JourneyPatterns&quot;</span> s</div>
-<div class="sourceLine" id="cb71-85" data-line-number="85">      <span class="kw">ON</span> s.<span class="ot">&quot;JourneyPattern&quot;</span> = v.<span class="ot">&quot;JourneyPatternRef&quot;</span></div>
-<div class="sourceLine" id="cb71-86" data-line-number="86">    <span class="kw">LEFT</span> <span class="kw">JOIN</span> <span class="ot">&quot;JourneyPatternTimingLinks&quot;</span> j</div>
-<div class="sourceLine" id="cb71-87" data-line-number="87">      <span class="kw">ON</span> j.<span class="ot">&quot;JourneyPatternSections&quot;</span> = s.<span class="ot">&quot;JourneyPatternSectionRefs&quot;</span></div>
-<div class="sourceLine" id="cb71-88" data-line-number="88"></div>
-<div class="sourceLine" id="cb71-89" data-line-number="89">    <span class="co">/* Stop Names */</span></div>
-<div class="sourceLine" id="cb71-90" data-line-number="90">    <span class="kw">LEFT</span> <span class="kw">JOIN</span> <span class="ot">&quot;StopPoints&quot;</span> p1</div>
-<div class="sourceLine" id="cb71-91" data-line-number="91">      <span class="kw">ON</span> p1.<span class="ot">&quot;AtcoCode&quot;</span> = j.<span class="ot">&quot;From_StopPointRef&quot;</span></div>
-<div class="sourceLine" id="cb71-92" data-line-number="92">    <span class="kw">LEFT</span> <span class="kw">JOIN</span> <span class="ot">&quot;StopPoints&quot;</span> p2</div>
-<div class="sourceLine" id="cb71-93" data-line-number="93">      <span class="kw">ON</span> p2.<span class="ot">&quot;AtcoCode&quot;</span> = j.<span class="ot">&quot;To_StopPointRef&quot;</span></div>
-<div class="sourceLine" id="cb71-94" data-line-number="94"></div>
-<div class="sourceLine" id="cb71-95" data-line-number="95">    <span class="co">/* Operating Periods and Operating Profiles */</span></div>
-<div class="sourceLine" id="cb71-96" data-line-number="96">    <span class="kw">LEFT</span> <span class="kw">JOIN</span> <span class="ot">&quot;Services_RegularDayType_DaysOfWeek&quot;</span> d1</div>
-<div class="sourceLine" id="cb71-97" data-line-number="97">      <span class="kw">ON</span> d1.<span class="ot">&quot;Services&quot;</span> = v.<span class="ot">&quot;ServiceRef&quot;</span></div>
-<div class="sourceLine" id="cb71-98" data-line-number="98">    <span class="kw">LEFT</span> <span class="kw">JOIN</span> <span class="ot">&quot;VehicleJourneys_RegularDayType_DaysOfWeek&quot;</span> d2</div>
-<div class="sourceLine" id="cb71-99" data-line-number="99">      <span class="kw">ON</span> d2.<span class="ot">&quot;VehicleJourneys&quot;</span> = v.<span class="ot">&quot;VehicleJourneyCode&quot;</span></div>
-<div class="sourceLine" id="cb71-100" data-line-number="100">    <span class="kw">LEFT</span> <span class="kw">JOIN</span> <span class="ot">&quot;Services&quot;</span> b</div>
-<div class="sourceLine" id="cb71-101" data-line-number="101">      <span class="kw">ON</span> b.<span class="ot">&quot;ServiceCode&quot;</span> = v.<span class="ot">&quot;ServiceRef&quot;</span></div>
-<div class="sourceLine" id="cb71-102" data-line-number="102"></div>
-<div class="sourceLine" id="cb71-103" data-line-number="103">    <span class="kw">WHERE</span></div>
-<div class="sourceLine" id="cb71-104" data-line-number="104">    <span class="co">-- Filter to timetables that have services and journeys on _timetable_date day of the week</span></div>
-<div class="sourceLine" id="cb71-105" data-line-number="105">          d1.<span class="ot">&quot;DaysOfWeek&quot;</span> <span class="kw">IN</span> (<span class="kw">SELECT</span> <span class="ot">&quot;DayGroup&quot;</span> <span class="kw">FROM</span> DaysOfWeek_Groups</div>
-<div class="sourceLine" id="cb71-106" data-line-number="106">                              <span class="kw">WHERE</span> <span class="ot">&quot;DayIndex&quot;</span> = DATE_PART(<span class="st">'ISODOW'</span>,</div>
-<div class="sourceLine" id="cb71-107" data-line-number="107">                                                           <span class="fu">CAST</span>(_timetable_date <span class="kw">AS</span> <span class="dt">date</span>)))</div>
-<div class="sourceLine" id="cb71-108" data-line-number="108">      <span class="kw">AND</span> d2.<span class="ot">&quot;DaysOfWeek&quot;</span> <span class="kw">IN</span> (<span class="kw">SELECT</span> <span class="ot">&quot;DayGroup&quot;</span> <span class="kw">FROM</span> DaysOfWeek_Groups</div>
-<div class="sourceLine" id="cb71-109" data-line-number="109">                              <span class="kw">WHERE</span> <span class="ot">&quot;DayIndex&quot;</span> = DATE_PART(<span class="st">'ISODOW'</span>,</div>
-<div class="sourceLine" id="cb71-110" data-line-number="110">                                                           <span class="fu">CAST</span>(_timetable_date <span class="kw">AS</span> <span class="dt">date</span>)))</div>
-<div class="sourceLine" id="cb71-111" data-line-number="111"></div>
-<div class="sourceLine" id="cb71-112" data-line-number="112">    <span class="co">-- Filter to timetables that are operating on _timetable_date</span></div>
-<div class="sourceLine" id="cb71-113" data-line-number="113">      <span class="kw">AND</span> <span class="fu">CAST</span>(_timetable_date <span class="kw">AS</span> <span class="dt">date</span>) <span class="kw">BETWEEN</span> b.<span class="ot">&quot;OpPeriod_StartDate&quot;</span> <span class="kw">AND</span> b.<span class="ot">&quot;OpPeriod_EndDate&quot;</span></div>
-<div class="sourceLine" id="cb71-114" data-line-number="114"></div>
-<div class="sourceLine" id="cb71-115" data-line-number="115">  ) arrival_calc</div>
-<div class="sourceLine" id="cb71-116" data-line-number="116"></div>
-<div class="sourceLine" id="cb71-117" data-line-number="117">  $BODY$ LANGUAGE sql;</div></code></pre>
+<pre class="sourceCode sql" id="cb64"><code class="sourceCode sql"><div class="sourceLine" id="cb64-1" data-line-number="1"><span class="kw">CREATE</span> <span class="kw">OR</span> <span class="kw">REPLACE</span> <span class="kw">FUNCTION</span> departureboard(<span class="kw">IN</span> _timetable_date text)</div>
+<div class="sourceLine" id="cb64-2" data-line-number="2">  RETURNS <span class="kw">TABLE</span> (</div>
+<div class="sourceLine" id="cb64-3" data-line-number="3">    <span class="ot">&quot;VehicleJourneyCode&quot;</span> text,</div>
+<div class="sourceLine" id="cb64-4" data-line-number="4">    <span class="ot">&quot;Line&quot;</span> text,</div>
+<div class="sourceLine" id="cb64-5" data-line-number="5">    <span class="ot">&quot;From_VehicleSequenceNumber&quot;</span> <span class="dt">integer</span>,</div>
+<div class="sourceLine" id="cb64-6" data-line-number="6">    <span class="ot">&quot;From_StopPointRef&quot;</span> text,</div>
+<div class="sourceLine" id="cb64-7" data-line-number="7">    <span class="ot">&quot;From_StopPointName&quot;</span> text,</div>
+<div class="sourceLine" id="cb64-8" data-line-number="8">    <span class="ot">&quot;From_Longitude&quot;</span> <span class="dt">double</span> <span class="dt">precision</span>,</div>
+<div class="sourceLine" id="cb64-9" data-line-number="9">    <span class="ot">&quot;From_Latitude&quot;</span> <span class="dt">double</span> <span class="dt">precision</span>,</div>
+<div class="sourceLine" id="cb64-10" data-line-number="10">    <span class="ot">&quot;To_VehicleSequenceNumber&quot;</span> <span class="dt">integer</span>,</div>
+<div class="sourceLine" id="cb64-11" data-line-number="11">    <span class="ot">&quot;To_StopPointRef&quot;</span> text,</div>
+<div class="sourceLine" id="cb64-12" data-line-number="12">    <span class="ot">&quot;To_StopPointName&quot;</span> text,</div>
+<div class="sourceLine" id="cb64-13" data-line-number="13">    <span class="ot">&quot;To_Longitude&quot;</span> <span class="dt">double</span> <span class="dt">precision</span>,</div>
+<div class="sourceLine" id="cb64-14" data-line-number="14">    <span class="ot">&quot;To_Latitude&quot;</span> <span class="dt">double</span> <span class="dt">precision</span>,</div>
+<div class="sourceLine" id="cb64-15" data-line-number="15">    <span class="ot">&quot;JourneyTime&quot;</span>   <span class="dt">double</span> <span class="dt">precision</span>,</div>
+<div class="sourceLine" id="cb64-16" data-line-number="16">    <span class="ot">&quot;DepartureMins_Link&quot;</span> <span class="dt">double</span> <span class="dt">precision</span>,</div>
+<div class="sourceLine" id="cb64-17" data-line-number="17">    <span class="ot">&quot;ArrivalMins_Link&quot;</span> <span class="dt">double</span> <span class="dt">precision</span>,</div>
+<div class="sourceLine" id="cb64-18" data-line-number="18">    <span class="ot">&quot;Flag_LastStop&quot;</span> <span class="dt">boolean</span></div>
+<div class="sourceLine" id="cb64-19" data-line-number="19">  )</div>
+<div class="sourceLine" id="cb64-20" data-line-number="20"></div>
+<div class="sourceLine" id="cb64-21" data-line-number="21">  <span class="kw">AS</span></div>
+<div class="sourceLine" id="cb64-22" data-line-number="22"></div>
+<div class="sourceLine" id="cb64-23" data-line-number="23">  $BODY$</div>
+<div class="sourceLine" id="cb64-24" data-line-number="24"></div>
+<div class="sourceLine" id="cb64-25" data-line-number="25">  <span class="kw">SELECT</span></div>
+<div class="sourceLine" id="cb64-26" data-line-number="26"></div>
+<div class="sourceLine" id="cb64-27" data-line-number="27">     <span class="ot">&quot;VehicleJourneyCode&quot;</span></div>
+<div class="sourceLine" id="cb64-28" data-line-number="28">     <span class="co">-- Extract three-letter line abbreviation</span></div>
+<div class="sourceLine" id="cb64-29" data-line-number="29">    ,SUBSTRING(<span class="ot">&quot;LineRef&quot;</span> <span class="kw">FROM</span> <span class="dv">3</span> <span class="kw">FOR</span> <span class="dv">3</span>) <span class="ot">&quot;Line&quot;</span></div>
+<div class="sourceLine" id="cb64-30" data-line-number="30">    ,<span class="fu">CAST</span>(<span class="ot">&quot;From_VehicleSequenceNumber&quot;</span> <span class="kw">as</span> <span class="dt">int</span>) <span class="ot">&quot;From_VehicleSequenceNumber&quot;</span></div>
+<div class="sourceLine" id="cb64-31" data-line-number="31">    ,<span class="ot">&quot;From_StopPointRef&quot;</span></div>
+<div class="sourceLine" id="cb64-32" data-line-number="32">    ,<span class="ot">&quot;From_StopPointName&quot;</span></div>
+<div class="sourceLine" id="cb64-33" data-line-number="33">    ,<span class="ot">&quot;From_Longitude&quot;</span></div>
+<div class="sourceLine" id="cb64-34" data-line-number="34">    ,<span class="ot">&quot;From_Latitude&quot;</span></div>
+<div class="sourceLine" id="cb64-35" data-line-number="35">    <span class="co">-- Re-create SequenceNumber for each vehicle</span></div>
+<div class="sourceLine" id="cb64-36" data-line-number="36">    ,<span class="fu">CAST</span>(<span class="ot">&quot;From_VehicleSequenceNumber&quot;</span> + <span class="dv">1</span> <span class="kw">as</span> <span class="dt">int</span>) <span class="ot">&quot;To_VehicleSequenceNumber&quot;</span></div>
+<div class="sourceLine" id="cb64-37" data-line-number="37">    ,<span class="ot">&quot;To_StopPointRef&quot;</span></div>
+<div class="sourceLine" id="cb64-38" data-line-number="38">    ,<span class="ot">&quot;To_StopPointName&quot;</span></div>
+<div class="sourceLine" id="cb64-39" data-line-number="39">    ,<span class="ot">&quot;To_Longitude&quot;</span></div>
+<div class="sourceLine" id="cb64-40" data-line-number="40">    ,<span class="ot">&quot;To_Latitude&quot;</span></div>
+<div class="sourceLine" id="cb64-41" data-line-number="41">    ,<span class="ot">&quot;JourneyTime&quot;</span></div>
+<div class="sourceLine" id="cb64-42" data-line-number="42">    <span class="co">-- DepartureMins_Link is the ArrivalMins_Link of the previous row</span></div>
+<div class="sourceLine" id="cb64-43" data-line-number="43">    <span class="co">-- partitioned by vehicle and ordered by stop sequence</span></div>
+<div class="sourceLine" id="cb64-44" data-line-number="44">    ,<span class="fu">LAG</span>(<span class="ot">&quot;ArrivalMins_Link&quot;</span>, <span class="dv">1</span>, <span class="ot">&quot;DepartureMins&quot;</span>) <span class="kw">OVER</span></div>
+<div class="sourceLine" id="cb64-45" data-line-number="45">      (<span class="kw">PARTITION</span> <span class="kw">BY</span> <span class="ot">&quot;VehicleJourneyCode&quot;</span> <span class="kw">ORDER</span> <span class="kw">BY</span> <span class="ot">&quot;From_SequenceNumber&quot;</span>)</div>
+<div class="sourceLine" id="cb64-46" data-line-number="46">      <span class="kw">AS</span> <span class="ot">&quot;DepartureMins_Link&quot;</span></div>
+<div class="sourceLine" id="cb64-47" data-line-number="47">    ,<span class="ot">&quot;ArrivalMins_Link&quot;</span></div>
+<div class="sourceLine" id="cb64-48" data-line-number="48">    ,<span class="ot">&quot;Flag_LastStop&quot;</span></div>
+<div class="sourceLine" id="cb64-49" data-line-number="49"></div>
+<div class="sourceLine" id="cb64-50" data-line-number="50">  <span class="kw">FROM</span> (</div>
+<div class="sourceLine" id="cb64-51" data-line-number="51"></div>
+<div class="sourceLine" id="cb64-52" data-line-number="52">    <span class="kw">SELECT</span></div>
+<div class="sourceLine" id="cb64-53" data-line-number="53"></div>
+<div class="sourceLine" id="cb64-54" data-line-number="54">       v.<span class="ot">&quot;VehicleJourneyCode&quot;</span></div>
+<div class="sourceLine" id="cb64-55" data-line-number="55">      ,v.<span class="ot">&quot;LineRef&quot;</span></div>
+<div class="sourceLine" id="cb64-56" data-line-number="56">      ,v.<span class="ot">&quot;DepartureMins&quot;</span></div>
+<div class="sourceLine" id="cb64-57" data-line-number="57"></div>
+<div class="sourceLine" id="cb64-58" data-line-number="58">      ,j.<span class="ot">&quot;From_SequenceNumber&quot;</span></div>
+<div class="sourceLine" id="cb64-59" data-line-number="59">      <span class="co">-- Re-create SequenceNumber for each vehicle by ranking the current SequenceNumber</span></div>
+<div class="sourceLine" id="cb64-60" data-line-number="60">      <span class="co">-- within a vehicle partition</span></div>
+<div class="sourceLine" id="cb64-61" data-line-number="61">      ,<span class="fu">RANK</span>() <span class="kw">OVER</span> (<span class="kw">PARTITION</span> <span class="kw">BY</span> v.<span class="ot">&quot;VehicleJourneyCode&quot;</span> <span class="kw">ORDER</span> <span class="kw">BY</span> j.<span class="ot">&quot;From_SequenceNumber&quot;</span>)</div>
+<div class="sourceLine" id="cb64-62" data-line-number="62">        <span class="ot">&quot;From_VehicleSequenceNumber&quot;</span></div>
+<div class="sourceLine" id="cb64-63" data-line-number="63">      ,j.<span class="ot">&quot;From_StopPointRef&quot;</span></div>
+<div class="sourceLine" id="cb64-64" data-line-number="64">      ,p1.<span class="ot">&quot;CommonName&quot;</span> <span class="ot">&quot;From_StopPointName&quot;</span></div>
+<div class="sourceLine" id="cb64-65" data-line-number="65">      ,p1.<span class="ot">&quot;Longitude&quot;</span> <span class="ot">&quot;From_Longitude&quot;</span></div>
+<div class="sourceLine" id="cb64-66" data-line-number="66">      ,p1.<span class="ot">&quot;Latitude&quot;</span> <span class="ot">&quot;From_Latitude&quot;</span></div>
+<div class="sourceLine" id="cb64-67" data-line-number="67">      ,j.<span class="ot">&quot;To_StopPointRef&quot;</span></div>
+<div class="sourceLine" id="cb64-68" data-line-number="68">      ,p2.<span class="ot">&quot;CommonName&quot;</span> <span class="ot">&quot;To_StopPointName&quot;</span></div>
+<div class="sourceLine" id="cb64-69" data-line-number="69">      ,p2.<span class="ot">&quot;Longitude&quot;</span> <span class="ot">&quot;To_Longitude&quot;</span></div>
+<div class="sourceLine" id="cb64-70" data-line-number="70">      ,p2.<span class="ot">&quot;Latitude&quot;</span> <span class="ot">&quot;To_Latitude&quot;</span></div>
+<div class="sourceLine" id="cb64-71" data-line-number="71"></div>
+<div class="sourceLine" id="cb64-72" data-line-number="72">      ,j.<span class="ot">&quot;JourneyTime&quot;</span></div>
+<div class="sourceLine" id="cb64-73" data-line-number="73">      <span class="co">-- Create ArrivalMins_Link as DepartureMins plus the cumulative JourneyTime</span></div>
+<div class="sourceLine" id="cb64-74" data-line-number="74">      ,v.<span class="ot">&quot;DepartureMins&quot;</span> + <span class="fu">SUM</span>(j.<span class="ot">&quot;JourneyTime&quot;</span>) <span class="kw">OVER</span></div>
+<div class="sourceLine" id="cb64-75" data-line-number="75">        (<span class="kw">PARTITION</span> <span class="kw">BY</span> v.<span class="ot">&quot;VehicleJourneyCode&quot;</span> <span class="kw">ORDER</span> <span class="kw">BY</span> j.<span class="ot">&quot;From_SequenceNumber&quot;</span>)</div>
+<div class="sourceLine" id="cb64-76" data-line-number="76">        <span class="kw">AS</span> <span class="ot">&quot;ArrivalMins_Link&quot;</span></div>
+<div class="sourceLine" id="cb64-77" data-line-number="77">      <span class="co">-- Flag whether the current To_SequenceNumber is the greatest within a</span></div>
+<div class="sourceLine" id="cb64-78" data-line-number="78">      <span class="co">-- Vehicle partition</span></div>
+<div class="sourceLine" id="cb64-79" data-line-number="79">      ,j.<span class="ot">&quot;To_SequenceNumber&quot;</span> = <span class="fu">MAX</span>(j.<span class="ot">&quot;To_SequenceNumber&quot;</span>) <span class="kw">OVER</span></div>
+<div class="sourceLine" id="cb64-80" data-line-number="80">        (<span class="kw">PARTITION</span> <span class="kw">BY</span> v.<span class="ot">&quot;VehicleJourneyCode&quot;</span>) <span class="kw">AS</span> <span class="ot">&quot;Flag_LastStop&quot;</span></div>
+<div class="sourceLine" id="cb64-81" data-line-number="81"></div>
+<div class="sourceLine" id="cb64-82" data-line-number="82">    <span class="co">/* Journey and Timing Link Tables */</span></div>
+<div class="sourceLine" id="cb64-83" data-line-number="83">    <span class="kw">FROM</span> <span class="ot">&quot;VehicleJourneys&quot;</span> v</div>
+<div class="sourceLine" id="cb64-84" data-line-number="84">    <span class="kw">LEFT</span> <span class="kw">JOIN</span> <span class="ot">&quot;JourneyPatterns&quot;</span> s</div>
+<div class="sourceLine" id="cb64-85" data-line-number="85">      <span class="kw">ON</span> s.<span class="ot">&quot;JourneyPattern&quot;</span> = v.<span class="ot">&quot;JourneyPatternRef&quot;</span></div>
+<div class="sourceLine" id="cb64-86" data-line-number="86">    <span class="kw">LEFT</span> <span class="kw">JOIN</span> <span class="ot">&quot;JourneyPatternTimingLinks&quot;</span> j</div>
+<div class="sourceLine" id="cb64-87" data-line-number="87">      <span class="kw">ON</span> j.<span class="ot">&quot;JourneyPatternSections&quot;</span> = s.<span class="ot">&quot;JourneyPatternSectionRefs&quot;</span></div>
+<div class="sourceLine" id="cb64-88" data-line-number="88"></div>
+<div class="sourceLine" id="cb64-89" data-line-number="89">    <span class="co">/* Stop Names */</span></div>
+<div class="sourceLine" id="cb64-90" data-line-number="90">    <span class="kw">LEFT</span> <span class="kw">JOIN</span> <span class="ot">&quot;StopPoints&quot;</span> p1</div>
+<div class="sourceLine" id="cb64-91" data-line-number="91">      <span class="kw">ON</span> p1.<span class="ot">&quot;AtcoCode&quot;</span> = j.<span class="ot">&quot;From_StopPointRef&quot;</span></div>
+<div class="sourceLine" id="cb64-92" data-line-number="92">    <span class="kw">LEFT</span> <span class="kw">JOIN</span> <span class="ot">&quot;StopPoints&quot;</span> p2</div>
+<div class="sourceLine" id="cb64-93" data-line-number="93">      <span class="kw">ON</span> p2.<span class="ot">&quot;AtcoCode&quot;</span> = j.<span class="ot">&quot;To_StopPointRef&quot;</span></div>
+<div class="sourceLine" id="cb64-94" data-line-number="94"></div>
+<div class="sourceLine" id="cb64-95" data-line-number="95">    <span class="co">/* Operating Periods and Operating Profiles */</span></div>
+<div class="sourceLine" id="cb64-96" data-line-number="96">    <span class="kw">LEFT</span> <span class="kw">JOIN</span> <span class="ot">&quot;Services_RegularDayType_DaysOfWeek&quot;</span> d1</div>
+<div class="sourceLine" id="cb64-97" data-line-number="97">      <span class="kw">ON</span> d1.<span class="ot">&quot;Services&quot;</span> = v.<span class="ot">&quot;ServiceRef&quot;</span></div>
+<div class="sourceLine" id="cb64-98" data-line-number="98">    <span class="kw">LEFT</span> <span class="kw">JOIN</span> <span class="ot">&quot;VehicleJourneys_RegularDayType_DaysOfWeek&quot;</span> d2</div>
+<div class="sourceLine" id="cb64-99" data-line-number="99">      <span class="kw">ON</span> d2.<span class="ot">&quot;VehicleJourneys&quot;</span> = v.<span class="ot">&quot;VehicleJourneyCode&quot;</span></div>
+<div class="sourceLine" id="cb64-100" data-line-number="100">    <span class="kw">LEFT</span> <span class="kw">JOIN</span> <span class="ot">&quot;Services&quot;</span> b</div>
+<div class="sourceLine" id="cb64-101" data-line-number="101">      <span class="kw">ON</span> b.<span class="ot">&quot;ServiceCode&quot;</span> = v.<span class="ot">&quot;ServiceRef&quot;</span></div>
+<div class="sourceLine" id="cb64-102" data-line-number="102"></div>
+<div class="sourceLine" id="cb64-103" data-line-number="103">    <span class="kw">WHERE</span></div>
+<div class="sourceLine" id="cb64-104" data-line-number="104">    <span class="co">-- Filter to timetables that have services and journeys on _timetable_date day of the week</span></div>
+<div class="sourceLine" id="cb64-105" data-line-number="105">          d1.<span class="ot">&quot;DaysOfWeek&quot;</span> <span class="kw">IN</span> (<span class="kw">SELECT</span> <span class="ot">&quot;DayGroup&quot;</span> <span class="kw">FROM</span> DaysOfWeek_Groups</div>
+<div class="sourceLine" id="cb64-106" data-line-number="106">                              <span class="kw">WHERE</span> <span class="ot">&quot;DayIndex&quot;</span> = DATE_PART(<span class="st">'ISODOW'</span>,</div>
+<div class="sourceLine" id="cb64-107" data-line-number="107">                                                           <span class="fu">CAST</span>(_timetable_date <span class="kw">AS</span> <span class="dt">date</span>)))</div>
+<div class="sourceLine" id="cb64-108" data-line-number="108">      <span class="kw">AND</span> d2.<span class="ot">&quot;DaysOfWeek&quot;</span> <span class="kw">IN</span> (<span class="kw">SELECT</span> <span class="ot">&quot;DayGroup&quot;</span> <span class="kw">FROM</span> DaysOfWeek_Groups</div>
+<div class="sourceLine" id="cb64-109" data-line-number="109">                              <span class="kw">WHERE</span> <span class="ot">&quot;DayIndex&quot;</span> = DATE_PART(<span class="st">'ISODOW'</span>,</div>
+<div class="sourceLine" id="cb64-110" data-line-number="110">                                                           <span class="fu">CAST</span>(_timetable_date <span class="kw">AS</span> <span class="dt">date</span>)))</div>
+<div class="sourceLine" id="cb64-111" data-line-number="111"></div>
+<div class="sourceLine" id="cb64-112" data-line-number="112">    <span class="co">-- Filter to timetables that are operating on _timetable_date</span></div>
+<div class="sourceLine" id="cb64-113" data-line-number="113">      <span class="kw">AND</span> <span class="fu">CAST</span>(_timetable_date <span class="kw">AS</span> <span class="dt">date</span>) <span class="kw">BETWEEN</span> b.<span class="ot">&quot;OpPeriod_StartDate&quot;</span> <span class="kw">AND</span> b.<span class="ot">&quot;OpPeriod_EndDate&quot;</span></div>
+<div class="sourceLine" id="cb64-114" data-line-number="114"></div>
+<div class="sourceLine" id="cb64-115" data-line-number="115">  ) arrival_calc</div>
+<div class="sourceLine" id="cb64-116" data-line-number="116"></div>
+<div class="sourceLine" id="cb64-117" data-line-number="117">  $BODY$ LANGUAGE sql;</div></code></pre>
 <p>As you can imagine, when pushing every timetable to the database this table blows out to 6.63M rows. As discussed earlier, the vast majority of it is redundant information. Entire XML files are duplicated for special calendar days such as Bank Holidays, New Years, Christmas etc. hence the need to sample the data.</p>
 <p>If using the Python methodology of scraping the dataset for all files, this sampling process discussed earlier now occurs as part of the Departures Board query <code>WHERE</code> clause.</p>
 <p>Essentially we just filter on the Operating Profile of the Services and Vehicle Journeys to be one day of the week and filter the Operating Periods to be those that contain a given date. Now, by passing in the date “Wednesday 20th Dec 2017” for example the table size has reduced to 244K rows.</p>

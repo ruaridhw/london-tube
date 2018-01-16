@@ -25,6 +25,15 @@
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet" />
 <script src="site_libs/pagedtable-1.1/js/pagedtable.js"></script>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-108468724-2"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-108468724-2');
+</script>
 
 
 <style type="text/css">code{white-space: pre;}</style>
@@ -324,10 +333,10 @@ div.tocify {
   <a href="index.html">Home</a>
 </li>
 <li>
-  <a href="ManagingData.html">Managing Data</a>
+  <a href="ManagingData.html">Part One: Managing Data</a>
 </li>
 <li>
-  <a href="VisualisingData.html">Visualising Data</a>
+  <a href="VisualisingData.html">Part Two: Visualising Data</a>
 </li>
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
@@ -343,21 +352,23 @@ div.tocify {
       <a href="GetData.html">Download Data</a>
     </li>
     <li>
-      <a href="GetTablesFromXPaths.html">Scraping</a>
+      <a href="GetTablesFromXPaths.html">Extract Data</a>
     </li>
     <li>
       <a href="VariableCreation.html">Variable Creation</a>
     </li>
     <li>
-      <a href="SQLTables.html">SQL Upload</a>
+      <a href="SQLTables.html">Database Upload
+(R workflow)</a>
     </li>
     <li>
-      <a href="FeatherUpload.html">Feather Upload</a>
+      <a href="FeatherUpload.html">Database Upload
+(Python workflow)</a>
     </li>
     <li class="divider"></li>
     <li class="dropdown-header">Python</li>
     <li>
-      <a href="XMLParsing.html">Scraping</a>
+      <a href="XMLParsing.html">Extract Data</a>
     </li>
     <li>
       <a href="TfLTimetable.html">TfL Timetable Class</a>
@@ -368,13 +379,13 @@ div.tocify {
     <li class="divider"></li>
     <li class="dropdown-header">SQL</li>
     <li>
-      <a href="InboundGraph.html">Inbound Graph</a>
+      <a href="InboundGraph.html">Inbound Graph view</a>
     </li>
     <li>
-      <a href="DepartureBoard.html">Departure Board</a>
+      <a href="DepartureBoard.html">Departure Board function</a>
     </li>
     <li>
-      <a href="DaysOfWeekGroups.html">Days of Week Groups</a>
+      <a href="DaysOfWeekGroups.html">Days of Week Groups table</a>
     </li>
     <li class="divider"></li>
     <li class="dropdown-header">Workflow</li>
@@ -424,20 +435,27 @@ div.tocify {
 <div class="sourceLine" id="cb1-13" data-line-number="13"><span class="st">  </span><span class="kw">unique</span>()</div></code></pre>
 <p>Define subset of xpaths required.</p>
 <pre class="sourceCode r" id="cb2"><code class="sourceCode r"><div class="sourceLine" id="cb2-1" data-line-number="1">required_xpaths &lt;-<span class="st"> </span><span class="kw">list</span>(</div>
-<div class="sourceLine" id="cb2-2" data-line-number="2">   <span class="dt">NptgLocalities =</span> <span class="dv">1</span></div>
-<div class="sourceLine" id="cb2-3" data-line-number="3">  ,<span class="dt">StopPoints =</span> <span class="dv">2</span><span class="op">:</span><span class="dv">5</span></div>
-<div class="sourceLine" id="cb2-4" data-line-number="4">  ,<span class="dt">RouteLinks =</span> <span class="dv">8</span><span class="op">:</span><span class="dv">10</span></div>
-<div class="sourceLine" id="cb2-5" data-line-number="5">  ,<span class="dt">Routes =</span> <span class="dv">11</span></div>
-<div class="sourceLine" id="cb2-6" data-line-number="6">  ,<span class="dt">JourneyPatternTimingLinks =</span> <span class="dv">12</span><span class="op">:</span><span class="dv">14</span></div>
-<div class="sourceLine" id="cb2-7" data-line-number="7">  ,<span class="dt">Services =</span> <span class="dv">16</span></div>
-<div class="sourceLine" id="cb2-8" data-line-number="8">  ,<span class="dt">JourneyPatterns =</span> <span class="dv">24</span></div>
-<div class="sourceLine" id="cb2-9" data-line-number="9">  ,<span class="dt">VehicleJourneys =</span> <span class="dv">26</span></div>
-<div class="sourceLine" id="cb2-10" data-line-number="10">)</div></code></pre>
+<div class="sourceLine" id="cb2-2" data-line-number="2">   <span class="dt">NptgLocalities =</span> <span class="st">&quot;/TransXChange/NptgLocalities/AnnotatedNptgLocalityRef&quot;</span></div>
+<div class="sourceLine" id="cb2-3" data-line-number="3">  ,<span class="dt">StopPoints =</span> <span class="kw">c</span>(<span class="st">&quot;/TransXChange/StopPoints/StopPoint&quot;</span>,</div>
+<div class="sourceLine" id="cb2-4" data-line-number="4">                  <span class="st">&quot;/TransXChange/StopPoints/StopPoint/Descriptor&quot;</span>,</div>
+<div class="sourceLine" id="cb2-5" data-line-number="5">                  <span class="st">&quot;/TransXChange/StopPoints/StopPoint/Place&quot;</span>,</div>
+<div class="sourceLine" id="cb2-6" data-line-number="6">                  <span class="st">&quot;/TransXChange/StopPoints/StopPoint/Place/Location&quot;</span>)</div>
+<div class="sourceLine" id="cb2-7" data-line-number="7">  ,<span class="dt">RouteLinks =</span> <span class="kw">c</span>(<span class="st">&quot;/TransXChange/RouteSections/RouteSection/RouteLink&quot;</span>,</div>
+<div class="sourceLine" id="cb2-8" data-line-number="8">                  <span class="st">&quot;/TransXChange/RouteSections/RouteSection/RouteLink/From&quot;</span>,</div>
+<div class="sourceLine" id="cb2-9" data-line-number="9">                  <span class="st">&quot;/TransXChange/RouteSections/RouteSection/RouteLink/To&quot;</span>)</div>
+<div class="sourceLine" id="cb2-10" data-line-number="10">  ,<span class="dt">Routes =</span> <span class="st">&quot;/TransXChange/Routes/Route&quot;</span></div>
+<div class="sourceLine" id="cb2-11" data-line-number="11">  ,<span class="dt">JourneyPatternTimingLinks =</span> <span class="kw">c</span>(<span class="st">&quot;/TransXChange/JourneyPatternSections/JourneyPatternSection/JourneyPatternTimingLink&quot;</span>,</div>
+<div class="sourceLine" id="cb2-12" data-line-number="12">                                 <span class="st">&quot;/TransXChange/JourneyPatternSections/JourneyPatternSection/JourneyPatternTimingLink/From&quot;</span>,</div>
+<div class="sourceLine" id="cb2-13" data-line-number="13">                                 <span class="st">&quot;/TransXChange/JourneyPatternSections/JourneyPatternSection/JourneyPatternTimingLink/To&quot;</span>)</div>
+<div class="sourceLine" id="cb2-14" data-line-number="14">  ,<span class="dt">Services =</span> <span class="st">&quot;/TransXChange/Services/Service&quot;</span></div>
+<div class="sourceLine" id="cb2-15" data-line-number="15">  ,<span class="dt">JourneyPatterns =</span> <span class="st">&quot;/TransXChange/Services/Service/StandardService/JourneyPattern&quot;</span></div>
+<div class="sourceLine" id="cb2-16" data-line-number="16">  ,<span class="dt">VehicleJourneys =</span> <span class="st">&quot;/TransXChange/VehicleJourneys/VehicleJourney&quot;</span></div>
+<div class="sourceLine" id="cb2-17" data-line-number="17">)</div></code></pre>
 <p>Extract the tables by grouping the results from the sets of xpaths</p>
 <pre class="sourceCode r" id="cb3"><code class="sourceCode r"><div class="sourceLine" id="cb3-1" data-line-number="1">build_tfl &lt;-<span class="st"> </span><span class="cf">function</span>(doc, terminal_xpaths, required_terminal_xpaths) {</div>
-<div class="sourceLine" id="cb3-2" data-line-number="2">  purrr<span class="op">::</span><span class="kw">map</span>(required_terminal_xpaths, <span class="cf">function</span>(xpath_idxs) {</div>
-<div class="sourceLine" id="cb3-3" data-line-number="3">    <span class="co"># Subset the needed paths</span></div>
-<div class="sourceLine" id="cb3-4" data-line-number="4">    terminal_xpaths[xpath_idxs] <span class="op">%&gt;%</span></div>
+<div class="sourceLine" id="cb3-2" data-line-number="2">  purrr<span class="op">::</span><span class="kw">map</span>(required_terminal_xpaths, <span class="cf">function</span>(xpaths) {</div>
+<div class="sourceLine" id="cb3-3" data-line-number="3">    <span class="co"># Use the provided paths</span></div>
+<div class="sourceLine" id="cb3-4" data-line-number="4">    xpaths <span class="op">%&gt;%</span></div>
 <div class="sourceLine" id="cb3-5" data-line-number="5"><span class="st">      </span><span class="co"># Find all matches of each path</span></div>
 <div class="sourceLine" id="cb3-6" data-line-number="6"><span class="st">      </span><span class="kw">lapply</span>(xml2<span class="op">::</span>xml_find_all, <span class="dt">x =</span> doc) <span class="op">%&gt;%</span></div>
 <div class="sourceLine" id="cb3-7" data-line-number="7"><span class="st">      </span><span class="co"># Extract underlying data</span></div>
